@@ -26,16 +26,6 @@ $db=new Application_Model_DbTable_DbGlobal();
     	$mainStockElement->setMultiOptions($optionsStock);
     	$this->addElement($mainStockElement);
     	
-    	$rows= $db->getGlobalDb('SELECT id,name FROM `tb_price_type` WHERE name!="" AND status=1');
-    	$opt= array();
-    	if(count($rows) > 0) {
-    		foreach($rows as $readStock) $opt[$readStock['id']]=$readStock['name'];
-    	}
-    	$customerlevel = new Zend_Form_Element_Select('customer_level');
-    	$customerlevel->setAttribs(array('OnChange'=>'AddLocation()','class'=>'form-control select2me'));
-    	$customerlevel->setMultiOptions($opt);
-    	$this->addElement($customerlevel);
-		
 		$province = new Zend_Form_Element_Select('province');
     	$province->setAttribs(array('class'=>'form-control select2me','onchange'=>'getDistrict();'));
     	$opt = $db->getAllProvince(1);

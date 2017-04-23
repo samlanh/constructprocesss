@@ -3,36 +3,35 @@
 class Sales_Model_DbTable_DbSaleOrder extends Zend_Db_Table_Abstract
 {
 	//use for add purchase order 29-13
-	protected $_name="tb_sales_order";
+	protected $_name="tb_boq";
 	function getAllSaleOrder($search){
 			$db= $this->getAdapter();
 			$sql=" SELECT id,
-			(SELECT name FROM `tb_sublocation` WHERE tb_sublocation.id = branch_id AND status=1 AND name!='' LIMIT 1) AS branch_name,
-			(SELECT cust_name FROM `tb_customer` WHERE tb_customer.id=tb_sales_order.customer_id LIMIT 1 ) AS customer_name,
-			(SELECT contact_name FROM `tb_customer` WHERE tb_customer.id=tb_sales_order.customer_id LIMIT 1 ) AS contact_name,	
-			(SELECT name FROM `tb_sale_agent` WHERE tb_sale_agent.id =tb_sales_order.saleagent_id  LIMIT 1 ) AS staff_name,
-			sale_no,(SELECT quoat_number FROM `tb_quoatation` WHERE tb_quoatation.id=tb_sales_order.quote_id) AS quoat_number, date_sold,
-			net_total,paid,balance,
-			(SELECT name_en FROM `tb_view` WHERE type=7 AND key_code=is_approved LIMIT 1) AS approval,
-			(SELECT name_en FROM `tb_view` WHERE type=8 AND key_code=pending_status LIMIT 1) AS processing,
-			(SELECT u.fullname FROM tb_acl_user AS u WHERE u.user_id = user_mod) AS user_name
-			FROM `tb_sales_order` ";
+			(SELECT cust_name FROM `tb_customer` WHERE tb_customer.id=tb_boq.customer_id LIMIT 1 ) AS customer_name,
+			(SELECT contact_name FROM `tb_customer` WHERE tb_customer.id=tb_boq.customer_id LIMIT 1 ) AS contact_name,	
+			(SELECT name FROM `tb_sale_agent` WHERE tb_sale_agent.id =tb_boq.saleagent_id  LIMIT 1 ) AS staff_name,
+			boq_number,project_name,duration,(SELECT name_en FROM `tb_view` WHERE type=2 AND key_code=project_type) AS project_type 
+			,all_total,discount_value,net_total,boq_date,
+			(SELECT name_en FROM `tb_view` WHERE type=3 AND key_code=is_approved LIMIT 1) AS approval,
+			(SELECT name_en FROM `tb_view` WHERE type=4 AND key_code=pending_status LIMIT 1) AS processing,
+			(SELECT u.fullname FROM tb_acl_user AS u WHERE u.user_id = tb_boq.user_id LIMIT 1) AS user_name
+			FROM `tb_boq` ";
 			
-			$from_date =(empty($search['start_date']))? '1': " date_sold >= '".$search['start_date']." 00:00:00'";
-			$to_date = (empty($search['end_date']))? '1': " date_sold <= '".$search['end_date']." 23:59:59'";
+			$from_date =(empty($search['start_date']))? '1': " boq_date >= '".$search['start_date']." 00:00:00'";
+			$to_date = (empty($search['end_date']))? '1': " boq_date <= '".$search['end_date']." 23:59:59'";
 			$where = " WHERE ".$from_date." AND ".$to_date;
 			if(!empty($search['text_search'])){
 				$s_where = array();
 				$s_search = trim(addslashes($search['text_search']));
-				$s_where[] = " sale_no LIKE '%{$s_search}%'";
+				$s_where[] = " boq_number LIKE '%{$s_search}%'";
 				$s_where[] = " net_total LIKE '%{$s_search}%'";
 				$s_where[] = " paid LIKE '%{$s_search}%'";
 				$s_where[] = " balance LIKE '%{$s_search}%'";
 				$where .=' AND ('.implode(' OR ',$s_where).')';
 			}
-			if($search['branch_id']>0){
-				$where .= " AND branch_id = ".$search['branch_id'];
-			}
+// 			if($search['branch_id']>0){
+// 				$where .= " AND branch_id = ".$search['branch_id'];
+// 			}
 			if($search['customer_id']>0){
 				$where .= " AND customer_id =".$search['customer_id'];
 			}
@@ -41,7 +40,7 @@ class Sales_Model_DbTable_DbSaleOrder extends Zend_Db_Table_Abstract
 			$order=" ORDER BY id DESC ";
 			return $db->fetchAll($sql.$where.$order);
 	}
-	public function addSaleOrder($data)
+	public function addNewBOQ($data)
 	{
 		$db = $this->getAdapter();
 		$db->beginTransaction();
@@ -51,93 +50,86 @@ class Sales_Model_DbTable_DbSaleOrder extends Zend_Db_Table_Abstract
 			$userName=$session_user->user_name;
 			$GetUserId= $session_user->user_id;
 			$dbc=new Application_Model_DbTable_DbGlobal();
+			$data["branch_id"]=1;
 			$so = $dbc->getSalesNumber($data["branch_id"]);
 
 			$info_purchase_order=array(
-					"customer_id"   => 	$data['customer_id'],
-					"branch_id"     => 	$data["branch_id"],
-					"sale_no"       => 	$so,//$data['txt_order'],
-					"date_sold"     => 	date("Y-m-d",strtotime($data['order_date'])),
-					"saleagent_id"  => 	$data['saleagent_id'],
-					//"payment_method" => $data['payment_name'],
-					"currency_id"    => $data['currency'],
-					"remark"         => 	$data['remark'],
-					"all_total"      => 	$data['totalAmoun'],
-					"discount_value" => 	$data['dis_value'],
-					"discount_type"  => 	$data['discount_type'],
-					"net_total"      => 	$data['all_total'],
-					//"paid"         => 	$data['paid'],
-					//"balance"      => 	$data['remain'],
-					//"tax"			 =>     $data["total_tax"],
-					"user_mod"       => 	$GetUserId,
-					'pending_status' =>3,
-					"date"      => 	date("Y-m-d"),
+					"customer_id"    => $data['customer_id'],
+					"branch_id"      => 1,
+					"project_name"   => $data['project_name'],
+					"project_address" => $data['project_address'],
+					"boq_number"     => $so,//$data['txt_order'],
+					"create_date"    => date("Y-m-d"),
+					"boq_date"       => date("Y-m-d",strtotime($data['boq_date'])),
+					"start_date"     => date("Y-m-d",strtotime($data['start_date'])),
+					"end_date"       => date("Y-m-d",strtotime($data['end_date'])),
+					"duration"       => $data['duration'],
+					"project_type"   => $data['project_type'],
+					"saleagent_id"   => $data['saleagent_id'],
+					"remark"         => $data['remark'],
+					"all_total"      => $data['all_total'],
+					"discount_value" => $data['dis_value'],
+				    //"discount_type"  => $data['discount_type'],
+					"net_total"      => $data['net_total'],
+					"labour_note"	 => $data["labor_remark"],
+					"user_id"        => $GetUserId,
+					'pending_status' => 2,
 			);
-			$this->_name="tb_sales_order";
+			$this->_name="tb_boq";
 			$sale_id = $this->insert($info_purchase_order); 
 			unset($info_purchase_order);
 
 			$ids=explode(',',$data['identity']);
 			$locationid=$data['branch_id'];
+			$parent_service=0;
 			foreach ($ids as $i)
 			{
+				if($data['is_service'.$i]==1){
+					$parent_service = $data['item_id_'.$i];
+					$data['qty'.$i]=0;
+					$data['material_price'.$i]=0;
+					$data['labour_price'.$i]=0;
+					$data['material_price'.$i]=0;
+					$data['oldprice_'.$i]=0;
+					$data['total'.$i]=0;
+					$data['measure'.$i]='';
+				}
 				$data_item= array(
-						'saleorder_id'=> $sale_id,
-						'pro_id'	  => 	$data['item_id_'.$i],
-						'qty_unit'=>$data['qty_unit_'.$i],
-						'qty_detail'  => 	$data['qty_per_unit_'.$i],
-						'qty_order'	  => 	$data['qty'.$i],
-						'price'		  => 	$data['price'.$i]+$data['extra_price'.$i],
-						'old_price'   =>    $data['oldprice_'.$i],
-						'cost_price'   =>    $data['cost_price_'.$i],
-						'extra_price' =>    $data['extra_price'.$i],
-						'disc_value'  =>    str_replace("%",'',$data['dis_value'.$i]),//check it
-						'disc_type'	  =>    $data['discount_type'.$i],//check it
-						'sub_total'	  =>    $data['total'.$i],
+					'boq_id'=> $sale_id,
+					'pro_id'	  => $data['item_id_'.$i],
+					'qty_order'	  => $data['qty'.$i],
+					'price'		  => $data['material_price'.$i],
+					'labour_price'=> $data['labour_price'.$i],
+					'materail_price'=> $data['material_price'.$i],
+					'old_price'   => $data['oldprice_'.$i],
+// 					'cost_price'  => $data['material_price'.$i],						
+					'sub_total'	  => $data['total'.$i],
+					'is_service'  =>$data['is_service'.$i],
+					'measure'=>$data['measure'.$i],
+				    'parent_service'=>$parent_service,
 				);
-				$this->_name='tb_salesorder_item';
+				$this->_name='tb_boqdetail';
 				$this->insert($data_item);
-				
-				/*$rows=$db_global ->productLocationInventory($data['item_id_'.$i], $locationid);//check stock product location
-				
-				if($rows)
-				{
-						$datatostock   = array(
-								'qty'   		=> 		$rows["qty"]-$data['qty'.$i],
-								'last_mod_date'		=>	date("Y-m-d"),
-								'last_mod_userid'=>$GetUserId
-						);
-						$this->_name="tb_prolocation";
-						$where=" id = ".$rows['id'];
-						$this->update($datatostock, $where);
-					
-				}else{
-				}*/
 			 }
-			 
 			 $ids=explode(',',$data['identity_term']);
 			 if(!empty($data['identity_term'])){
 				 foreach ($ids as $i)
 				 {
 				 	$data_item= array(
-				 			'quoation_id'=> $sale_id,
+				 			'quoation_id' => $sale_id,
 				 			'condition_id'=> $data['termid_'.$i],
-				 			"user_id"   => 	$GetUserId,
-				 			"date"      => 	date("Y-m-d"),
-							'term_type'=>2
-				 			
-				 	);
+				 			"user_id"     => $GetUserId,
+				 			"date"        => date("Y-m-d"),
+							'term_type'   =>1);
 				 	$this->_name='tb_quoatation_termcondition';
 				 	$this->insert($data_item);
 				 }
 			 }
-			 
 			$db->commit();
 		}catch(Exception $e){
 			$db->rollBack();
 			Application_Form_FrmMessage::message('INSERT_FAIL');
 			$err =$e->getMessage();
-			echo $err;exit();
 			Application_Model_DbTable_DbUserLog::writeMessageError($err);
 		}
 	}
@@ -176,7 +168,7 @@ class Sales_Model_DbTable_DbSaleOrder extends Zend_Db_Table_Abstract
 					$this->update($arr, $where);
 				}
 				
-				$this->_name="tb_sales_order";
+				$this->_name="tb_boq";
 				$where=" id=".$data['id'];
 				$this->update($arr, $where);
 // 				print_r($arr);exit();
@@ -223,12 +215,12 @@ class Sales_Model_DbTable_DbSaleOrder extends Zend_Db_Table_Abstract
 					"date"      => 	date("Y-m-d"),
 			);
 
-			$this->_name="tb_sales_order";
+			$this->_name="tb_boq";
 			$where="id = ".$id;
 			$this->update($arr, $where);
 			unset($arr);
 			
-			$this->_name='tb_salesorder_item';
+			$this->_name='tb_boqdetail';
 			$where = " saleorder_id =".$id;
 			$this->delete($where);
 			
@@ -250,7 +242,7 @@ class Sales_Model_DbTable_DbSaleOrder extends Zend_Db_Table_Abstract
 						'disc_type'	  =>    $data['discount_type'.$i],//check it
 						'sub_total'	  => $data['total'.$i],
 				);
-				$this->_name='tb_salesorder_item';
+				$this->_name='tb_boqdetail';
 				$this->insert($data_item);
 // 				print_r($data_item);exit();
 			}
@@ -291,7 +283,7 @@ class Sales_Model_DbTable_DbSaleOrder extends Zend_Db_Table_Abstract
 	}
 	function getSaleorderItemDetailid($id){
 		$db = $this->getAdapter();
-		$sql=" SELECT * FROM `tb_salesorder_item` WHERE saleorder_id=$id ";
+		$sql=" SELECT * FROM `tb_boqdetail` WHERE saleorder_id=$id ";
 		return $db->fetchAll($sql);
 	}
 	function getTermconditionByid($id){

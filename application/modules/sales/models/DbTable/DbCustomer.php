@@ -151,13 +151,13 @@ class Sales_Model_DbTable_DbCustomer extends Zend_Db_Table_Abstract
 	}
 	//for add new customer from sales
 	final function addNewCustomer($post){
-		$rsterm = $this->getCustomerLimit($post['customer_type']);
+// 		$rsterm = $this->getCustomerLimit($post['customer_type']);
 		$credit_limit=0;
 		$credit_term=0;
-		if(!empty($rsterm)){
-			$credit_limit = $rsterm['credit_limit'];
-			$credit_term = $rsterm['credit_term'];
-		}
+// 		if(!empty($rsterm)){
+// 			$credit_limit = $rsterm['credit_limit'];
+// 			$credit_term = $rsterm['credit_term'];
+// 		}
 		$session_user=new Zend_Session_Namespace('auth');
 		$db = new Application_Model_DbTable_DbGlobal();
 		$userName=$session_user->user_name;
@@ -175,9 +175,9 @@ class Sales_Model_DbTable_DbCustomer extends Zend_Db_Table_Abstract
 // 				'add_remark'	=>	$post['remark'],
 				'user_id'		=> $GetUserId,
 				'date'			=> date("Y-m-d"),
-				'branch_id'		=> $post['branch_id'],
-				'customer_level'=> $post['customer_level'],
-				'cu_type'		=>	$post["customer_type"],
+// 				'branch_id'		=> $post['branch_id'],
+// 				'customer_level'=> $post['customer_level'],
+// 				'cu_type'		=>	$post["customer_type"],
 				'credit_limit'	=>	$credit_limit,
 				'credit_team'	=>	$credit_term,
 		);

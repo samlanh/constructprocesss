@@ -30,8 +30,8 @@ class Sales_IndexController extends Zend_Controller_Action
 		}
 		$db = new Sales_Model_DbTable_DbSaleOrder();
 		$rows = $db->getAllSaleOrder($search);
-		$columns=array("BRANCH_NAME","Com.Name","CON_NAME","SALE_AGENT","SALE_ORDER","QUOTATION_NO","ORDER_DATE",
-				"TOTAL","DISCOUNT","TOTAL_AMOUNT","APPROVED_STATUS","PENDING_STATUS","BY_USER");
+		$columns=array("Com.Name","CON_NAME","SALE_AGENT","SALE_ORDER","Project Name","Duration","Project Type",
+				"TOTAL","DISCOUNT","TOTAL_AMOUNT","DATE","APPROVED_STATUS","PENDING_STATUS","BY_USER");
 		$link=array(
 				'module'=>'sales','controller'=>'index','action'=>'edit',
 		);
@@ -54,7 +54,7 @@ class Sales_IndexController extends Zend_Controller_Action
 			try {
 				$dbq = new Sales_Model_DbTable_DbSaleOrder();
 				if(!empty($data['identity'])){
-					$dbq->addSaleOrder($data);
+					$dbq->addNewBOQ($data);
 				}
 				Application_Form_FrmMessage::message("INSERT_SUCESS");
 				if(!empty($data['btnsavenew'])){
