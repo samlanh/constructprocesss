@@ -7,21 +7,20 @@ class Sales_Model_DbTable_Dbsalesapprov extends Zend_Db_Table_Abstract
 	function getAllSaleOrder($search){
 			$db= $this->getAdapter();
 			$sql=" SELECT id,
-			(SELECT name FROM `tb_sublocation` WHERE tb_sublocation.id = branch_id AND status=1 AND name!='' LIMIT 1) AS branch_name,
-			(SELECT cust_name FROM `tb_customer` WHERE tb_customer.id=tb_sales_order.customer_id LIMIT 1 ) AS customer_name,
-			(SELECT contact_name FROM `tb_customer` WHERE tb_customer.id=tb_sales_order.customer_id LIMIT 1 ) AS contact_name,
-			(SELECT name FROM `tb_sale_agent` WHERE tb_sale_agent.id =tb_sales_order.saleagent_id  LIMIT 1 ) AS staff_name,
-			sale_no,date_sold,
-			
+			(SELECT NAME FROM `tb_sublocation` WHERE tb_sublocation.id = branch_id AND STATUS=1 AND NAME!='' LIMIT 1) AS branch_name,
+			(SELECT cust_name FROM `tb_customer` WHERE tb_customer.id=tb_boq.customer_id LIMIT 1 ) AS customer_name,
+			(SELECT contact_name FROM `tb_customer` WHERE tb_customer.id=tb_boq.customer_id LIMIT 1 ) AS contact_name,
+			(SELECT NAME FROM `tb_sale_agent` WHERE tb_sale_agent.id =tb_boq.saleagent_id  LIMIT 1 ) AS staff_name,
+			boq_number,boq_date,
 			all_total,discount_value,net_total,
-			(SELECT name_en FROM `tb_view` WHERE type=7 AND key_code=is_approved LIMIT 1),
-			(SELECT name_en FROM `tb_view` WHERE type=8 AND key_code=pending_status LIMIT 1),
-			(SELECT u.fullname FROM tb_acl_user AS u WHERE u.user_id = tb_sales_order.approved_userid) AS user_name
-			FROM `tb_sales_order` WHERE status=1";
+			(SELECT name_en FROM `tb_view` WHERE TYPE=7 AND key_code=is_approved LIMIT 1),
+			(SELECT name_en FROM `tb_view` WHERE TYPE=8 AND key_code=pending_status LIMIT 1),
+			(SELECT u.fullname FROM tb_acl_user AS u WHERE u.user_id = tb_boq.approved_userid) AS user_name
+			FROM `tb_boq` WHERE STATUS=1 ";
 			
 			//(SELECT u.fullname FROM tb_acl_user AS u WHERE u.user_id = (SELECT user_id FROM `tb_invoice` WHERE sale_id=tb_sales_order.id LIMIT 1)) AS user_name
-			$from_date =(empty($search['start_date']))? '1': " date_sold >= '".$search['start_date']." 00:00:00'";
-			$to_date = (empty($search['end_date']))? '1': " date_sold <= '".$search['end_date']." 23:59:59'";
+			$from_date =(empty($search['start_date']))? '1': " boq_date >= '".$search['start_date']." 00:00:00'";
+			$to_date = (empty($search['end_date']))? '1': " boq_date <= '".$search['end_date']." 23:59:59'";
 			$where = " AND ".$from_date." AND ".$to_date;
 			if(!empty($search['text_search'])){
 				$s_where = array();
@@ -32,9 +31,9 @@ class Sales_Model_DbTable_Dbsalesapprov extends Zend_Db_Table_Abstract
 				$s_where[] = " balance LIKE '%{$s_search}%'";
 				$where .=' AND ('.implode(' OR ',$s_where).')';
 			}
-			if($search['branch_id']>0){
-				$where .= " AND branch_id = ".$search['branch_id'];
-			}
+// 			if($search['branch_id']>0){
+// 				$where .= " AND branch_id = ".$search['branch_id'];
+// 			}
 			if($search['customer_id']>0){
 				$where .= " AND customer_id =".$search['customer_id'];
 			}

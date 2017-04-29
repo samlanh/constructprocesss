@@ -44,35 +44,6 @@ class Sales_InvoiceapproveController extends Zend_Controller_Action
 		$formFilter = new Sales_Form_FrmSearch();
 		$this->view->formFilter = $formFilter;
 	    Application_Model_Decorator::removeAllDecorator($formFilter);
-		
-		/*if($this->getRequest()->isPost()){
-			$search = $this->getRequest()->getPost();
-			$search['start_date']=date("Y-m-d",strtotime($search['start_date']));
-			$search['end_date']=date("Y-m-d",strtotime($search['end_date']));
-		}
-		else{
-			$search =array(
-					'text_search'=>'',
-					'start_date'=>date("Y-m-d"),
-					'end_date'=>date("Y-m-d"),
-					'branch_id'=>-1,
-					'customer_id'=>-1,
-					);
-		}
-		$db = new Sales_Model_DbTable_Dbinvoiceapprove();
-		$rows = $db->getAllSaleOrder($search);
-		$columns=array("BRANCH_NAME","CUSTOMER_NAME","SALE_AGENT","SALE_NO", "ORDER_DATE","SALE_APP_DATE",
-				"CURRNECY_TYPE","TOTAL","DISCOUNT","TOTAL_AMOUNT","APPROVED_STATUS","PENDING_STATUS","BY_USER");
-		$link=array(
-				'module'=>'sales','controller'=>'invoiceapprove','action'=>'add',
-		);
-		
-		$list = new Application_Form_Frmlist();
-		$this->view->list=$list->getCheckList(0, $columns, $rows, array('branch_name'=>$link,'customer_name'=>$link,'staff_name'=>$link,'sale_no'=>$link));
-		$formFilter = new Sales_Form_FrmSearch();
-		$this->view->formFilter = $formFilter;
-	    Application_Model_Decorator::removeAllDecorator($formFilter);*/
-		
 	}
 	function approvedAction(){
 		$db = new Application_Model_DbTable_DbGlobal();
@@ -107,7 +78,6 @@ class Sales_InvoiceapproveController extends Zend_Controller_Action
     		$this->_redirect("/sales/salesapprove");
     	}
     	$db= new Application_Model_DbTable_DbGlobal();
-    	//$this->view->rscondition = $db->getTermConditionByIdIinvocie(3, null);
 		$this->view->rscondition = $db->getTermConditionById(2, $id);
 		
 		$items = new Application_Model_GlobalClass();

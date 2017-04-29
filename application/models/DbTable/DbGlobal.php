@@ -106,7 +106,7 @@ class Application_Model_DbTable_DbGlobal extends Zend_Db_Table_Abstract
 						  (SELECT p.qty_onsold  FROM tb_product AS p WHERE p.pro_id = so.`pro_id`) AS qty_onsold 
 						FROM
 						  tb_sale_order_delivery AS so ,
-						  `tb_sales_order_item` AS soi
+						  `tb_boq_item` AS soi
 						WHERE so.sale_order_id = $id_order_update 
 						AND so.`pro_id`=soi.`pro_id`
 						AND so.`sale_order_id`=soi.`order_id`
@@ -205,7 +205,7 @@ class Application_Model_DbTable_DbGlobal extends Zend_Db_Table_Abstract
     
     public function userSaleOrderExist($order_id , $location_id){
     	$db = $this->getAdapter();
-    	$sql = "SELECT order_id FROM tb_sales_order WHERE order_id =".$order_id." AND LocationId = $location_id LIMIT 1";
+    	$sql = "SELECT order_id FROM tb_boq WHERE order_id =".$order_id." AND LocationId = $location_id LIMIT 1";
     	$row= $db->fetchRow($sql);
     	return $row;
     }
@@ -504,7 +504,7 @@ class Application_Model_DbTable_DbGlobal extends Zend_Db_Table_Abstract
     	return $pre.$new_acc_no;
     }
     public function getSalesNumber($branch_id = 1){
-    	$this->_name='tb_sales_order';
+    	$this->_name='tb_boq';
     	$db = $this->getAdapter();
     	$sql=" SELECT COUNT(id)  FROM $this->_name WHERE branch_id=".$branch_id." LIMIT 1 ";
     	$pre = $this->getPrefixCode($branch_id)."SO";
@@ -558,10 +558,9 @@ class Application_Model_DbTable_DbGlobal extends Zend_Db_Table_Abstract
     		return $rows;
     	}
     }
-   function getProductPriceBytype($customer_id,$product_id){//BY Customer Level and Product id
+   function getProductPriceBytype($customer_id,$product_id){//used BY Customer Level and Product id
    	$db = $this->getAdapter();
-   	$sql=" SELECT price,pro_id FROM `tb_product_price` WHERE type_id = 
-   		(SELECT customer_level FROM `tb_customer` WHERE id=$customer_id limit 1) AND pro_id=$product_id LIMIT 1 ";
+   	$sql=" SELECT price,id FROM `tb_product` WHERE id=$product_id LIMIT 1 ";
    	return $db->fetchRow($sql);
    }
    function getTermConditionById($term_type,$record_id=null){
@@ -596,12 +595,12 @@ class Application_Model_DbTable_DbGlobal extends Zend_Db_Table_Abstract
    function getAllInvoicePayment($post_id,$type){
    	$db= $this->getAdapter();
 	if($type==1){//by customer
-		$sql=" SELECT *,v.id AS invoice_id FROM `tb_invoice` AS v,tb_sales_order as s WHERE v.sale_id = s.id AND s.customer_id = $post_id AND v.status=1  ";
+		$sql=" SELECT *,v.id AS invoice_id FROM `tb_invoice` AS v,tb_boq as s WHERE v.sale_id = s.id AND s.customer_id = $post_id AND v.status=1  ";
 		$sql.="  AND v.is_fullpaid=0 ";
 		$sql.=" ORDER BY v.id DESC ";
    }else{//by invoice
 		$sql=" SELECT v.*,v.id AS invoice_id,
-		(SELECT s.customer_id FROM `tb_sales_order` AS s WHERE s.id=v.sale_id) AS customer_id
+		(SELECT s.customer_id FROM `tb_boq` AS s WHERE s.id=v.sale_id) AS customer_id
 		FROM `tb_invoice` AS v  WHERE v.id=$post_id AND v.status=1  ";
 		$sql.="  AND v.is_fullpaid=0 LIMIT 1";
 	}
@@ -626,7 +625,7 @@ class Application_Model_DbTable_DbGlobal extends Zend_Db_Table_Abstract
     	$db=$this->getAdapter();
     	$sql=" SELECT DISTINCT (c.id) AS id,
     	CONCAT(c.cust_name,',',c.contact_name) AS cust_name
-    	FROM `tb_invoice` AS iv,`tb_sales_order` AS s,tb_customer AS c
+    	FROM `tb_invoice` AS iv,`tb_boq` AS s,tb_customer AS c
     	WHERE iv.sale_id=s.id AND c.id=s.`customer_id` AND iv.is_fullpaid=0";
     	$row =  $db->fetchAll($sql);
     	if($opt==null){
