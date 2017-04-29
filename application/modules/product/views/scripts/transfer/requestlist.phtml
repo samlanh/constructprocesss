@@ -8,12 +8,12 @@
 	$rs = $this->product;
 	//print_r($rs);
 ?>
-<title><?php echo $tr->translate("TRANSFER_LIST");?></title>
+<title><?php echo $tr->translate("MENU_REQUEST_TRANSFER_LIST");?></title>
 
 	<div class="portlet box blue">
 		<div class="portlet-title">
 			<div class="caption">
-					<i class="fa fa-globe"></i><?php echo $tr->translate("TRANSFER_LIST");?>
+					<i class="fa fa-globe"></i><?php echo $tr->translate("MENU_REQUEST_TRANSFER_LIST");?>
 			</div>
 			<div class="caption" style="float:right">
 					<?php $formList = new Application_Form_Frmlist(); echo $formList->showAddBuntton($url_new);?>
@@ -57,11 +57,11 @@
 							<table class="collape tablesorter" id="table" width="100%">
 						<thead>
 							<tr>
-								<th class="tdheader"><?php echo  $tr->translate("NO");?></th>
-								<th class="tdheader"><?php echo  $tr->translate("REQUEST_NO");?></th>
+								<th class="tdheader"><?php echo  $tr->translate("NUM");?></th>
+								<th class="tdheader"><?php echo  $tr->translate("TRANSFER_NUM");?></th>
+								<th class="tdheader"><?php echo  $tr->translate("TRANSFER_DATE");?></th>
 								<th class="tdheader"><?php echo  $tr->translate("REQUEST_LOCATION");?></th>
 								<th class="tdheader"><?php echo  $tr->translate("REQUEST_TO");?></th>
-								<th class="tdheader"><?php echo  $tr->translate("REQUEST_DATE");?></th>
 								<th class="tdheader"><?php echo  $tr->translate("APP_STATUS");?></th>
 								<th class="tdheader"><?php echo  $tr->translate("PEDDING");?></th>
 								<th class="tdheader"><?php echo  $tr->translate("STATUS");?></th>
@@ -106,9 +106,10 @@
 											</form>
 									</div>	';
 							$footer="";
+							//print_r($rs);
 							if(!empty($rs)){ foreach ($rs as $key => $row){
 									$edit_status = '';
-									if($row["ap_pedding"]>1){
+									if($row["ap_pedding"]>1 and $row["ap_status"]!=2){
 										$edit_status = "style='pointer-events: none;cursor: default;color: #ccc;'";
 									}
 							?>
@@ -116,9 +117,9 @@
 								<tr class="odd gradeX">
 									<td class="center"><?php echo $key+1;?></td>
 									<td><?php echo $row["tran_no"]?></td>
+									<td><?php echo date('d-M-Y',strtotime($row["date_tran"]))?></td>
 									<td><?php echo $row["re_tran"]?></td>
 									<td><?php echo $row["to_tran"]?></td>
-									<td><?php echo $row["date_tran"]?></td>
 									<td><?php echo $row["appr_status"]?></td>
 									<td><?php echo $row["appr_pedding"]?></td>
 									<td class="center">

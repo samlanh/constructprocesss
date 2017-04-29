@@ -13,7 +13,7 @@ $frm_agent = $this->form_agent;
 				</div>
 			</div>
 			<div class="portlet-body form">
-				<form id="form_sample_2" class="form-horizontal" enctype="multipart/form-data" method="post">
+				<form id="form_sample_2" id="a" class="form-horizontal" enctype="multipart/form-data" method="post">
 				<div class="form-body">
 						<div class="form-group">
 						<label class="control-label col-md-2">
@@ -54,8 +54,8 @@ $frm_agent = $this->form_agent;
 					<div class="form-group">
 						<label  class="col-md-12 col-md-offset-4 col-md-8">
 							<a href="<?php echo $this->baseUrl();?>/product/pricelevel"><button type="button" class="btn red"><i class="fa fa-times"></i> <?php echo $tr->translate("EXIT")?></button></a>
-							<button type="submit" name="saveclose" value="saveclose" class="btn btn-primary" ><i class="glyphicon glyphicon-log-in"></i> <?php echo $tr->translate("SAVE_CLOSE")?></button>
-							<button type="submit" name="btnsavenew" class="btn btn-primary"><i class="fa fa-save"></i> <?php echo $tr->translate("SAVE_NEW")?> </button>
+							<button type="submit" name="saveclose" id="save_close" value="saveclose" class="btn btn-primary" ><i class="glyphicon glyphicon-log-in"></i> <?php echo $tr->translate("SAVE_CLOSE")?></button>
+							<button type="submit" name="btnsavenew" id="save_close" class="btn btn-primary"><i class="fa fa-save"></i> <?php echo $tr->translate("SAVE_NEW")?> </button>
 							
 						</label>
 					</div>
@@ -67,7 +67,9 @@ $frm_agent = $this->form_agent;
 </div>
 
 <script>
-
+$(document).ready(function () {
+    
+});
 
 
 </script>

@@ -7,6 +7,11 @@ class Product_Model_DbTable_DbBranch extends Zend_Db_Table_Abstract
 	public function getUserId(){
 		return Application_Model_DbTable_DbGlobal::GlobalgetUserId();
 	}
+	function getAllLocation(){
+		// $db = $this->getAdapter();
+		// $sql = "SELECT * FROM tb_location WHERE status=1";
+		// return $db->fetchAll($sql);
+	}
 	public function add($data){
 		//print_r($data);exit();
 		$db = $this->getAdapter();
@@ -14,67 +19,117 @@ class Product_Model_DbTable_DbBranch extends Zend_Db_Table_Abstract
 		$photo = $_FILES['logo'];
 			if($photo["name"]!=""){
 				$temp = explode(".", $photo["name"]);
-				$newfilename =str_replace(" ","",$data["branch_name"]).str_replace(" ","",$data["code"]). '.' . end($temp);
+				$newfilename = $data["branch_name"]. '.' . end($temp);
 				move_uploaded_file($_FILES['logo']["tmp_name"], $part . $newfilename);
 				$photo_name = $newfilename;
 			}
+			
+			
 		$arr = array(
-			'name'			=>	$data["branch_name"],
-			'branch_code'	=>	$data["code"],
-			'prefix'		=>	$data["prefix"],
-			'contact'		=>	$data["contact"],
-			'phone'			=>	$data["contact_num"],
-			'email'			=>	$data["email"],
-			'office_tel'	=>	$data["office_num"],
-			'fax'			=>	$data["fax"],
-			'address'		=>	$data["address"],
-			'user_id'		=>	$this->getUserId(),
-			'last_mod_date'	=>	new Zend_Date(),
-			'status'		=>	$data["status"],
-			'remark'		=>	$data["remark"],
-			'show_by'		=>	$data["show_by"],
-			'logo'			=>	$photo_name,
+			//'loc_id'			=>	$data["location"],
+			'name'				=>	$data["branch_name"],
+			'branch_code'		=>	$data["code"],
+			'prefix'			=>	$data["prefix"],
+			'contact'			=>	$data["contact"],
+			'phone'				=>	$data["contact_num"],
+			'email'				=>	$data["email"],
+			'contact'			=>	$data["contact"],
+			'title_report_en'	=>	$data["title_en"],
+			'title_report_kh'	=>	$data["title_kh"],
+			'logo'				=>	$photo_name,
+			'fax'				=>	$data["fax"],
+			'address'			=>	$data["address"],
+			'user_id'			=>	$this->getUserId(),
+			'last_mod_date'		=>	new Zend_Date(),
+			'status'			=>	$data["status"],
+			'remark'			=>	$data["remark"],
 		);
 		$this->_name = "tb_sublocation";
-		$this->insert($arr);
+		$id = $this->insert($arr);
 		
+		$sql = "SELECT id FROM tb_product";
+		$rs = $db->fetchAll($sql);
+		if(!empty($rs)){
+			foreach ($rs as $row){
+				$array = array(
+					'pro_id'		=>	$row["id"],
+					'location_id'	=>	$id,
+					'qty'			=>	0,
+					'qty_warning'	=>	0,
+					'last_mod_date'	=>	new Zend_Date(),
+					'user_id'		=>	$this->getUserId(),
+				);
+				
+				$this->_name = "tb_prolocation";
+				$this->insert($array);
+			}
+		}
 	}
 	
 	public function edit($data){
 		//print_r($data);exit();
 		$db = $this->getAdapter();
-		$part= PUBLIC_PATH.'/images/logo/';
-		$photo = $_FILES['logo'];
-		echo $photo["name"];
-			if($photo["name"]!=""){
-				$temp = explode(".", $photo["name"]);
-				$newfilename =str_replace(" ","",$data["branch_name"]).str_replace(" ","",$data["code"]). '.' . end($temp);
-				move_uploaded_file($_FILES['logo']["tmp_name"], $part . $newfilename);
-				$photo_name = $newfilename;
-			}else {
-				$photo_name = $data["old_logo"];
-				//echo "<script>alert(1);</script>";
+		$db->beginTransaction();
+		try{
+			$part= PUBLIC_PATH.'/images/logo/';
+			$photo = $_FILES['logo'];
+				if($photo["name"]!=""){
+					$temp = explode(".", $photo["name"]);
+					$newfilename = $data["branch_name"]. '.' . end($temp);
+					move_uploaded_file($_FILES['logo']["tmp_name"], $part . $newfilename);
+					$photo_name = $newfilename;
+				}else{
+					$photo_name = $data["old_photo"];
+				}
+				
+			$arr = array(
+				//'loc_id'			=>	$data["location"],
+				'name'				=>	$data["branch_name"],
+				'branch_code'		=>	$data["code"],
+				'prefix'			=>	$data["prefix"],
+				'contact'			=>	$data["contact"],
+				'phone'				=>	$data["contact_num"],
+				'email'				=>	$data["email"],
+				'contact'			=>	$data["contact"],
+				'title_report_en'	=>	$data["title_en"],
+				'title_report_kh'	=>	$data["title_kh"],
+				'logo'				=>	$photo_name,
+				'fax'				=>	$data["fax"],
+				'address'			=>	$data["address"],
+				'user_id'			=>	$this->getUserId(),
+				'last_mod_date'		=>	date("Y-m-d"),
+				'status'			=>	$data["status"],
+				'remark'			=>	$data["remark"],
+			);
+			$this->_name = "tb_sublocation";
+			$where = $db->quoteInto("id=?", $data["id"]);
+			$this->update($arr, $where);
+			$sql = "SELECT p.`id` FROM tb_product AS p WHERE p.id NOT IN(SELECT pl.pro_id FROM `tb_prolocation` AS pl WHERE  pl.`location_id`=".$data["id"].")";
+			
+			$rs = $db->fetchAll($sql);
+			//print_r($rs);exit();
+			if(!empty($rs)){
+				foreach ($rs as $row){
+					$array = array(
+						'pro_id'		=>	$row["id"],
+						'location_id'	=>	$data["id"],
+						'qty'			=>	0,
+						'qty_warning'	=>	0,
+						'last_mod_date'	=>	new Zend_Date(),
+						'user_id'		=>	$this->getUserId(),
+					);
+					
+					$this->_name = "tb_prolocation";
+					$this->insert($array);
+				}
 			}
-		$arr = array(
-				'name'			=>	$data["branch_name"],
-				'branch_code'	=>	$data["code"],
-				'prefix'		=>	$data["prefix"],
-				'contact'		=>	$data["contact"],
-				'phone'			=>	$data["contact_num"],
-				'email'			=>	$data["email"],
-				'office_tel'	=>	$data["office_num"],
-				'fax'			=>	$data["fax"],
-				'address'		=>	$data["address"],
-				'user_id'		=>	$this->getUserId(),
-				'last_mod_date'	=>	new Zend_Date(),
-				'status'		=>	$data["status"],
-				'remark'		=>	$data["remark"],
-				'show_by'		=>	$data["show_by"],
-				'logo'			=>	$photo_name,
-		);
-		$this->_name = "tb_sublocation";
-		$where = $db->quoteInto("id=?", $data["id"]);
-		$this->update($arr, $where);
+			
+			$db->commit();
+		}catch(Exception $e){
+			//$db->rollBack();
+			$err =$e->getMessage();
+			Application_Model_DbTable_DbUserLog::writeMessageError($err);			
+		}
 	
 	}
 	
@@ -90,7 +145,7 @@ class Product_Model_DbTable_DbBranch extends Zend_Db_Table_Abstract
 				  s.`email`,
 				  s.`office_tel`,
 				  s.`address`,
-				  s.`status` 
+				  (SELECT name_en FROM `tb_view` WHERE type=5 AND key_code=s.`status` LIMIT 1) status
 				FROM
 				  `tb_sublocation` AS s where 1 ";
 		$where='';
@@ -118,20 +173,7 @@ class Product_Model_DbTable_DbBranch extends Zend_Db_Table_Abstract
 	public function getBranchById($id){
 		$db = $this->getAdapter();
 		$sql = "SELECT 
-				  s.`id`,
-				  s.`branch_code` AS code,
-				  s.prefix,
-				  s.`name`,
-				  s.`contact`,
-				  s.`phone`,
-				  s.`fax`,
-				  s.remark,
-				  s.`email`,
-				  s.`office_tel`,
-				  s.`address`,
-				  s.`status`,
-					s.show_by,
-					s.logo
+				  s.* 
 				FROM
 				  `tb_sublocation` AS s 
 				WHERE s.id = $id";

@@ -49,7 +49,7 @@ class Product_Model_DbTable_DbBrand extends Zend_Db_Table_Abstract
 	
 	public function getAllBrands($data){
 		$db = $this->getAdapter();
-		$sql = "SELECT c.id,c.`name`,c.`parent_id`,c.`remark`,c.`status` FROM `tb_brand` AS c WHERE c.`status` =1";
+		$sql = "SELECT c.id,c.`name`,c.`remark`,(SELECT name_kh FROM `tb_view` WHERE type=1 AND key_code=c.status LIMIT 1) `status` FROM `tb_brand` AS c WHERE c.`status` =1";
 		$where = '';
 		if($data["name"]!=""){
 			$s_where=array();

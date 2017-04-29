@@ -19,7 +19,7 @@ class Product_Form_FrmReceive extends Zend_Form
 	
 		$tran_num = new Zend_Form_Element_Text('tran_num');
 		$tran_num->setAttribs(array('class'=>'form-control', 'required'=>'required','readOnly'=>true));
-		//$tran_num->setValue($db->getTransferNo());
+		$tran_num->setValue($db->getTransferNo());
     	
     	$date =new Zend_Date();
     	$tran_date = new Zend_Form_Element_Text('tran_date');
@@ -165,26 +165,31 @@ class Product_Form_FrmReceive extends Zend_Form
     	return $this;
 	}
 	
-	public function makeTransfers($data=null) {
+	public function receiveTransfers($data=null) {
 		$db=new Product_Model_DbTable_DbTransfer();
 		$db_stock = new Product_Model_DbTable_DbAdjustStock();
 		$rs_loc = $db->getLocation(2);
 		$tr = Application_Form_FrmLanguages::getCurrentlanguage();
 		
+		$db_global = new Application_Model_DbTable_DbGlobal();
+		
+		$user_info = new Application_Model_DbTable_DbGetUserInfo();
+		$result = $user_info->getUserInfo();
+		
 		$date =date("m/d/Y");
 		
 		$receive_num = new Zend_Form_Element_Text('receive_num');
 		$receive_num->setAttribs(array('class'=>'form-control', 'required'=>'required','readOnly'=>true));
-		
+		$receive_num->setValue($db->getReceiveNo());
 		$this->addElement($receive_num);
 	
 		$tran_num = new Zend_Form_Element_Text('tran_num');
 		$tran_num->setAttribs(array('class'=>'form-control', 'required'=>'required','readOnly'=>true));
-		//$tran_num->setValue($db->getTransferNo());
+		$tran_num->setValue($db->getTransferNo());
 		
 		$re_num = new Zend_Form_Element_Text('re_num');
 		$re_num->setAttribs(array('class'=>'form-control', 'required'=>'required','readOnly'=>true));
-		//$re_num->setValue($db->getRequestTransferNo());
+		$re_num->setValue($db->getRequestTransferNo());
     	
     	$date =date("m/d/Y");
     	$tran_date = new Zend_Form_Element_Text('tran_date');
@@ -198,11 +203,22 @@ class Product_Form_FrmReceive extends Zend_Form
     	$remark = new Zend_Form_Element_Textarea("remark");
     	$remark->setAttribs(array('class'=>'form-control','style'=>'width: 100%;height:35px'));
     	
+    	$rs_from_loc = $db_global -> getAllLocation();
+		//print_r($rs_from_loc);
     	$from_loc = new Zend_Form_Element_Select("from_loc");
     	$from_loc->setAttribs(array(
     			'class'=>'form-control select2me',
-				'readOnly'=>'readOnly',
     	));
+		
+		$opt = array(''=>$tr->translate("SELECT BRANCH"));
+		if(!empty($rs_from_loc)){
+    		foreach ($rs_from_loc as $rs){
+    			$opt[$rs["id"]] = $rs["name"];
+    		}
+    	}
+    	$from_loc->setMultiOptions($opt);
+		$from_loc->setValue($result["branch_id"]);
+		
 		$opt = array(''=>$tr->translate("SELECT BRANCH"));
 		if(!empty($rs_loc)){
     		foreach ($rs_loc as $rs){
@@ -215,7 +231,6 @@ class Product_Form_FrmReceive extends Zend_Form
     	$to_loc = new Zend_Form_Element_Select("to_loc");
     	$to_loc->setAttribs(array(
     			'class'=>'form-control select2me',
-				'readOnly'=>true,
     	));
     	if(!empty($rs_loc)){
     		foreach ($rs_loc as $rs){
@@ -227,8 +242,7 @@ class Product_Form_FrmReceive extends Zend_Form
     	$pro_name =new Zend_Form_Element_Select("pro_name");
     	$pro_name->setAttribs(array(
     			'class'=>'form-control select2me',
-    			'onChange'=>'addNew();',
-				'readOnly'=>true,
+    			'onChange'=>'addNew();'
     	));
     	$opt= array(''=>$tr->translate("SELECT PRODUCT"));
 		$row_product=$db_stock->getProductName();
@@ -242,8 +256,7 @@ class Product_Form_FrmReceive extends Zend_Form
     	$type =new Zend_Form_Element_Select("type");
     	$type->setAttribs(array(
     			'class'=>'form-control select2me',
-    			'onChange'=>'transferType()',
-				
+    			'onChange'=>'transferType()'
     	));
     	$opt= array(''=>$tr->translate("SELECT_TRANSFER_TYPE"),1=>$tr->translate("TRANSFER_IN"),2=>$tr->translate("TRANSFER_OUT"));
     	$type->setMultiOptions($opt);
@@ -258,25 +271,19 @@ class Product_Form_FrmReceive extends Zend_Form
     	//set value when edit
     	if($data != null) {
     		$re_num->setValue($data["re_no"]);
-			$tran_num->setValue($data["tran_no"]);
 			$re_id = new Zend_Form_Element_Hidden("re_id");
-			$re_id->setValue($data["req_id"]);
+			if(!empty(@$data["re_id"])){
+				$re_id->setValue($data["re_id"]);
+			}
+			
 			$this->addElement($re_id);
-			if(@$data["date_tran"]!=""){
-				$tran_date->setValue(date("m/d/Y",strtotime(@$data["date_tran"])));
-			}else{
-				$tran_date->setValue($date);
-			}
-			if(@$data["receive_no"]!=""){
-				$receive_num->setValue(@$data["receive_no"]);
-			}else{
-				$receive_num->setValue($db->getReceiveNo($data["tran_location"]));
-			}
-			$re_date->setValue($data["re_date"]);
+			$tran_date->setValue(date("m/d/Y",strtotime($data["date"])));
+			$tran_num->setValue($data["tran_no"]);
+			$re_date->setValue(date("m/d/Y",strtotime($data["re_date"])));
     		$remark->setValue($data["remark"]);
     		$to_loc->setValue($data["tran_location"]);
 			$from_loc->setValue($data["cur_location"]);
-    		$status->setValue(1);
+    		$status->setValue($data["status"]);
     		//$type->setValue($data["type"]);
     	}
     	$this->addElements(array($re_date,$re_num,$status,$type,$pro_name,$tran_num,$tran_date,$remark,$from_loc,$to_loc));

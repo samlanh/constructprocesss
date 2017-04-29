@@ -8,16 +8,16 @@
 	$rs = $this->product;
 	//print_r($rs);
 ?>
-<title><?php echo $tr->translate("TRANSFER_LIST");?></title>
+<title><?php echo $tr->translate("MENU_MAKE_TRANSFER_LIST");?></title>
 
 	<div class="portlet box blue">
 		<div class="portlet-title">
 			<div class="caption">
-					<i class="fa fa-globe"></i><?php echo $tr->translate("TRANSFER_LIST");?>
+					<i class="fa fa-globe"></i><?php echo $tr->translate("MENU_MAKE_TRANSFER_LIST");?>
 			</div>
 			<!--<div class="caption" style="float:right">
 					<a href="<?php echo $url_new;?>" class="btn btn-sm red" style="line-height: 35px;">
-						<i class="fa fa-plus"></i>&nbsp;<?php //echo $tr->translate("ADD_NEW");?>
+						<i class="fa fa-plus"></i>&nbsp;<?php echo $tr->translate("ADD_NEW");?>
 					</a>
 			</div>-->
 		</div>
@@ -25,29 +25,27 @@
 			<form class="form-horizontal" method="post" action="" >
 				<div class="form-body">
 							<div class="form-group">
-								<div class="col-md-3">
-									<?php echo $formFilter->getElement('avd_search');?>
-								</div>
-								<div class="col-md-3">
-									<?php echo $formFilter->getElement('branch');?>
+								<div class="col-md-2">
+									<?php echo $formFilter->getElement('tran_num');?>
 								</div>
 								<div class="col-md-2">
-									<?php echo $formFilter->getElement('start_date');?>
+									<?php echo $formFilter->getElement('to_loc');?>
 								</div>
 								<div class="col-md-2">
-									<?php echo $formFilter->getElement('end_date');?>
+									<?php echo $formFilter->getElement('tran_date');?>
 								</div>
-								<!--<div class="col-md-2">
-									<?php //echo $formFilter->getElement('type');?>
+								<div class="col-md-2">
+									<?php echo $formFilter->getElement('type');?>
 								</div>
 								<div class="col-md-2">
 									<?php echo $formFilter->getElement('status');?>
-								</div>-->
+								</div>
 								<div class="col-md-2">
 									<button type="submit" class="btn green"><?php echo $tr->translate("SEARCH");?></button>
 								</div>
 							</div>
-					</div>
+							
+				</div>
 			</form>
 			
 		</div>
@@ -59,11 +57,11 @@
 							<table class="collape tablesorter" id="table" width="100%">
 						<thead>
 							<tr>
-								<th class="tdheader"><?php echo  $tr->translate("NO");?></th>
-								<th class="tdheader"><?php echo  $tr->translate("BRANCH");?></th>
+								<th class="tdheader"><?php echo  $tr->translate("NUM");?></th>
 								<th class="tdheader"><?php echo  $tr->translate("REQUEST_NO");?></th>
-								<th class="tdheader"><?php echo  $tr->translate("REQUEST_FROM");?></th>
 								<th class="tdheader"><?php echo  $tr->translate("REQUEST_DATE");?></th>
+								<th class="tdheader"><?php echo  $tr->translate("LOCATION");?></th>
+								<th class="tdheader"><?php echo  $tr->translate("REQUEST_LOCATION");?></th>
 								<th class="tdheader"><?php echo  $tr->translate("APP_STATUS");?></th>
 								<th class="tdheader"><?php echo  $tr->translate("PEDDING");?></th>
 								<th class="tdheader"><?php echo  $tr->translate("STATUS");?></th>
@@ -114,8 +112,13 @@
 										$edit_status = "style='pointer-events: none;cursor: default;color: #ccc;'";
 									}
 									
+									$print = '';
+									if($row["ap_pedding"]<3){
+										$print = "style='pointer-events: none;cursor: default;color: #ccc;'";
+									}
+									
 									$is_transfer ="";
-									if($row["is_transfer"]>0){
+									if($row["is_transfer"]==1){
 										$is_transfer = "style='pointer-events: none;cursor: default;color: #ccc;'";
 									}
 									
@@ -123,11 +126,10 @@
 								
 								<tr class="odd gradeX">
 									<td class="center"><?php echo $key+1;?></td>
-									<td><?php echo $row["to_tran"]?></td>
 									<td><?php echo $row["tran_no"]?></td>
+									<td><?php echo date('d-M-Y',strtotime($row["date_tran"]))?></td>
+									<td><?php echo $row["to_tran"]?></td>
 									<td><?php echo $row["re_tran"]?></td>
-									
-									<td><?php echo $row["date_tran"]?></td>
 									<td><?php echo $row["appr_status"]?></td>
 									<td><?php echo $row["appr_pedding"]?></td>
 									<td class="center">
@@ -142,9 +144,9 @@
 										<?php if($row["is_transfer"]>0){?>
 										<a <?php echo $edit_status;?> href="<?php echo $this->baseUrl();?>/product/transfer/edittransfer/id/<?php echo $row["is_transfer"]?>"><?php echo  $tr->translate("Edit Transfer");?></a> |
 										<?php }else{?>
-										<a <?php echo $is_transfer;?> href="<?php echo $this->baseUrl();?>/product/transfer/maketransfer/id/<?php echo $row["id"]?>"><?php echo  $tr->translate("Make Transfer");?></a> |  
+										<a <?php //echo $is_transfer;?> href="<?php echo $this->baseUrl();?>/product/transfer/maketransfer/id/<?php echo $row["id"]?>"><?php echo  $tr->translate("Make Transfer");?></a> |  
 										<?php }?>
-										<a <?php //echo $edit_status;?> href="<?php echo $this->baseUrl();?>/product/transfer/viewtransfer/id/<?php echo $row["id"]?>"><?php echo  $tr->translate("PRINT");?></a>
+										<a <?php echo $print;?> href="<?php echo $this->baseUrl();?>/product/transfer/viewtransfer/id/<?php echo $row["is_transfer"]?>"><?php echo  $tr->translate("PRINT");?></a>
 									</td>
 								</tr>
 								<?php $counter='<strong style="float:right;padding:5px">Number of record(s): '.count($this->rs).'</strong>'; 

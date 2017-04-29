@@ -12,13 +12,22 @@ class Product_Form_FrmCategory extends Zend_Form
 		$tr = Application_Form_FrmLanguages::getCurrentlanguage();
 		$name = new Zend_Form_Element_Text('cat_name');
 		$name->setAttribs(array(
-				'class'=>'form-control',
+				'class'=>'form-control','onChange'=>'getCategoryExist()',
 				'required'=>'required'
+		));
+		
+		$db = new Category_Model_DbTable_DbCategory();
+		$tr = Application_Form_FrmLanguages::getCurrentlanguage();
+		$prifix = new Zend_Form_Element_Text('prifix');
+		$prifix->setAttribs(array(
+				'class'=>'form-control',
+				'required'=>'required',
+				'onChange'=>'getPrefixyExist()'
 		));
 		 
 		$parent = new Zend_Form_Element_Select("parent");
 		$parent->setAttribs(array(
-				'class'=>'form-control',
+				'class'=>'form-control select2me',
 		));
 		$opt = array(''=>$tr->translate("SEELECT_CATEGORY"));
 		$row_cate = $db->getAllCategory();
@@ -43,13 +52,24 @@ class Product_Form_FrmCategory extends Zend_Form
 		));
 		
 		if($data != null){
+			$row_cate = $db->getAllCategory();
+			if(!empty($row_cate)){
+				foreach ($row_cate as $rs){
+						if($rs["id"]==$data["id"]){
+						}else{
+							$opt[$rs["id"]] = $rs["name"];
+						}
+				}
+				$parent->setMultiOptions($opt);
+			}
 			$name->setValue($data["name"]);
 			$parent->setValue($data["parent_id"]);
 			$remark->setValue($data["remark"]);
 			$status->setValue($data["status"]);
+			$prifix->setValue($data["prefix"]);
 		}
 			
-		$this->addElements(array($parent,$name,$status,$remark));
+		$this->addElements(array($parent,$name,$status,$remark,$prifix));
 		return $this;
 	}
 	
@@ -58,7 +78,7 @@ class Product_Form_FrmCategory extends Zend_Form
 		$db = new Category_Model_DbTable_DbCategory();
 		$name = new Zend_Form_Element_Text('name');
 		$name->setAttribs(array(
-				'class'=>'form-control',
+				'class'=>'form-control'
 		));
 		
 		$parent = new Zend_Form_Element_Select("parent");

@@ -49,7 +49,7 @@ class Product_Form_FrmOther extends Zend_Form
 				'class'=>'form-control',
 				'required'=>'required'));
 		
-		$opt = array(''=>$tr->translate("SELECT_TYPE"),2=>$tr->translate("MODEL"),3=>$tr->translate("SIZE"),4=>$tr->translate("COLOR"),6=>$tr->translate("Customer Type"));
+		$opt = array(''=>$tr->translate("SELECT_TYPE"),7=>$tr->translate("MODEL"),8=>$tr->translate("SIZE"),6=>$tr->translate("COLOR"),6=>$tr->translate("Customer Type"));
 		$type = new Zend_Form_Element_Select("type");
 		$type->setAttribs(array(
 				'class'=>'form-control',
@@ -97,7 +97,7 @@ class Product_Form_FrmOther extends Zend_Form
 		$status_search->setMultiOptions($_status_opt);
 		$status_search->setValue($request->getParam("status_search"));
 		
-		$opt = array(''=>$tr->translate("SELECT_TYPE"),2=>$tr->translate("MODEL"),3=>$tr->translate("SIZE"),4=>$tr->translate("COLOR"));
+		$opt = array(''=>$tr->translate("SELECT_TYPE"),7=>$tr->translate("MODEL"),8=>$tr->translate("SIZE"),6=>$tr->translate("COLOR"));
 		$type = new Zend_Form_Element_Select("type");
 		$type->setAttribs(array(
 				'class'=>'form-control',));

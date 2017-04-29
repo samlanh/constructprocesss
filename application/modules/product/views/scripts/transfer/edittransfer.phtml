@@ -1,14 +1,14 @@
 <?php
 $tr = Application_Form_FrmLanguages::getCurrentlanguage();
 $url_submit =  $this->url(array('module'=>'product','controller'=>'adjust','action'=>'add'));
-$url_cancel =  $this->url(array('module'=>'product','controller'=>'transfer','action'=>'transferlist'),null,true);
+$url_cancel =  $this->url(array('module'=>'product','controller'=>'transfer','action'=>'index'));
 
 $url_getcurrentitem =  $this->url(array('module'=>'product','controller'=>'adjust-stock','action'=>'get-current-quantity'));
 $url_getProduct =  $this->url(array('module'=>'product','controller'=>'adjust','action'=>'get-product'));
 $formFilter = $this->formFilter;
 //print_r($this->rs_detail);
 ?>
-<title><?php echo $tr->translate("ADJUST_STOCK");?></title>
+<title><?php echo $tr->translate("EDIT_TRANSFER");?></title>
 <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>-->
 <br/>
 <div class="portlet box blue">
@@ -38,6 +38,7 @@ $formFilter = $this->formFilter;
 						<label class="col-md-2 control-label"><?php echo $tr->translate("TRANSFER_NUM");?></label>
 						<div class="col-md-4">
 							<?php echo $formFilter->getElement('tran_num');?>
+							<?php echo $formFilter->getElement('re_id');?>
 						</div>
 						
 						<label class="col-md-2 control-label"><?php echo $tr->translate("REQUEST_NUM");?></label>
@@ -46,14 +47,15 @@ $formFilter = $this->formFilter;
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-md-2 control-label"><?php echo $tr->translate("REQUEST_DATE");?></label>
+						<label class="col-md-2 control-label"><?php echo $tr->translate("TRAN_DATE");?></label>
 						<div class="col-md-4">
-							<?php echo $formFilter->getElement('re_date');?>
+							<?php echo $formFilter->getElement('tran_date');?>
 						</div>
 						
 						<label class="col-md-2 control-label"><span id="lb_br"></span><?php echo $tr->translate("TRANSFER_DATE");?></label>
+						
 						<div class="col-md-4">
-							<?php echo $formFilter->getElement('tran_date');?>
+							<?php echo $formFilter->getElement('re_date');?>
 						</div>
 					</div>
 					<div class="form-group">
@@ -89,8 +91,6 @@ $formFilter = $this->formFilter;
 												<th>#</th>
 												<th><?php echo $tr->translate("PRODUCT_NAME");?></th>
 												<th><?php echo $tr->translate("QTY_REQUEST");?></th>
-												<th><?php echo $tr->translate("QTY_TRANSFER_UNIT");?></th>
-												<th><?php echo $tr->translate("QTY_TRANSFER_PER_UNIT");?></th>
 												<th><?php echo $tr->translate("QTY_TRANSFER");?></th>
 												<th><?php echo $tr->translate("REMARK");?></th>
 												<th><?php echo $tr->translate("ACTION");?></th>
@@ -99,12 +99,15 @@ $formFilter = $this->formFilter;
 										<tbody id="tr_location" style="font-size:12px;">
 										</tbody>
 									</table>
-								</div>
+									<div class="col-md-12 col-md-offset-4 col-md-8">
 								<input type="hidden" name="identity" id="identity" value="<?php //echo $identity;?>" >
-								<a href="<?php echo $this->baseUrl();?>/product/transfer/transferlist"><button type="button" class="btn red"><i class="fa fa-times"></i> <?php echo $tr->translate("EXIT")?></button></a>
-								<button type="submit" name="save_new" class="btn btn-primary"><?php echo $tr->translate("SAVE_NEW");?></button>
+								<a href="<?php echo $this->baseUrl();?>/product/transfer"><button type="button" class="btn red"><i class="fa fa-times"></i> <?php echo $tr->translate("EXIT")?></button></a>
+								<!--<button type="submit" name="save_new" class="btn btn-primary"><?php echo $tr->translate("SAVE_NEW");?></button>-->
 								<button type="submit" name="save_close" class="btn btn-primary"><?php echo $tr->translate("SAVE_CLOSE");?></button>
 							</div>
+								</div>
+								
+						</div>
 					</div>
 				</div>
 			</form>
@@ -126,9 +129,7 @@ function oldRow(){
 			template+='<td>'+index+'</td>';
 			template+='<td style="white-space: nowrap;"><?php echo $rs["item_name"];?><input type="hidden" id="pro_id_'+index+'" name="pro_id_'+index+'" value="<?php echo $rs["pro_id"]?>" </td>';
 			template+='<td><input type="text" id="qty_request_'+index+'" readOnly="readOnly" name="qty_request_'+index+'" value="<?php echo $rs['qty_request']?>" class="form-control"></td>'; 
-			template+='<td><input type="text" id="qty_unit_'+index+'" onKeyup="TotalQty('+index+')" name="qty_unit_'+index+'" value="<?php echo $rs['qty_unit']?>" class="form-control" /></td>'; 
-			template+='<td><input type="text" id="qty_per_unit_'+index+'" onKeyup="TotalQty('+index+')" name="qty_per_unit_'+index+'" value="<?php echo $rs['qty_per_unit']?>" class="form-control" /></td>'; 
-			template+='<td><input type="text" id="qty_tran_'+index+'" readOnly="readOnly" name="qty_tran_'+index+'" value="<?php echo $rs['qty']?>" class="form-control"><input type="hidden" id="old_qty_tran_'+index+'" readOnly="readOnly" name="old_qty_tran_'+index+'" value="<?php echo $rs['qty']?>" class="form-control"> <input type="hidden" name="qty_measure_'+index+'" id="qty_measure_'+index+'" value="<?php echo $rs['qty_measure']?>"/></td>';
+			template+='<td><input type="text" id="qty_tran_'+index+'" name="qty_tran_'+index+'" value="<?php echo $rs['qty']?>" class="form-control"></td>'; 
 			template+='<td><input type="text" id="remark_'+index+'" name="remark_'+index+'" class="form-control"></td>';
 			template+='<td><button type="button" onClick="deleteRecord('+index+',1)" name="save_close" class="btn default"><?php echo $tr->translate("DELETE");?></button></td>';
 			template+='</tr>';
@@ -139,18 +140,7 @@ function oldRow(){
 			} else {$('#identity').val(index);}
 	<?php }}?>
 }
-function TotalQty(index){
-		main_qty =$("#qty_unit_"+index).val();
-		detail_qty =  $("#qty_per_unit_"+index).val();
-		qty_measure = $("#qty_measure_"+index).val();
-		if(qty_measure==0){
-			qty_measure=1;
-		}else{
-			qty_measure = qty_measure;
-		}
-		total_qty = parseFloat(main_qty) + (parseFloat(detail_qty)/parseFloat(qty_measure));
-		$("#qty_tran_"+index).val(total_qty.toFixed(3));
-	}
+
 function addNew(){
 	id = $("#pro_name").val();
 	index++;

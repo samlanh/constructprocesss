@@ -5,6 +5,11 @@ public function init()
     {
         /* Initialize action controller here */
     	defined('BASE_URL')	|| define('BASE_URL', Zend_Controller_Front::getInstance()->getBaseUrl());
+		$db = new Application_Model_DbTable_DbGlobal();
+		// $rs = $db->getValidUserUrl();
+		// if(empty($rs)){
+			// Application_Form_FrmMessage::Sucessfull("YOU_NO_PERMISION_TO_ACCESS_THIS_SECTION","/index/dashboad");
+		// }
     }
     protected function GetuserInfoAction(){
     	$user_info = new Application_Model_DbTable_DbGetUserInfo();
@@ -24,6 +29,18 @@ public function init()
 					'status'	=>	1
 			);
 		}
+		
+		$columns=array("BRANCH_NAME","CODE","PREFIX", "CONTACT_NAME",
+				"PHONE","EMAIL","OFFICE_PHONE","ADDRESS","STATUS");
+		$link=array(
+				'module'=>'product','controller'=>'branch','action'=>'edit',
+		);
+		
+		$rows = $db->getAllBranch($data);
+		$list = new Application_Form_Frmlist();
+		$this->view->list=$list->getCheckList(0, $columns, $rows, array('name'=>$link,'branch_code'=>$link,'prefix'=>$link,
+				'contact'=>$link));
+				
 		$this->view->formFilter = $frmsearch;
 		$list = new Application_Form_Frmlist();
 		$result = $db->getAllBranch($data);

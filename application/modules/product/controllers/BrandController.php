@@ -5,6 +5,11 @@ public function init()
     {
         /* Initialize action controller here */
     	defined('BASE_URL')	|| define('BASE_URL', Zend_Controller_Front::getInstance()->getBaseUrl());
+		$db = new Application_Model_DbTable_DbGlobal();
+		// $rs = $db->getValidUserUrl();
+		// if(empty($rs)){
+			// Application_Form_FrmMessage::Sucessfull("YOU_NO_PERMISION_TO_ACCESS_THIS_SECTION","/index/dashboad");
+		// }
     }
     protected function GetuserInfoAction(){
     	$user_info = new Application_Model_DbTable_DbGetUserInfo();
@@ -26,8 +31,17 @@ public function init()
 					'status'	=>	1
 			);
 		}
-		$result = $db->getAllBrands($data);
-		$this->view->resulr = $result;
+		$rows = $db->getAllBrands($data);
+		
+		$columns=array("BRAND_NAME","REMRK","STATUS");
+		$link=array(
+				'module'=>'product','controller'=>'brand','action'=>'edit',
+		);
+		
+		$list = new Application_Form_Frmlist();
+		$this->view->list=$list->getCheckList(0, $columns, $rows, array('name'=>$link,'remark'=>$link));
+				
+		$this->view->resulr = $rows;
 		Application_Model_Decorator::removeAllDecorator($formFilter);
 	}
 	public function addAction()
@@ -49,7 +63,7 @@ public function init()
 	public function editAction()
 	{
 		$id = ($this->getRequest()->getParam('id'))? $this->getRequest()->getParam('id'): '0';
-		$db = new Product_Model_DbTable_DbBrand();
+		$db = new Brand_Model_DbTable_DbBrand();
 		
 		if($id==0){
 			$this->_redirect('product/brand/index/add');

@@ -1,9 +1,9 @@
 <?php
 $tr = Application_Form_FrmLanguages::getCurrentlanguage();
 $url_submit =  $this->url(array('module'=>'product','controller'=>'adjust','action'=>'add'));
-$url_cancel =  $this->url(array('module'=>'product','controller'=>'adjust','action'=>'index'),null,true);
+$url_cancel =  $this->url(array('module'=>'product','controller'=>'adjust','action'=>'index'));
 $url_getcurrentitem =  $this->url(array('module'=>'product','controller'=>'adjust-stock','action'=>'get-current-quantity'));
-$url_getProduct =  $this->url(array('module'=>'product','controller'=>'damagedstock','action'=>'get-product'),null,true);
+$url_getProduct =  $this->url(array('module'=>'product','controller'=>'ajax','action'=>'getproductadjust'));
 $formFilter = $this->formFilter;
 ?>
 <title><?php echo $tr->translate("ADJUST_STOCK");?></title>
@@ -14,14 +14,12 @@ $formFilter = $this->formFilter;
 			<div class="caption">
 					<i class="fa fa-globe"></i><?php echo $tr->translate("ADJUST_STOCK");?>
 			</div>
-			<div class="tools">
-				<a href="<?php echo $url_cancel;?>"><button type="button" name="calcel" class="btn red"><?php echo $tr->translate("GO_BACK");?></button></a>
-			</div>
+				<a href="<?php echo $url_cancel;?>" class="pull-right"><button type="button" name="calcel" class="btn red"><?php echo $tr->translate("GO_BACK");?></button></a>
 		</div>
 		<div class="portlet-body form">
-			<form class="form-horizontal" method="post" action="" >
+			<form class="form-horizontal" id="a" method="post" action="" >
 				<div class="form-body">	
-					<div class="form-group">
+							<div class="form-group">
 						<label class="col-md-2 control-label"><?php //echo $tr->translate("RECEIVE_FROM");?></label>
 						<div class="col-md-4">
 							<?php //echo $formFilter->getElement('to_loc');?>
@@ -32,31 +30,21 @@ $formFilter = $this->formFilter;
 							<?php echo $formFilter->getElement('from_loc');?>
 						</div>
 					</div>
-					<div class="portlet box blue">
-						<div class="portlet-title">
-							<div class="caption" style="width:100%">
-								<?php echo $formFilter->getElement('pro_name');?>
+							<div class="form-group">
+								<div  class="col-md-12">
+								<?php //echo $formFilter->getElement('pro_name');?>
+								<input type="hidden" class="form-control" id="add_item" name="add_item" Onchange="addNew();"  placeholder="<?php echo $tr->translate("SELECT_PRODUCT");?>"/>
+								</div>
 							</div>
-						</div>
-					</div>
-													
-					<div class="portlet box blue">
-						<div class="portlet-title">
-							<div class="caption">
-								<i class="fa fa-cogs"></i><?php echo $tr->translate("PRODUCT_LIST");?>
-							</div>
-						</div>	
-							<div class="portlet-body">
 								<div class="table-responsive">
 									<table class="table table-bordered">
 										<thead>
 											<tr>
-												<th>#</th>
+												<th><?php echo $tr->translate("NUM");?></th>
 												<th><?php echo $tr->translate("PRODUCT_NAME");?></th>
 												<th><?php echo $tr->translate("CURRENT_QTY");?></th>
-												<th><?php echo $tr->translate("ADJUST_QTY_UNIT");?></th>
-												<th><?php echo $tr->translate("ADJUST_QTY_PER_UNIT");?></th>
-												<th><?php echo $tr->translate("ADJUST_TOTAL_QTY");?></th>
+												<th><?php echo $tr->translate("NEW_QTY");?></th>
+												<th><?php echo $tr->translate("DIFFERENCE_QTY");?></th>
 												<th><?php echo $tr->translate("REMARK");?></th>
 												<th><?php echo $tr->translate("ACTION");?></th>
 											</tr>
@@ -66,49 +54,81 @@ $formFilter = $this->formFilter;
 									</table>
 								</div>
 								<input type="hidden" name="identity" id="identity" value="<?php //echo $identity;?>" >
-								
-							</div>
 							
 							<div class="form-group">
-								<div  class="col-md-12 col-md-offset-4 col-md-8">
+								<label  class="col-md-12 col-md-offset-4 col-md-8">
 									<a href="<?php echo $this->baseUrl();?>/product/adjust"><button type="button" class="btn red"><i class="fa fa-times"></i> <?php echo $tr->translate("EXIT")?></button></a>
-									<button type="submit" name="saveclose" value="saveclose" class="btn btn-primary" ><i class="glyphicon glyphicon-log-in"></i> <?php echo $tr->translate("SAVE_CLOSE")?></button>
-									<button type="submit" name="btnsavenew" class="btn btn-primary"><i class="fa fa-save"></i> <?php echo $tr->translate("SAVE_NEW")?> </button>
+									<button type="submit" name="saveclose" id="save_close" value="saveclose" class="btn btn-primary" ><i class="glyphicon glyphicon-log-in"></i> <?php echo $tr->translate("SAVE_CLOSE")?></button>
+									<button type="submit" name="btnsavenew" id="save_close" class="btn btn-primary"><i class="fa fa-save"></i> <?php echo $tr->translate("SAVE_NEW")?> </button>
 									
-								</div>
+								</label>
 							</div>
-					</div>
 				</div>
 			</form>
 		</div>
 </div>
 <script type="text/javascript">
 
+itemss = <?php echo Zend_Json::encode($this->product)?>;
+$( document ).ready(function() {
+	select2Speed('add_item');
+	//alert("ready loaded");
+	
+});
+function select2Speed(name){
+	 $('#add_item').select2({
+            data : _.map(_.range(0, itemss.length), function (i) {
+				//alert(itemss);
+                  return {
+                      id  : itemss[i].id,
+                      text: itemss[i].item_code+"-"+itemss[i].item_name
+                  };
+            }),
+            dropdownCssClass : 'capitalize',
+            containerCssClass: 'capitalize',
+            // configure as multiple select
+            //multiple         : true,
+            // text for loading more results
+            formatLoadMore   : 'Loading more...',
+            query            : function (q) {
+            // pageSize is number of results to show in dropdown
+                var pageSize,
+                    results;
+                    pageSize = 20;
+                    results  = _.filter(this.data, function (e) {
+                        return (q.term === "" || e.text.toUpperCase().indexOf(q.term.toUpperCase()) >= 0);
+                 });
+                q.callback({
+                    results: results.slice((q.page - 1) * pageSize, q.page * pageSize),
+                    // retrieve more when user hits bottom
+                    more   : results.length >= q.page * pageSize
+                });
+            }
+        });
+}
+
 jQuery(document).ready(function(){
 	//addRow();
 });
 var index=0;
-url_get_qty = '<?php echo $this->url(array('module'=>'product','controller'=>'adjust','action'=>'getproduct'))?>';
 function addNew(){
-	
-	id = $("#pro_name").val();
+	id = $("#add_item").val();
 	location_ids = $("#from_loc").val();
-	//alert('<?php echo $url_getProduct;?>');
 	index++;
 	$.ajax({
-        url: url_get_qty,
-        type: "POST",
-        data: {id:id,location_ids:location_ids},
+        url: "<?php echo $url_getProduct;?>",
+        type: "post",
+         data: {id:id,location_ids:location_ids},
         success: function(val){
-			//alert(val);
+            //alert(data);
 			for(i=1; i<index; i++){
 				new_item=parseInt(id);
 				items = parseInt($("#pro_id_"+i).val());
 				if(new_item==items){		
-					newqty = parseInt($("#qty_unit_"+i).val());
+					newqty = parseInt($("#new_qty_"+i).val());
 					newqty = newqty+1;
-					$("#qty_unit_"+i).val(newqty);
-					//diferQTY(i);
+					$("#new_qty_"+i).val(newqty);
+					diferQTY(i);
 					return false;
 					
 				}
@@ -116,11 +136,10 @@ function addNew(){
 			 data = $.parseJSON(val);
 			template='<tr id="row_location_'+index+'">';
 			template+='<td>'+index+'</td>';
-			template+='<td style="white-space: nowrap;">'+data.item_name+'<input type="hidden"  id="pro_id_'+index+'" name="pro_id_'+index+'" value="'+data.id+'" </td>';
-			template+='<td style="white-space: nowrap;"><label id="lb_cu_qty_'+index+'"></label><input type="hidden" id="current_qty_'+index+'"  name="current_qty_'+index+'" value="'+data.qty+'" class="form-control"><input type="hidden" name="measure_'+index+'" id="measure_'+index+'" value="'+data.measure+'"/></td>'; 
-			template+='<td><input type="text" id="qty_unit_'+index+'" onKeyup="TotalQty('+index+')" name="qty_unit_'+index+'"  value="1" class="form-control"><input type="hidden" name="unit_label_'+index+'" id="unit_label_'+index+'" value="'+data.unit_label+'"/></td>'; 
-			template+='<td><input type="text" id="qty_per_unit_'+index+'" onKeyup="TotalQty('+index+')" name="qty_per_unit_'+index+'"  value="0" class="form-control"><input type="hidden" id="qty_measure_'+index+'" name="qty_measure_'+index+'" onKeyup="" value="'+data.qty_perunit+'" class="form-control"></td>';
-			template+='<td style="white-space: nowrap;"><label id="lb_remain_'+index+'"></label><input type="hidden" id="remain_qty_'+index+'" name="remain_qty_'+index+'" class="form-control"><input type="hidden" name="qty_'+index+'" id="qty_'+index+'" value="0"/></td>';
+			template+='<td style="white-space: nowrap;">'+data.item_name+'<input type="hidden" id="pro_id_'+index+'" name="pro_id_'+index+'" value="'+data.id+'" </td>';
+			template+='<td><input type="text" id="current_qty_'+index+'" onKeyup="diferQTY('+index+')" name="current_qty_'+index+'" value="'+data.qty+'" class="form-control"></td>'; 
+			template+='<td><input type="text" id="new_qty_'+index+'" name="new_qty_'+index+'" onKeyup="diferQTY('+index+')" value="0" class="form-control"></td>'; 
+			template+='<td><input type="text" id="difer_qty_'+index+'" name="difer_qty_'+index+'" class="form-control"></td>';
 			template+='<td><input type="text" id="remark_'+index+'" name="remark_'+index+'" class="form-control"></td>';
 			template+='<td><button type="button" onClick="deleteRecord('+index+',1)" name="save_close" class="btn default"><?php echo $tr->translate("DELETE");?></button></td>';
 			template+='</tr>';
@@ -129,81 +148,22 @@ function addNew(){
 				var identity = $('#identity').val();
 				$('#identity').val(identity+','+index);
 			} else {$('#identity').val(index);}
-			//diferQTY(index);
-			TotalQty(index);
-			qty = $('#current_qty_'+index).val();
-			cur_qty = fullMeanQty(index,qty);
-			document.getElementById("lb_cu_qty_"+index).innerHTML = cur_qty;
+			diferQTY(index);
         },
         error:function(){
-            //alert(e);
-            //$("#result").html('There is error while submit');
+           // alert("Please Product Name And Location");
+            $("#result").html('There is error while submit');
         }
     });
 }
 	
-function fullMeanQty(index,qty){
-	
-	qty_measure = $('#qty_measure_'+index).val();
-	unit_label = $('#unit_label_'+index).val();
-	measure = $("#measure_"+index).val()
-	if(qty_measure==0){
-		qty_measure=1;
-	}else{
-		qty_measure = qty_measure;
+	function diferQTY(index){
+		cur_qty = $('#current_qty_'+index).val();
+		new_qty = $('#new_qty_'+index).val();
+		difer_qty = parseFloat(new_qty)-parseFloat(cur_qty);
+		$('#difer_qty_'+index).val(difer_qty);
 	}
-	//value = parseString(qty);
-	var arrays = qty.split('.');
-	unit_qty = arrays[0];
-	qty_per_unit = arrays[1];
-	total_qty_per_unit = Math.round((parseFloat(qty)*parseFloat(qty_measure)) - (parseFloat(unit_qty)*parseFloat(qty_measure)));
-	
-	if(unit_qty>0 && qty_per_unit>0){
-		l_qty = unit_qty+" "+measure+" & "+total_qty_per_unit+" "+unit_label;
-	}else if(unit_qty>0 && qty_per_unit<=0){
-		l_qty = unit_qty+" "+measure;
-	}else if(unit_qty<=0 && qty_per_unit>0){
-		l_qty = total_qty_per_unit+" "+unit_label;
-	}else{
-		l_qty=0;
-	}
-	//alert();
-	return l_qty;
-}
-function TotalQty(index){
-		
-		main_qty =$("#qty_unit_"+index).val();
-		detail_qty =  $("#qty_per_unit_"+index).val();
-		qty_measure = $("#qty_measure_"+index).val();
-		qty = $('#current_qty_'+index).val();
-		if(qty_measure==0){
-			qty_measure=1;
-		}else{
-			qty_measure = qty_measure;
-		}
-		total_qty = parseFloat(main_qty) + (parseFloat(detail_qty)/parseFloat(qty_measure));
-		
-		/*if(total_qty>qty){
-			alert("Damaged product Can't more than Current Qty!");
-			$("#qty_unit_"+index).val(0);
-			$("#qty_per_unit_"+index).val(0);
-			$("#qty_unit_"+index).focus();
-			$("#qty_"+index).val(0);
-			document.getElementById('lb_remain_'+index).innerHTML='';
-		}else{
-			$("#qty_"+index).val(total_qty.toFixed(3));
-		}*/
-		$("#qty_"+index).val(total_qty.toFixed(3));
-		doRemainQty(index);
-	}
-function doRemainQty(index){
-	damaged_qty = $("#qty_"+index).val();
-	cur_qty = $('#current_qty_'+index).val();
-	remain_qty = parseFloat(cur_qty)-parseFloat(damaged_qty);
-	$('#remain_qty_'+index).val(parseFloat(remain_qty).toFixed(3));
-	remain_full = fullMeanQty(index,damaged_qty);
-	document.getElementById('lb_remain_'+index).innerHTML= remain_full;
-}
+
 function deleteRecord(index,type) {
 		if(type==1){
 			var identity = $('#identity').val();

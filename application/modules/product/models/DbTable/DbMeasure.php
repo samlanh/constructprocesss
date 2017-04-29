@@ -1,56 +1,50 @@
 <?php
-
-class Product_Model_DbTable_DbMeasure extends Zend_Db_Table_Abstract
-{
+class Product_Model_DbTable_DbMeasure extends Zend_Db_Table_Abstract{
 	protected $_name = "tb_measure";
-	
 	public function getUserId(){
 		return Application_Model_DbTable_DbGlobal::GlobalgetUserId();
-	}
+		}
 	public function add($data){
 		$db = $this->getAdapter();
 		$arr = array(
 				'name'			=>	$data["measure_name"],
-// 				'parent_id'		=>	$data["parent"],
 				'date'			=>	new Zend_Date(),
 				'status'		=>	$data["status"],
-				'remark'		=>	$data["remark"],
-		);
+				'remark'		=>	$data["remark"],);
 		$this->_name = "tb_measure";
 		$this->insert($arr);
-	}
+		}
+	function getmeasurename($data){
+		$db= $this->getAdapter();
+		$sql ="SELECT m.name from tb_measure as m where REPLACE(m.name,' ','')=REPLACE('$data',' ','')";
+		return $db->fetchOne($sql);
+		}
 	public function edit($data){
 		$db = $this->getAdapter();
 		$arr = array(
 				'name'			=>	$data["measure_name"],
-// 				'parent_id'		=>	$data["parent"],
 				'date'			=>	new Zend_Date(),
 				'status'		=>	$data["status"],
-				'remark'		=>	$data["remark"],
-		);
+				'remark'		=>	$data["remark"],);
 		$this->_name = "tb_measure";
 		$where = $db->quoteInto("id=?", $data["id"]);
 		$this->update($arr, $where);
-	}
-	//Insert Popup=============================================================================
+		}
 	public function addNew($data){
 		$db = $this->getAdapter();
 		$arr = array(
 				'name'			=>	$data["measure_name"],
-// 				'parent_id'		=>	$data["parent"],
 				'date'			=>	new Zend_Date(),
 				'status'		=>	$data["status"],
-				'remark'		=>	$data["remark"],
-		);
+				'remark'		=>	$data["remark"],);
 		$this->_name = "tb_measure";
 		return $this->insert($arr);
-	}
+		}
 	public function getAllMeasure(){
 		$db = $this->getAdapter();
-		$sql = "SELECT m.id,m.`name`,m.`status`,m.`remark` FROM `tb_measure` AS m ";
+		$sql = "SELECT m.id,m.`name`,m.`remark`,(SELECT name_en FROM `tb_view` WHERE type=1 AND key_code=m.`status` LIMIT 1) AS `status` FROM `tb_measure` AS m ";
 		return $db->fetchAll($sql);
-	}
-	
+		}
 	public function getMeasure($id){
 		$db = $this->getAdapter();
 		$sql = "SELECT m.id,m.`name`,m.`status`,m.`remark` FROM `tb_measure` AS m  WHERE m.`id`= $id";

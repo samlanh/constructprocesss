@@ -9,76 +9,43 @@
 ?>
 <title><?php echo $tr->translate("PRODUCT_LIST");?></title>
 
-	<div class="portlet box blue">
-		<div class="portlet-title">
-			<div class="caption">
+	<div class="row">
+	<div class="col-md-12">
+		<div class="portlet box blue">
+			<div class="portlet-title">
+				<div class="caption">
 					<i class="fa fa-globe"></i><?php echo $tr->translate("PRODUCT_LIST");?>
+				</div>
+				<div class="pull-right">
+					<a href="<?php echo $url_new;?>" class="btn btn-sm red" style="line-height: 35px;">
+						<i class="fa fa-plus"></i>&nbsp;<?php echo $tr->translate("ADD_NEW");?>
+					</a>
+				</div>
 			</div>
-			
-			<div class="caption pull-right">
-				<a href="<?php echo $url_new;?>"><button id="sample_editable_1_new" class="btn green">Add New <i class="fa fa-plus"></i></button></a>
-			</div>
-			<div class="caption" style="float:right">
-					<?php $formList = new Application_Form_Frmlist(); //echo $formList->showAddBuntton($url_new);?>
-			</div>
-		</div>
-		<div class="portlet-body form">
-			<form class="form-horizontal" method="post" action="" >
-				<div class="form-body">
-							<div class="form-group">
-								<!--  <label class="col-md-1 control-label"><?php //echo $tr->translate("ADVANCE_SEARCH");?></label>-->
-								<div class="col-md-3">
-									<?php echo $formFilter->getElement('ad_search');?>
-								</div>
-								<!--<label class="col-md-1 control-label"><?php echo $tr->translate("BRANCH");?></label>-->
-								<div class="col-md-3">
-									<?php echo $formFilter->getElement('branch');?>
-								</div>
-								<!--<label class="col-md-1 control-label"><?php echo $tr->translate("BRAND");?></label>-->
-								<div class="col-md-3">
-									<?php echo $formFilter->getElement('brand');?>
-								</div>
-								<!--<label class="col-md-1 control-label"><?php echo $tr->translate("CATEGORY");?></label>-->
-								<div class="col-md-3">
-									<?php echo $formFilter->getElement('category');?>
-								</div>
-							</div>
-							<div class="form-group">
-								<!--<label class="col-md-1 control-label"><?php echo $tr->translate("MODEL");?></label>-->
-								<div class="col-md-3">
-									<?php echo $formFilter->getElement('model');?>
-								</div>
-								<!--<label class="col-md-1 control-label"><?php echo $tr->translate("SIZE");?></label>-->
-								<div class="col-md-3">
-									<?php echo $formFilter->getElement('size');?>
-								</div>
-								<!--<label class="col-md-1 control-label"><?php echo $tr->translate("COLOR");?></label>-->
-								<div class="col-md-3">
-									<?php echo $formFilter->getElement('color');?>
-								</div>
-								<!--<label class="col-md-1 control-label"><?php echo $tr->translate("STATUS");?></label>-->
-								<div class="col-md-3">
-									<?php echo $formFilter->getElement('status');?>
-								</div>
-							</div>		
-							
-						<div class="form-group">
-						<label class="control-label col-md-3 pull-right">
-							<button class="btn btn-primary col-md-12" value="" ><i class="fa fa-save"></i>&nbsp;<?php echo $tr->translate("REFRESH");?></button>
-						</label>
-					</div>
+			<div class="portlet-body form">
+				<form method="post" action="" >
+				<div class="form-group" style="padding-top: 6px;">
+					<label class="control-label col-md-2"><?php echo $formFilter->getElement('ad_search');?></label>
+					<label class="control-label col-md-2"><?php echo $formFilter->getElement('branch');?></label>
+					<label class="control-label col-md-2"><?php echo $formFilter->getElement('brand');?></label>
+					<label class="control-label col-md-2"><?php echo $formFilter->getElement('category');?></label>
+					
+					<label class="control-label col-md-2"><?php echo $formFilter->getElement('model');?></label>
+					<label class="control-label col-md-2"><?php echo $formFilter->getElement('size');?></label>
+					<label class="control-label col-md-2"><?php echo $formFilter->getElement('color');?></label>
+					<label class="control-label col-md-2"><?php echo $formFilter->getElement('status');?></label>
+					<label class="control-label col-md-2">
+						<button class="btn btn-primary col-md-12" value="" ><i class="fa fa-save"></i>&nbsp;<?php echo $tr->translate("REFRESH");?></button>
+					</label>
+				</div>
 				</div>
 			</form>
-			
+					<div class="contain_form" style="clear: both;">
+						<?php echo $this->list; ?>
+					</div>
+		   </div>
 		</div>
-		
-		<!-- Result List -->
-					<!-- BEGIN EXAMPLE TABLE PORTLET-->
-						<div class="portlet-body">
-						<?php echo $this->list;?>
+
 							
-						</div>
-					<!-- END EXAMPLE TABLE PORTLET-->
-			<!-- End Result list -->
 
 </div>

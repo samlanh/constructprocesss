@@ -9,6 +9,20 @@ class Product_Form_FrmBranch extends Zend_Form
 	/////////////	Form Product		/////////////////
 	public function branch($data=null){
 		$tr = Application_Form_FrmLanguages::getCurrentlanguage();
+		$db = new Product_Model_DbTable_DbBranch();
+		$rs_location = $db->getAllLocation();
+		$opt = array(''=>$tr->translate('SELECT'));
+		if(!empty($rs_location)){
+			foreach($rs_location as $rs){
+				$opt[$rs["id"]] = $rs["name"];
+			}
+			
+		}
+		$location = new Zend_Form_Element_Select('location');
+		$location->setAttribs(array('class'=>'form-control','required'=>true));
+		$location->setMultiOptions($opt);
+		$this->addElement($location);
+		
 		$branch_name = new Zend_Form_Element_Text('branch_name');
 		$branch_name->setAttribs(array(
 				'class'=>'form-control',
@@ -25,6 +39,23 @@ class Product_Form_FrmBranch extends Zend_Form
 		$prefix->setAttribs(array(
 				'class'=>'form-control',
 				//'required'=>'required'
+		));
+		
+		$title_report_en = new Zend_Form_Element_Text("title_en");
+		$title_report_en->setAttribs(array(
+				'class'=>'form-control',
+				//'required'=>'required'
+		));
+		
+		$title_report_kh = new Zend_Form_Element_Text("title_kh");
+		$title_report_kh->setAttribs(array(
+				'class'=>'form-control',
+				//'required'=>'required'
+		));
+		
+		$logo = new Zend_Form_Element_File("logo");
+		$logo->setAttribs(array(
+				'class'=>'form-control',
 		));
 		
 		$addres = new Zend_Form_Element_Textarea("address");
@@ -78,36 +109,27 @@ class Product_Form_FrmBranch extends Zend_Form
 		
 		));
 		
-		$show_by = new Zend_Form_Element_Select("show_by");
-		$show_by->setAttribs(array(
-				'class'=>'form-control',
-				//'required'=>'required'
-		));
-		$opt_show = array('1'=>$tr->translate("SHOW_BY_TEXT"),'2'=>$tr->translate("SHOW_BY_LOGO"),'3'=>$tr->translate("SHOW_BY_ALL"));
-		$show_by->setMultiOptions($opt_show);
-		
-		$logo = new Zend_Form_Element_File("logo");
-    	$this->addElement($logo);
-		$old_logo = new Zend_Form_Element_Hidden("old_logo");
-    	$this->addElement($old_logo);
-		
 		if($data != null){
 			$branch_name->setValue($data["name"]);
-			$contact_name->setValue($data["contact"]);
-			$contact_num->setValue($data["phone"]);
-			$email->setValue($data["email"]);
-			$fax->setValue($data["fax"]);
-			$office_num->setValue($data["office_tel"]);
+			$contact_name->setValue(@$data["contact"]);
+			$contact_num->setValue(@$data["phone"]);
+			$email->setValue(@$data["email"]);
+			$fax->setValue(@$data["fax"]);
+			$office_num->setValue(@$data["office_tel"]);
 			$status->setValue($data["status"]);
 			$remark->setValue($data["remark"]);
-			$addres->setValue($data["address"]);
-			$code->setValue($data["code"]);
-			$prefix->setValue($data["prefix"]);
-			$show_by->setValue($data["show_by"]);
-			$old_logo->setValue($data["logo"]);
+			$addres->setValue(@$data["address"]);
+			$code->setValue(@$data["code"]);
+			$prefix->setValue(@$data["prefix"]);
+			$title_report_kh->setValue($data["title_report_kh"]);
+			$title_report_en->setValue($data["title_report_en"]);
+			$old_photo = new Zend_Form_Element_Text("old_photo");
+			$old_photo->setValue($data["logo"]);
+			$this->addElement($old_photo);
+			$location->setValue(@$data["loc_id"]);
 		}
 			
-		$this->addElements(array($show_by,$code,$prefix,$branch_name,$addres,$contact_name,$contact_num,$email,$fax,$office_num,$status,$remark));
+		$this->addElements(array($logo,$title_report_kh,$title_report_en,$code,$prefix,$branch_name,$addres,$contact_name,$contact_num,$email,$fax,$office_num,$status,$remark));
 		return $this;
 	}
 }

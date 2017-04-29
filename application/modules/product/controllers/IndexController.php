@@ -5,6 +5,11 @@ public function init()
     {
         /* Initialize action controller here */
     	defined('BASE_URL')	|| define('BASE_URL', Zend_Controller_Front::getInstance()->getBaseUrl());
+		// $db = new Application_Model_DbTable_DbGlobal();
+		// $rs = $db->getValidUserUrl();
+		// if(empty($rs)){
+			// Application_Form_FrmMessage::Sucessfull("YOU_NO_PERMISION_TO_ACCESS_THIS_SECTION","/index/dashboad");
+		// }
     }
     protected function GetuserInfoAction(){
     	$user_info = new Application_Model_DbTable_DbGetUserInfo();
@@ -18,9 +23,6 @@ public function init()
     public function indexAction()
     {
     	$db = new Product_Model_DbTable_DbProduct();
-		$user_info = new Application_Model_DbTable_DbGetUserInfo();
-		$result = $user_info->getUserInfo();
-		$level = $result["level"];
     	if($this->getRequest()->isPost()){
     		$data = $this->getRequest()->getPost();
     	}else{
@@ -35,28 +37,18 @@ public function init()
     			'status'	=>	1
     		);
     	}
-		//$db = new Sales_Model_DbTable_DbSaleOrder();
-		if($level==1 or $level==2){
-			$rows = $db->getAllProductForAdmin($data);
-			//$columns=array("BRANCH_NAME","ITEM_CODE","ITEM_NAME","BARCODE","COLOR","BRAND","CATEGORY","MEASURE","QTY","MASTER_PRICE","DEALER_PRICE","USER","STATUS");
-			$columns=array("BRANCH_NAME","ITEM_CODE","ITEM_NAME",
-					"CATEGORY","MEASURE","HAEHQ","HAESR","HAEKPC","HAESHV","QTY","MASTER_PRICE","DEALER_PRICE","COST_PRICE","USER","STATUS");
-		}else{
-			$rows = $db->getAllProduct($data);
-			//$columns=array("BRANCH_NAME","ITEM_CODE","ITEM_NAME","BARCODE","COLOR","BRAND","CATEGORY","MEASURE","QTY","MASTER_PRICE","DEALER_PRICE","USER","STATUS");
-			$columns=array("BRANCH_NAME","ITEM_CODE","ITEM_NAME",
-					"CATEGORY","MEASURE","HAEHQ","HAESR","HAEKPC","HAESHV","QTY","MASTER_PRICE","DEALER_PRICE","USER","STATUS");
-		}
+		$columns=array("BRANCH","ITEM_CODE","ITEM_NAME", "BARCODE",
+				"SERIAL_NO","TRADE_MARKE","CATEGORY","MODEL","MEASURE","QTY","STATUS");
 		$link=array(
 				'module'=>'product','controller'=>'index','action'=>'edit',
 		);
-	
 		
+		$rows = $db->getAllProduct($data);
 		$list = new Application_Form_Frmlist();
-		//array('item_name'=>$link,'item_code'=>$link,'barcode'=>$link,'branch'=>$link)
-		$this->view->list=$list->getCheckList(0, $columns, $rows,array('item_name'=>$link,'item_code'=>$link,'barcode'=>$link,'branch'=>$link));
-		
-    	//$this->view->product = $db->getAllProduct($data);
+		$this->view->list=$list->getCheckList(0, $columns, $rows, array('branch'=>$link,'item_code'=>$link,'item_name'=>$link,
+				'barcode'=>$link));
+				
+    	$this->view->product = $db->getAllProduct($data);
     	$formFilter = new Product_Form_FrmProduct();
     	$this->view->formFilter = $formFilter->productFilter();
     	Application_Model_Decorator::removeAllDecorator($formFilter);
@@ -72,8 +64,10 @@ public function init()
 					if(isset($post["save_close"]))
 					{
 						Application_Form_FrmMessage::Sucessfull("INSERT_SUCCESS", '/product/index');
+					}elseif(isset($post["btn_print"])){
+						
 					}else{
-						Application_Form_FrmMessage::Sucessfull("INSERT_SUCCESS","");
+						Application_Form_FrmMessage::Sucessfull("INSERT_SUCCESS","/product/index");
 					}
 				  }catch (Exception $e){
 				  	Application_Form_FrmMessage::messageError("INSERT_ERROR",$err = $e->getMessage());
@@ -222,22 +216,6 @@ public function init()
 			}
 		}
 	}
-	public function addNewproudctAction(){
-		if($this->getRequest()->isPost()){
-			try {
-				$post=$this->getRequest()->getPost();
-				$db = new Product_Model_DbTable_DbProduct();
-				$pro_id =$db->addAjaxProduct($post);
-				$result = array('pro_id'=>$pro_id);
-				echo Zend_Json::encode($result);
-				exit();
-			}catch (Exception $e){
-				$result = array('err'=>$e->getMessage());
-				echo Zend_Json::encode($result);
-				exit();
-			}
-		}
-	}
 	
 	function outstockAction(){
 		$db = new Product_Model_DbTable_DbProduct();
@@ -282,6 +260,14 @@ public function init()
     	$this->view->formFilter = $formFilter->productFilter();
     	Application_Model_Decorator::removeAllDecorator($formFilter);
 	}
+	public function getProductPrefixAction(){
+		$post=$this->getRequest()->getPost();
+		$get_code = new Product_Model_DbTable_DbProduct();
+		$result = $get_code->getProductPrefix($post["id"]);
+		echo Zend_Json::encode($result);
+		exit();
+	}
+	
 	
 }
 

@@ -65,7 +65,7 @@
 	$url_report_list = array($this->url(array('module'=>'report','controller'=>'index','action'=>'index'),null, true), "MENU_REPORT_INDEX_INDEX");
 	$url_report_product = array($this->url(array('module'=>'report','controller'=>'product','action'=>'index'),null, true), "MENU_REPORT_PRODUCT");
 	$url_report_sale = array($this->url(array('module'=>'report','controller'=>'index','action'=>'index')), "MENU_REPORT_SALES_INDEX");
-	$url_report_summary = array($this->url(array('module'=>'report','controller'=>'index','action'=>'rpt-summary'),null, true), "MENU_REPORT_INDEX_RPT_SUMMARY");
+	$url_report_summary = array($this->url(array('module'=>'report','controller'=>'stock','action'=>'index')), "MENU_REPORT_INDEX_RPT_SUMMARY");
 	$url_report_pro = array($this->url(array('module'=>'report','controller'=>'product','action'=>'index'),null, true), "MENU_REPORT_PRODUCT_INDEX");
 	$url_report_purchase = array($this->url(array('module'=>'report','controller'=>'index','action'=>'rptpurchase'),null, true), "MENU_REPORT_PURCHASE_INDEX");
 	$url_report_transfer = array($this->url(array('module'=>'report','controller'=>'index','action'=>'rpt-transfer'),null, true), "MENU_REPORT_INDEX_RPT-TRANSFER");
@@ -161,10 +161,10 @@
 							    <i class="icon-bulb"></i> <?php echo $tr->translate($url_other[1]);?>
 		            		</a>
 	            		</li>
-						<li>
+						<!--<li>
 	            			<a href="<?php echo $url_deliver[0]; ?>">
 							 <i class="icon-bulb"></i><?php echo $tr->translate($url_deliver[1])?></a>
-	            		</li>
+	            		</li>-->
 						<li>
 	            			<a href="<?php echo $url_recieved[0]; ?>">
 		            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_recieved[1]);?>
@@ -492,6 +492,11 @@
 	            		</a>
             		</li>
             		<?php }?>
+					<li>
+	            			<a href="<?php echo $url_report_summary[0]; ?>">
+		            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_report_summary[1]);?>
+		            		</a>
+	            		</li> 
 					</ul>
 				</li>
 				<?php if($level==1){?>

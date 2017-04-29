@@ -10,7 +10,6 @@ class Product_Form_FrmAdjust extends Zend_Form
 		$db = new Product_Model_DbTable_DbAdjustStock();
 		$db_global = new Application_Model_DbTable_DbGlobal();
 		$rs_from_loc = $db_global -> getAllLocation();
-		
 		$user_info = new Application_Model_DbTable_DbGetUserInfo();
 		$result = $user_info->getUserInfo();
 		
@@ -19,7 +18,7 @@ class Product_Form_FrmAdjust extends Zend_Form
 				'class'=>'form-control select2me',
 				'onChange'=>'addNew();'
 		));
-		$opt= array(''=>$tr->translate("SELECT PRODUCT"));
+		$opt= array(''=>$tr->translate("SELECT_PRODUCT"));
 		$row_product = $db->getProductName();
 		if(!empty($row_product)){
 			foreach ($row_product as $rs){
@@ -29,7 +28,7 @@ class Product_Form_FrmAdjust extends Zend_Form
 		
 		$pro_name->setMultiOptions($opt);
 		
-		$from_loc = new Zend_Form_Element_Select("from_loc");
+		$this->addElements(array($pro_name));$from_loc = new Zend_Form_Element_Select("from_loc");
     	$from_loc->setAttribs(array(
     			'class'=>'form-control select2me',
     	));

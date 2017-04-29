@@ -7,26 +7,28 @@ class Product_Model_DbTable_DbAdjustStock extends Zend_Db_Table_Abstract
 	{
 		$this->_name=$name;
 	}
-	function getAllDamagedStock($data){
+	function getAllAdjustStock($data){
 		$db = $this->getAdapter();
 		$db_globle = new Application_Model_DbTable_DbGlobal();
-		$start_date = date("Y-m-d",strtotime($data["start_date"]));
-		$end_date = date("Y-m-d",strtotime($data["end_date"]));
+		$start_date = $data["start_date"];
+		$end_date = $data["end_date"];
 		$sql ="SELECT 
-				   d.id,
-				  (SELECT p.`item_code` FROM `tb_product` AS p WHERE p.id=d.`pro_id` LIMIT 1) AS item_code,
-				  (SELECT p.`item_name` FROM `tb_product` AS p WHERE p.id=d.`pro_id` LIMIT 1) AS item_name,
-				  d.`cur_qty`,
-				  d.`qty_adjust`,
-				  d.`defer_qty`,
-				  (SELECT m.name FROM `tb_measure` AS m WHERE m.id=(SELECT p.measure_id FROM `tb_product` AS p WHERE p.id=d.`pro_id` LIMIT 1) LIMIT 1) AS measure,
-				  (SELECT sl.name FROM `tb_sublocation` AS sl WHERE sl.id=d.`location_id`)AS location,
-				  d.`date`,
-				  (SELECT u.fullname FROM `tb_acl_user` AS u WHERE u.user_id=d.`user_id`) AS `user`
+				  m.`pro_id` ,
+				  p.`item_code`,
+				  p.`item_name`,
+				  m.`before_qty`,
+				  m.`qty_after`,
+				  m.`differ_qty`,
+				  (SELECT m.name FROM `tb_measure` AS m WHERE m.id = p.`measure_id` LIMIT 1) AS measure,
+				  (SELECT s.`name` FROM `tb_sublocation` AS s WHERE s.id=m.`location_id` LIMIT 1) AS location,
+				  (SELECT u.`fullname` FROM `tb_acl_user` AS u WHERE u.`user_id`=m.`user_mod` LIMIT 1) AS `username`,
+				   m.`date`
 				FROM
-				  `tb_product_adjust` AS d  WHERE d.`date` BETWEEN '".$start_date."' AND '".$end_date."'";
+				  `tb_move_history` AS m ,
+				  `tb_product` AS p
+				WHERE m.`pro_id`=p.`id` AND m.`date` BETWEEN '".$start_date."' AND '".$end_date."'";
 		$where = '';
-		 		/*if($data["ad_search"]!=""){
+		 		if($data["ad_search"]!=""){
 		 			$s_where=array();
 		 			$s_search = addslashes(trim($data['ad_search']));
 		 			$s_where[]= " p.item_name LIKE '%{$s_search}%'";
@@ -35,11 +37,10 @@ class Product_Model_DbTable_DbAdjustStock extends Zend_Db_Table_Abstract
 		 			$s_where[]= " p.serial_number LIKE '%{$s_search}%'";
 		 			//$s_where[]= " cate LIKE '%{$s_search}%'";
 		 			$where.=' AND ('.implode(' OR ', $s_where).')';
-		 		}*/
+		 		}
 		$location = $db_globle->getAccessPermission('m.`location_id`');
 		//echo $location;
-		//echo $sql;
-		return $db->fetchAll($sql);
+		return $db->fetchAll($sql.$where.$location);
 			
 	}
 	public function add($data){
@@ -57,39 +58,35 @@ class Product_Model_DbTable_DbAdjustStock extends Zend_Db_Table_Abstract
 				{
 					$arr = array(
 							'pro_id'		=>	$data["pro_id_".$i],
-							'location_id'	=>	$data["from_loc"],
-							'cur_qty'		=>	$data["current_qty_".$i],
-							'qty_unit'		=>	$data["qty_unit_".$i],
-							'qty_per_unit'	=>	$data["qty_per_unit_".$i],
-							'qty_measure'	=>	$data["qty_measure_".$i],
-							'qty_adjust'	=>	$data["qty_".$i],
-							'defer_qty'	    =>	$data["remain_qty_".$i],
-							'date'			=>	date('Y-m-d'),
-							'remark'		=>	$data["remark_".$i],
-							'user_id'		=>	$result["user_id"],
+							'location_id'	=>	$result["branch_id"],
+							'before_qty'	=>	$data["current_qty_".$i],
+							'qty_after'		=>	$data["new_qty_".$i],
+							'differ_qty'	=>	$data["difer_qty_".$i],
+							'type'			=>	1,
+							'date'			=>	$date->get('MM/d/Y'),
+							'Remark'		=>	$data["remark_".$i],
+							'user_mod'		=>	$result["user_id"],
 					);
-					$this->_name="tb_product_adjust";
+					$this->_name="tb_move_history";
 					$this->insert($arr);
 	
-					$rs = $this->getProductQtyById($data["pro_id_".$i],$data["from_loc"]);
+					$rs = $this->getProductById($data["pro_id_".$i],$result["branch_id"]);
 	
 					if(!empty($rs)){
 						$arr_p = array(
-								'qty'			=>	$data["qty_".$i],
-								//'damaged_qty'	=>	$rs["damaged_qty"]+$data["qty_".$i],
+								'qty'	=>	$data["new_qty_".$i],
 						);
 						$this->_name="tb_prolocation";
-						$where = array('pro_id=?'=>$data["pro_id_".$i],"location_id=?"=>$data["from_loc"]);
+						$where = array('pro_id=?'=>$data["pro_id_".$i],"location_id=?"=>$result["branch_id"]);
 						$this->update($arr_p, $where);
 					}else{
 						$arr_p = array(
 								'pro_id'			=>	$data["pro_id_".$i],
 								'location_id'		=>	$result["branch_id"],
-								'qty'				=>	$data["qty_".$i],
-								'damaged_qty'		=>	0,
+								'qty'				=>	$data["new_qty_".$i],
 								'qty_warning'		=>	0,
 								'last_mod_userid'	=>	$result["user_id"],
-								'last_mod_date'		=>	date('Y-m-d'),
+								'last_mod_date'		=>	$date->get('MM/d/Y'),
 						);
 						$this->_name="tb_prolocation";
 						$this->insert($arr_p);
@@ -112,25 +109,24 @@ class Product_Model_DbTable_DbAdjustStock extends Zend_Db_Table_Abstract
 				  p.`id`,
 				  p.`item_name` ,
 				  p.`item_code`,
-				  (SELECT b.name FROM `tb_brand` AS b WHERE b.id=p.`brand_id` limit 1) AS brand,
-				  (SELECT c.name FROM `tb_category` AS c WHERE c.id = p.`cate_id` limit 1) AS category,
-				  (SELECT v.name_kh FROM `tb_view` AS v WHERE v.key_code=p.`model_id` and type=2 limit 1) AS model,
-				  (SELECT v.name_kh FROM `tb_view` AS v WHERE v.key_code=p.`color_id` and type=4 limit 1) AS color,
-				  (SELECT v.name_kh FROM `tb_view` AS v WHERE v.key_code=p.`size_id` and type=3 limit 1) AS size
+				  (SELECT b.name FROM `tb_brand` AS b WHERE b.id=p.`brand_id`) AS brand,
+				  (SELECT c.name FROM `tb_category` AS c WHERE c.id = p.`cate_id`) AS category,
+				  (SELECT v.name_kh FROM `tb_view` AS v WHERE v.id=p.`model_id`) AS model,
+				  (SELECT v.name_kh FROM `tb_view` AS v WHERE v.id=p.`color_id`) AS color,
+				  (SELECT v.name_kh FROM `tb_view` AS v WHERE v.id=p.`size_id`) AS size
 				FROM
 				  `tb_product` AS p,
 				  `tb_prolocation` AS pl 
-				WHERE p.`id` = pl.`pro_id` AND p.status=1 ";
+				WHERE p.`id` = pl.`pro_id` AND pl.`location_id`=".$result["branch_id"];
 		//$location = $db_globle->getAccessPermission('pl.`location_id`');
 		return $db->fetchAll($sql);
 	}
-	function getProductById($id){
+	function getProductById($id,$location){
 		$db_globle = new Application_Model_DbTable_DbGlobal();
 		$db = $this->getAdapter();
 		$sql = "SELECT
 				  p.`id`,
 				  p.`item_name` ,
-				  p.`qty_perunit` ,
 				  p.`item_code`,
 				  (SELECT b.name FROM `tb_brand` AS b WHERE b.id=p.`brand_id`) AS brand,
 				  (SELECT c.name FROM `tb_category` AS c WHERE c.id = p.`cate_id`) AS category,
@@ -141,32 +137,8 @@ class Product_Model_DbTable_DbAdjustStock extends Zend_Db_Table_Abstract
 				FROM
 				  `tb_product` AS p,
 				  `tb_prolocation` AS pl
-				WHERE p.`id` = pl.`pro_id` AND p.`id`=$id ";
-		$location = $db_globle->getAccessPermission('pl.`location_id`');
-		return $db->fetchRow($sql.$location);
-	}
-	
-	function getProductQtyById($id,$location){
-		$db = $this->getAdapter();
-		$sql = "SELECT
-				  p.`id`,
-				  p.`item_name` ,
-				  p.`qty_perunit` ,
-				  p.`item_code`,
-				  p.`unit_label`,
-				  (SELECT m.`name` FROM `tb_measure` AS m WHERE m.id=p.`measure_id` LIMIT 1) AS measure,
-				  (SELECT b.name FROM `tb_brand` AS b WHERE b.id=p.`brand_id`) AS brand,
-				  (SELECT c.name FROM `tb_category` AS c WHERE c.id = p.`cate_id`) AS category,
-				  (SELECT v.name_kh FROM `tb_view` AS v WHERE v.id=p.`model_id`) AS model,
-				  (SELECT v.name_kh FROM `tb_view` AS v WHERE v.id=p.`color_id`) AS color,
-				  (SELECT v.name_kh FROM `tb_view` AS v WHERE v.id=p.`size_id`) AS size,
-				  pl.`qty`,
-				  pl.damaged_qty
-				FROM
-				  `tb_product` AS p,
-				  `tb_prolocation` AS pl
-				WHERE p.`id` = pl.`pro_id` AND p.`id`=$id AND pl.`location_id` = $location ";
-		
+				WHERE p.`id` = pl.`pro_id` AND p.`id`=$id AND pl.location_id=$location";
+		///$location = $db_globle->getAccessPermission('pl.`location_id`');
 		return $db->fetchRow($sql);
 	}
 	

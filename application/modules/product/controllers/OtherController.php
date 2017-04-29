@@ -1,18 +1,20 @@
 <?php
-class Product_otherController extends Zend_Controller_Action
-{
-public function init()
-    {
+class Product_otherController extends Zend_Controller_Action{
+public function init(){
         /* Initialize action controller here */
     	defined('BASE_URL')	|| define('BASE_URL', Zend_Controller_Front::getInstance()->getBaseUrl());
+		$db = new Application_Model_DbTable_DbGlobal();
+		// $rs = $db->getValidUserUrl();
+		// if(empty($rs)){
+			// Application_Form_FrmMessage::Sucessfull("YOU_NO_PERMISION_TO_ACCESS_THIS_SECTION","/index/dashboad");
+		// }
     }
     protected function GetuserInfoAction(){
     	$user_info = new Application_Model_DbTable_DbGetUserInfo();
     	$result = $user_info->getUserInfo();
     	return $result;
     }
-    public function indexAction()
-    {
+    public function indexAction(){
     	try{
     		$db = new Product_Model_DbTable_DbOther();
     		if($this->getRequest()->isPost()){
@@ -25,8 +27,13 @@ public function init()
     					'type' => ''
     			);
     		}
-    		$rs_rows= $db->getAllView($search);//call frome model
-    		$this->view->rs = $rs_rows;
+    		$rows= $db->getAllView($search);//call frome model
+			$columns=array("NAME","TYPE","STATUS");
+			$link=array(
+					'module'=>'product','controller'=>'other','action'=>'edit',);
+			$list = new Application_Form_Frmlist();
+			$this->view->list=$list->getCheckList(0, $columns, $rows, array('name_en'=>$link,'type'=>$link));
+    		$this->view->rs = $rows;
     	}catch (Exception $e){
     		Application_Form_FrmMessage::message("Application Error");
     		Application_Model_DbTable_DbUserLog::writeMessageError($e->getMessage());
@@ -36,22 +43,24 @@ public function init()
     	Application_Model_Decorator::removeAllDecorator($frm);
     	$this->view->Form = $frm;
     }
-    public function addAction()
-    {
+    public function addAction(){
     	if($this->getRequest()->isPost()){
     		$data=$this->getRequest()->getPost();
-    		
     		$db = new Product_Model_DbTable_DbOther();
+			$rows=$db->getOtherByname_type($data);
     		try {
-    			$db->add($data);
-    			if(isset($data['save_new'])){
-    				
+				if(!empty($rows)){
+					Application_Form_FrmMessage::Sucessfull("Other ready Exit!",'/product/other/add');
+				}else{
+					$db->add($data);
+					if(isset($data['save_new'])){
+						Application_Form_FrmMessage::message('ការ​បញ្ចូល​​ជោគ​ជ័យ');
+					}
+					if(isset($data['save_close'])){
     				Application_Form_FrmMessage::message('ការ​បញ្ចូល​​ជោគ​ជ័យ');
-    			}
-    			if(isset($data['save_close'])){
-    				Application_Form_FrmMessage::message('ការ​បញ្ចូល​​ជោគ​ជ័យ');
-    				Application_Form_FrmMessage::redirectUrl('/other/loantype');
-    			}
+    				Application_Form_FrmMessage::redirectUrl('/product/other');
+					}
+				}
     		} catch (Exception $e) {
     			Application_Form_FrmMessage::message("INSERT_FAIL");
     			$err = $e->getMessage();
@@ -63,23 +72,22 @@ public function init()
     	Application_Model_Decorator::removeAllDecorator($frm);
     	$this->view->Form = $frm;
     }
-    public function editAction()
-    {
+    public function editAction(){
     	$id = $this->getRequest()->getParam("id");
     	$db = new Product_Model_DbTable_DbOther();
     	if($this->getRequest()->isPost()){
     		$data=$this->getRequest()->getPost();
     		$data["id"] = $id;
+			$rows=$db->getOtherByname_type($data);
     		try {
-    			$db->edit($data);
-    			//if(isset($data['save_new'])){
-    
-    				Application_Form_FrmMessage::message('ការ​បញ្ចូល​​ជោគ​ជ័យ');
-    			//}
-    			//if(isset($data['save_close'])){
-    				Application_Form_FrmMessage::Sucessfull('ការ​បញ្ចូល​​ជោគ​ជ័យ',"/product/other");
-    				//Application_Form_FrmMessage::redirectUrl('/other/loantype');
-    			//}
+				if(!empty($rows)){
+					Application_Form_FrmMessage::Sucessfull("Other ready Exit!","/product/other");
+				}else{
+					$db->edit($data);
+					if(isset($data['save_close'])){
+						Application_Form_FrmMessage::Sucessfull('ការ​បញ្ចូល​​ជោគ​ជ័យ',"/product/other");
+					}
+				}
     		} catch (Exception $e) {
     			Application_Form_FrmMessage::message("INSERT_FAIL");
     			$err = $e->getMessage();
@@ -92,6 +100,5 @@ public function init()
     	Application_Model_Decorator::removeAllDecorator($frm);
     	$this->view->Form = $frm;
     }	
-	
 }
 

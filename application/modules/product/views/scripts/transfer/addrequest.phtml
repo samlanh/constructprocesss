@@ -3,7 +3,7 @@ $tr = Application_Form_FrmLanguages::getCurrentlanguage();
 $url_submit =  $this->url(array('module'=>'product','controller'=>'adjust','action'=>'add'));
 $url_cancel =  $this->url(array('module'=>'product','controller'=>'transfer','action'=>'requestlist'),null,true);
 $url_getcurrentitem =  $this->url(array('module'=>'product','controller'=>'adjust-stock','action'=>'get-current-quantity'));
-$url_getProduct =  $this->url(array('module'=>'product','controller'=>'transfer','action'=>'getproduct'));
+$url_getProduct =  $this->url(array('module'=>'product','controller'=>'transfer','action'=>'get-product'));
 $formFilter = $this->formFilter;
 $db_global = new Application_Model_DbTable_DbGlobal();
 $rs_from_loc = $db_global -> getAllLocation();
@@ -24,17 +24,16 @@ $rs_from_loc = $db_global -> getAllLocation();
 			</div>
 		</div>
 		<div class="portlet-body form">
-			<form class="form-horizontal" method="post" action="" >
+			<form class="form-horizontal" id="a" method="post" action="" >
 				<div class="form-body">	
 					<div class="form-group">
-						<label class="col-md-2 control-label"><span id="lb_br"></span><?php //echo $tr->translate("REQUET_TO_BRANCH");?></label>
-						<div class="col-md-4">
-							<?php //echo $formFilter->getElement('to_loc');?>
-						</div>	
-						
 						<label class="col-md-2 control-label"><?php echo $tr->translate("TRANSFER_NUM");?></label>
 						<div class="col-md-4">
 							<?php echo $formFilter->getElement('tran_num');?>
+						</div>
+						<label class="col-md-2 control-label"><?php echo $tr->translate("TRANSFER_DATE");?></label>
+						<div class="col-md-4">
+							<?php echo $formFilter->getElement('tran_date');?>
 						</div>
 						
 					</div>
@@ -50,33 +49,38 @@ $rs_from_loc = $db_global -> getAllLocation();
 							
 					</div>
 					<div class="form-group">
-						<label class="col-md-2 control-label"><?php echo $tr->translate("TRANSFER_DATE");?></label>
-						<div class="col-md-4">
-							<?php echo $formFilter->getElement('tran_date');?>
-						</div>
+						
 						<label class="col-md-2 control-label"><?php echo $tr->translate("REMARK");?></label>
 						<div class="col-md-4">
 							<?php echo $formFilter->getElement('remark');?>
 						</div>	
-					</div>
-					<div class="form-group">
-						<label class="col-md-2 control-label"><?php //echo $tr->translate("REMARK");?></label>
-						<div class="col-md-4">
-							<?php //echo $formFilter->getElement('remark');?>
-						</div>	
+					
 						
 						<label class="col-md-2 control-label"><?php echo $tr->translate("STATUS");?></label>
 						<div class="col-md-4">
 							<?php echo $formFilter->getElement('status');?>
 						</div>
 					</div>
-					<div class="portlet box blue">
-						<div class="portlet-title">
-							<div class="caption" style="width:100%">
-								<?php echo $formFilter->getElement('pro_name');?>
+					<div class="form-group">
+							<div class="col-md-2">
+								<button type="button" class="btn red delete" style="width:100%;">
+								<i class="fa fa-barcode"></i>
+								<span><?php echo $tr->translate("SCAN");?></span>
+								</button>
+							</div>
+							<div class="col-md-8">
+								<!--<select data-placeholder="Select..." class="form-control select2me" id="add_item" name="add_item" Onchange="addNew();"  style="width:100% ;margin:0 auto;">
+											<?php //echo $this->items; ?>
+								</select>-->
+								<input type="hidden" class="form-control" id="add_item" name="add_item" Onchange="getItemOrder();" style="width:100%;" placeholder="<?php echo $tr->translate("SELECT_PRODUCT");?>"/>
+							</div>
+							<div class="col-md-2">
+								<button type="button" class="btn red delete" style="width:100%;">
+								<i class="fa fa-barcode"></i>
+								<span><?php echo $tr->translate("SCAN");?></span>
+								</button>
 							</div>
 						</div>
-					</div>
 													
 					<div class="portlet box blue">
 						<div class="portlet-title">
@@ -89,11 +93,10 @@ $rs_from_loc = $db_global -> getAllLocation();
 									<table class="table table-bordered">
 										<thead>
 											<tr>
-												<th>#</th>
-												<th><?php echo $tr->translate("PRODUCT_NAME");?></th>
-												<th><?php echo $tr->translate("QTY_TRANSFER_UNIT");?></th>
-												<th><?php echo $tr->translate("QTY_TRANSFER_PER_UNIT");?></th>
+												<th><?php echo $tr->translate("NUM");?></th>
+												<th><?php echo $tr->translate("ITEM_NAME");?></th>
 												<th><?php echo $tr->translate("QTY_TRANSFER");?></th>
+												<th><?php echo $tr->translate("MEASURE");?></th>
 												<th><?php echo $tr->translate("REMARK");?></th>
 												<th><?php echo $tr->translate("ACTION");?></th>
 											</tr>
@@ -108,8 +111,8 @@ $rs_from_loc = $db_global -> getAllLocation();
 					<div class="form-group" style="padding-top: 6px;">
 						<div  class="col-md-12 col-md-offset-4 col-md-8">
 							<a href="<?php echo $url_cancel;?>"> <button type="button" class="btn red"><i class="fa fa-times"></i> <?php echo $tr->translate("EXIT")?></button></a>
-							<button type="submit" name="save_close" value="saveclose" class="btn btn-primary" ><i class="glyphicon glyphicon-log-in"></i> <?php echo $tr->translate("SAVE_CLOSE")?></button>
-							<button type="submit" name="btnsavenew" class="btn btn-primary"><i class="fa fa-save"></i> <?php echo $tr->translate("SAVE_NEW")?> </button>
+							<button type="submit" name="save_close" id="save_close" value="saveclose" class="btn btn-primary" ><i class="glyphicon glyphicon-log-in"></i> <?php echo $tr->translate("SAVE_CLOSE")?></button>
+							<button type="submit" name="btnsavenew" id="save_close" class="btn btn-primary"><i class="fa fa-save"></i> <?php echo $tr->translate("SAVE_NEW")?> </button>
 									
 						</div>
 					</div>
@@ -119,19 +122,58 @@ $rs_from_loc = $db_global -> getAllLocation();
 </div>
 <script type="text/javascript">
 
+itemss = <?php echo Zend_Json::encode($this->product)?>;
+$( document ).ready(function() {
+	select2Speed('add_item');
+	 
+});
+function select2Speed(name){
+	 $('#add_item').select2({
+            data : _.map(_.range(0, itemss.length), function (i) {
+				//alert(itemss);
+                  return {
+                      id  : itemss[i].id,
+                      text: itemss[i].item_code+"-"+itemss[i].item_name
+                  };
+            }),
+            dropdownCssClass : 'capitalize',
+            containerCssClass: 'capitalize',
+            // configure as multiple select
+            //multiple         : true,
+            // text for loading more results
+            formatLoadMore   : 'Loading more...',
+            query            : function (q) {
+            // pageSize is number of results to show in dropdown
+                var pageSize,
+                    results;
+                    pageSize = 20;
+                    results  = _.filter(this.data, function (e) {
+                        return (q.term === "" || e.text.toUpperCase().indexOf(q.term.toUpperCase()) >= 0);
+                 });
+                q.callback({
+                    results: results.slice((q.page - 1) * pageSize, q.page * pageSize),
+                    // retrieve more when user hits bottom
+                    more   : results.length >= q.page * pageSize
+                });
+            }
+        });
+}
+
 jQuery(document).ready(function(){
 	//addRow();
 });
 var index=0;
-function addNew(){
-	id = $("#pro_name").val();
+function getItemOrder(){
+	id = $("#add_item").val();
+	//branch =$('#').val();
+	//alert(id);
 	index++;
 	$.ajax({
         url: "<?php echo $url_getProduct;?>",
         type: "post",
         data: {'id':id},
         success: function(val){
-            //alert(data);
+           // alert(val);
 			for(i=1; i<index; i++){
 				new_item=parseInt(id);
 				items = parseInt($("#pro_id_"+i).val());
@@ -148,9 +190,8 @@ function addNew(){
 			template='<tr id="row_location_'+index+'">';
 			template+='<td>'+index+'</td>';
 			template+='<td style="white-space: nowrap;">'+data.item_name+'<input type="hidden" id="pro_id_'+index+'" name="pro_id_'+index+'" value="'+data.id+'" </td>';
-			template+='<td><input type="text" id="qty_unit_'+index+'" onKeyup="TotalQty('+index+')" name="qty_unit_'+index+'" value="1" class="form-control" /></td>'; 
-			template+='<td><input type="text" id="qty_per_unit_'+index+'" onKeyup="TotalQty('+index+')" name="qty_per_unit_'+index+'" value="0" class="form-control" /></td>'; 
-			template+='<td><input type="text" id="qty_tran_'+index+'" readOnly="readOnly" name="qty_tran_'+index+'" value="1" class="form-control"> <input type="hidden" name="qty_measure_'+index+'" id="qty_measure_'+index+'" value="'+data.qty_perunit+'"/></td>'; 
+			template+='<td><input type="text" id="qty_tran_'+index+'" name="qty_tran_'+index+'" value="1" class="form-control"><input type="hidden" name="qty_'+index+'" id="qty_'+index+'" value="'+data.qty+'" /></td>'; 
+			template+='<td><label id="lb_measure_'+index+'">'+data.measure+'</label></td>';
 			template+='<td><input type="text" id="remark_'+index+'" name="remark_'+index+'" class="form-control"></td>';
 			template+='<td><button type="button" onClick="deleteRecord('+index+',1)" name="save_close" class="btn default"><?php echo $tr->translate("DELETE");?></button></td>';
 			template+='</tr>';
@@ -166,18 +207,7 @@ function addNew(){
         }
     });
 }
-	function TotalQty(index){
-		main_qty =$("#qty_unit_"+index).val();
-		detail_qty =  $("#qty_per_unit_"+index).val();
-		qty_measure = $("#qty_measure_"+index).val();
-		if(qty_measure==0){
-			qty_measure=1;
-		}else{
-			qty_measure = qty_measure;
-		}
-		total_qty = parseFloat(main_qty) + (parseFloat(detail_qty)/parseFloat(qty_measure));
-		$("#qty_tran_"+index).val(total_qty.toFixed(3));
-	}
+	
 	function checkQTY(index){
 		qty = parseFloat($('#qty_'+index).val());
 		qty_tran = parseFloat($('#qty_tran_'+index).val());
@@ -302,7 +332,6 @@ function addNewLocation(){
         }
     });
 }
-
 <?php $url_no =  $this->url(array('module'=>'product','controller'=>'transfer','action'=>'get-request-transfer-no')); ?>
 function getRequestNo(){
 	var id = $("#from_loc").val();
@@ -312,8 +341,7 @@ function getRequestNo(){
         data: {'id':id},
         success: function(data){
            val = $.parseJSON(data);
-		   $("#tran_num").val(val);
-           // alert(data);
+            alert(data);
         },
         error:function(){
             alert("faile insert");

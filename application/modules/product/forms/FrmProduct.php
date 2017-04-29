@@ -36,6 +36,15 @@ class Product_Form_FrmProduct extends Zend_Form
 				'class'=>'form-control',
 				//'required'=>'required'
 		));
+		
+		$opt_type = array(''=>$tr->translate("SELECT"),1=>$tr->translate("PRODUCT"),2=>$tr->translate("SERVICE"));
+		$type = new Zend_Form_Element_Select("type");
+		$type->setAttribs(array(
+				'class'=>'form-control select2me',
+				//'required'=>'required'
+		));
+		$type->setMultiOptions($opt_type);
+		$this->addElement($type);
 		 
 		$opt = array(''=>$tr->translate("SELECT_BRAND"),-1=>$tr->translate("ADD_NEW_BRAND"));
 		$brand = new Zend_Form_Element_Select("brand");
@@ -71,7 +80,7 @@ class Product_Form_FrmProduct extends Zend_Form
 		$category = new Zend_Form_Element_Select("category");
 		$category->setAttribs(array(
 				'class'=>'form-control select2me',
-				'onChange'=>'getPopupCategory()',
+				'onChange'=>'getPopupCategory();getProductPrefix();',
 				//'required'=>'required'
 		));
 		$row_cat = $db->getCategory();
@@ -115,18 +124,15 @@ class Product_Form_FrmProduct extends Zend_Form
 		$unit = new Zend_Form_Element_Text("unit");
 		$unit->setAttribs(array(
 				'class'=>'form-control',
-				'required'=>'required',
-				'readOnly'=>'readOnly'
+				'readonly'=>true
 		));
 		$unit->setValue(1);
 		 
 		$qty_per_unit = new Zend_Form_Element_Text("qty_unit");
 		$qty_per_unit->setAttribs(array(
 				'class'=>'form-control',
-				'required'=>'required',
-				'onKeyup'=>'doTotalQty()'
+				//'required'=>'required'
 		));
-		$qty_per_unit->setValue(1);
 		 
 		$opt = array(''=>$tr->translate("SELECT_MEASURE"),-1=>$tr->translate("ADD_NEW_MEASURE"));
 		$measure = new Zend_Form_Element_Select("measure");
@@ -155,14 +161,8 @@ class Product_Form_FrmProduct extends Zend_Form
 				//'required'=>'required'
 		));
 		
-		$price = new Zend_Form_Element_Text("price");
-		$price->setAttribs(array(
-				'class'=>'form-control',
-				//'required'=>'required'
-		));
-		
 		$status = new Zend_Form_Element_Select("status");
-		$opt = array('1'=>$tr->translate("ACTIVE"),'0'=>$tr->translate("DEACTIVE"));
+		$opt = array('1'=>$tr->translate("ACTIVE"),'2'=>$tr->translate("DEACTIVE"));
 		$status->setAttribs(array(
 				'class'=>'form-control select2me',
 				'required'=>'required',
@@ -200,7 +200,37 @@ class Product_Form_FrmProduct extends Zend_Form
 		));
 		$price_type->setMultiOptions($opt);
 		
+		$price = new Zend_Form_Element_Text("price");
+		$price->setAttribs(array(
+				'class'=>'form-control',
+				//'required'=>'required'
+		));
+		$cost_price = new Zend_Form_Element_Text("cost_price");
+		$cost_price->setAttribs(array(
+				'class'=>'form-control',
+				//'required'=>'required'
+		));
+		
+		$is_convertor = new Zend_Form_Element_CheckBox("is_convertor");
+		$is_convertor->setAttribs(array('onChange'=>'isConvertor()'));
+		$this->addElement($is_convertor);
+		
+		$convertor_measure = new Zend_Form_Element_Text("convertor_measure");
+		$convertor_measure->setAttribs(array(
+				'class'=>'form-control',
+				'placeHolder'=>$tr->translate('CONVERTOR_MEASURE'),'readonly'=>true
+		));
+		$this->addElement($convertor_measure);
+		
+		$sign = new Zend_Form_Element_Text("sign");
+		$sign->setAttribs(array(
+				'class'=>'form-control',
+				'placeHolder'=>$tr->translate('SIGN'),'readonly'=>true
+		));
+		$this->addElement($sign);
+		
 		if($data!=null){
+			
 			$name->setValue($data["item_name"]);
 			$pro_code->setValue($data["item_code"]);
 			$barcode->setValue($data["barcode"]);
@@ -214,12 +244,13 @@ class Product_Form_FrmProduct extends Zend_Form
 			$label->setValue($data["unit_label"]);
 			$description->setValue($data["note"]);
 			$qty_per_unit->setValue($data["qty_perunit"]);
-			//$qty_unit->setValue($data["qty_perunit"]);
 			$status->setValue($data["status"]);
 			$price->setValue($data["price"]);
+			$type->setValue($data["type"]);
+			$cost_price->setValue($data["cost_price"]);
 		}
 		
-		$this->addElements(array($price,$price_type,$branch,$status,$pro_code,$name,$serial,$brand,$model,$barcode,$category,$size,$color,$measure,$qty_per_unit,$unit,$label,$description));
+		$this->addElements(array($cost_price,$price,$price_type,$branch,$status,$pro_code,$name,$serial,$brand,$model,$barcode,$category,$size,$color,$measure,$qty_per_unit,$unit,$label,$description));
 		return $this;
 	}
 	function productFilter(){
@@ -247,7 +278,7 @@ class Product_Form_FrmProduct extends Zend_Form
 		$branch->setValue($request->getParam("branch"));
 		
 		$status = new Zend_Form_Element_Select("status");
-		$opt = array('-1'=>$tr->translate("ALL"),'1'=>$tr->translate("ACTIVE"),'0'=>$tr->translate("DEACTIVE"));
+		$opt = array('1'=>$tr->translate("ACTIVE"),'2'=>$tr->translate("DEACTIVE"));
 		$status->setAttribs(array(
 				'class'=>'form-control select2me',
 		));

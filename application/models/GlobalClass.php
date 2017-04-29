@@ -18,6 +18,12 @@ class Application_Model_GlobalClass  extends Zend_Db_Table_Abstract
 		}
 		return $rows;
 	}
+	public function getAllProduct(){
+		$db = $this->getAdapter();
+		$sql = "SELECT p.id,p.`item_code`,p.`item_name` FROM `tb_product` AS p WHERE p.`status`=1";
+		
+		return $db->fetchAll($sql);
+	}
 	public function getImgActive($rows,$base_url, $case=''){
 		if($rows){
 			$imgnone='<img src="'.$base_url.'/images/icon/cross.png"/>';

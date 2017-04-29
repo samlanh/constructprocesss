@@ -12,6 +12,39 @@ class Application_Model_DbTable_DbGlobal extends Zend_Db_Table_Abstract
 	 * @param string $sql
 	 * @return array $row;
 	 */
+	 
+	 public function getTitleReportold($id){
+		$db=$this->getAdapter();
+		$sql="SELECT 
+				  s.`name`,
+				  s.`prefix`,
+				  s.`logo`,
+				  s.`title_report_en`,
+				  s.`title_report_kh`
+				FROM
+				  `tb_location` AS s 
+				WHERE s.id =$id";
+		$row = $db->fetchRow($sql);
+    	return $row;  
+	}
+	public function getTitleReport($id){
+		$db=$this->getAdapter();
+		$sql="SELECT 
+				  s.`name`,
+				  s.`branch_code` as title_report_en,
+				   s.`branch_code` as title_report_kh,
+				  s.`prefix`,
+				  s.`logo`,
+				  s.`address`,
+				  s.`phone`,
+				  s.`contact`,
+				  s.`email`
+				FROM
+				  `tb_sublocation` AS s 
+				WHERE s.id =$id";
+		$row = $db->fetchRow($sql);
+    	return $row;  
+	}
 	public function getGlobalDb($sql)
   	{
   		$db=$this->getAdapter();

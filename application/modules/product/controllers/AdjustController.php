@@ -1,13 +1,17 @@
 <?php
 class Product_AdjustController extends Zend_Controller_Action
 {
-	const REDIRECT_URL_ADD ='/product/damagredstock/add';
-	const REDIRECT_URL_ADD_CLOSE ='/product/damagredstock/';
+	const REDIRECT_URL_ADD ='/product/adjust/add';
+	const REDIRECT_URL_ADD_CLOSE ='/product/index/';
 public function init()
     {
         /* Initialize action controller here */
     	defined('BASE_URL')	|| define('BASE_URL', Zend_Controller_Front::getInstance()->getBaseUrl());
-    	
+    	$db = new Application_Model_DbTable_DbGlobal();
+		// $rs = $db->getValidUserUrl();
+		// if(empty($rs)){
+			// Application_Form_FrmMessage::Sucessfull("YOU_NO_PERMISION_TO_ACCESS_THIS_SECTION","/index/dashboad");
+		// }
     } 
    	//view transfer index
     protected function GetuserInfoAction(){
@@ -25,13 +29,13 @@ public function init()
     		$data = $this->getRequest()->getPost();
     	}else{
 			$data = array(
-    			'ad_search'		=>	'',
-    			'start_date'	=>	date("Y-m-d"),
-				'end_date'		=>	date("Y-m-d"),
+    			'ad_search'	=>	'',
+    			'start_date'	=>	$date->get('MM/d/Y'),
+				'end_date'	=>	$date->get('MM/d/Y')
     		);
 		}
    
-   		$rows=$db->getAllDamagedStock($data);
+   		$rows=$db->getAllAdjustStock($data);
    		$columns=array("ITEM_CODE","PRO_NAME","QTY_BEFORE","QTY_ADJUST","DFFER_QTY","MEASURE","LOCATION","BY_USER","DATE");
    		
    		$this->view->list=$list->getCheckList(0, $columns, $rows);
@@ -58,209 +62,20 @@ public function init()
     	}
 
     	//for add location
-    	
+		$items = new Application_Model_GlobalClass();
+    	$this->view->product = $items->getAllProduct();
     	$frm = new Product_Form_FrmAdjust();
     	Application_Model_Decorator::removeAllDecorator($frm);
     	$this->view->formFilter = $frm->add();
     	
 	}
-	public function priceAction(){
-		$formFilter = new Product_Form_FrmItemPrice();
-		$frmsearch=$formFilter->searchPrice(null);
-		Application_Model_Decorator::removeAllDecorator($frmsearch);
-		$this->view->formFilter = $frmsearch;
-		
-		$list = new Application_Form_Frmlist();
-			
-		$db = new Application_Model_DbTable_DbGlobal();
-		$request = $this->getRequest();
-		$id = $request->getParam("id", NULL);
-		
-		$sql = "SELECT p.pro_id, p.item_name,pt.price_type_name,pr.price,p.is_avaliable AS public
-		FROM tb_product As p,tb_price_type as pt,tb_product_price as pr
-		WHERE pr.product_id = p.pro_id AND pt.type_id=pr.type_price ";
-		if($this->getRequest()->isPost()){
-			$post = $this->getRequest()->getPost();
-			if($post['p_name'] !=''){
-				$sql .= " AND (p.item_name LIKE '%".trim($post['p_name'])."%'";
-				$sql .= " OR p.p_code LIKE '%".trim($post['p_name'])."%')";
-			}
-			if($post['type_id'] !=''){
-				$sql .= " AND pt.type_id =".trim($post['type_id']);
-			}
-			if($post['p_price'] !=''){
-				$sql .= " AND pr.price =".trim($post['p_price']);
-			}
-			if($post['status'] !=''){
-				$sql .= " AND p.is_active =".trim($post['status']);
-			}
-		}
-		//echo $sql;exit();
-		$sql .= " GROUP BY p.pro_id,pt.type_id";
-		//echo $sql;
-		$rows=$db->getGlobalDb($sql);
-		$glClass = new Application_Model_GlobalClass();
-		$rows = $glClass->getpublic($rows, BASE_URL, true);
-		
-		$columns=array("ITEM_NAME_CAP","TYPE_PRICE","PRICE","ACTIVE");
-		$link=array(
-				'module'=>'product','controller'=>'adjust-stock','action'=>'update-item-price',
-		);
-		$urlEdit = BASE_URL ."/product/adjust-stock/update-item-price";
-		$this->view->list=$list->getCheckList(1, $columns, $rows, array('item_name'=>$link,'Name'=>$link), $urlEdit);
-		Application_Model_Decorator::removeAllDecorator($formFilter);
-	}
 	
-	public function typePriceAction(){
-		$formFilter = new Product_Form_FrmItemPrice();
-		$frmsearch=$formFilter->searchPriceType(null);
-		Application_Model_Decorator::removeAllDecorator($frmsearch);
-		$this->view->formFilter = $frmsearch;
-	
-		$list = new Application_Form_Frmlist();
-			
-		$db = new Application_Model_DbTable_DbGlobal();
-		$request = $this->getRequest();
-		$id = $request->getParam("id", NULL);
-	
-		$sql = "SELECT id,name,pt.desc,status
-		FROM tb_price_type AS pt
-		WHERE name !='' ";
-		if($this->getRequest()->isPost()){
-			$post = $this->getRequest()->getPost();
-			if($post['price_type'] !=''){
-				$sql .= " AND name LIKE '%".trim($post['price_type'])."%'";
-			}
-			if($post['status'] !=''){
-				$sql .= " AND public =".trim($post['status']);
-			}
-		}
-// 		//echo $sql;exit();
-// 		$sql .= " GROUP BY p.pro_id,pt.type_id";
-		//echo $sql;
-		$rows=$db->getGlobalDb($sql);
-		$glClass = new Application_Model_GlobalClass();
-		$rows = $glClass->getpublic($rows, BASE_URL, true);
-	
-		$columns=array("TYPE_PRICE","DESC_CAP","ACTIVE","DEACTIVE");
-		$link=array(
-				'module'=>'product','controller'=>'adjust-stock','action'=>'add-type-price',
-		);
-		$urlEdit = BASE_URL ."/product/adjust-stock/add-type-price";
-		$this->view->list=$list->getCheckList(1, $columns, $rows, array('item_name'=>$link,'Name'=>$link), $urlEdit);
-		Application_Model_Decorator::removeAllDecorator($formFilter);
-	}
-	
-	
-	public function addTypePriceAction(){		
-		$dbprice= new Product_Model_DbTable_DbPrice();
-		if($this->getRequest()->isPost()) {
-			$data = $this->getRequest()->getPost();
-			$dbprice->addPriceType($data);
-			Application_Form_FrmMessage::message("Price type has been saved! ");
-		}
-		$id = ($this->getRequest()->getParam('id'))? $this->getRequest()->getParam('id'): '0';
-		$frm= new Product_Form_FrmItemPrice(null);
-		if($id){
-			$row=$dbprice->getTypePrice($id);	
-			$frmpricetype =$frm->AddClassPrice($row);
-			//Application_Form_FrmMessage::message("Price type has been saved! ");
-			$action = BASE_URL . "/product/adjust-stock/update-type-price";
-		}
-		else{
-			
-			$frmpricetype =$frm->AddClassPrice(null);
-			$action = BASE_URL . "/product/adjust-stock/add-type-price";
-		}
-		
-		Application_Model_Decorator::removeAllDecorator($frmpricetype);
-		$method = "post";
-		$url_cancel = BASE_URL . "/product/adjust-stock/type-price";
-		$frmgenerate = new Application_Form_FrmGlobal();
-		$this->view->formVendor = $frmgenerate->getForm1($action,$method,$url_cancel,$frmpricetype,'TYPE_PRICE');
-	}
-	
-	public function addItemPriceAction()
-	{
-		$db = new Application_Model_DbTable_DbGlobal();
-		if($this->getRequest()->isPost())
-		{
-			try{
-				$post=$this->getRequest()->getPost();
-				$dbprice= new Product_Model_DbTable_DbPrice();
-				$dbprice->setPriceItem($post);
-				if($post['save']=="Save New")
-				{
-					Application_Form_FrmMessage::message("Product has been set price success!");
-				}
-				else{
-					$this->_redirect("/product/adjust-stock/price");
-				}
-			}catch (Exception $e){
-				Application_Form_FrmMessage::message("You Set Prdocut Price Is failed!");
-			}
-			//$this->_redirect("product/index/index");
-		}
-		$frm = new Product_Form_FrmItemPrice();
-		$add_price =$frm->AddItemPrice();
-		Application_Model_Decorator::removeAllDecorator($add_price);
-		$this->view->frm_addprice = $add_price;
-	
-		$getOption = new Application_Model_GlobalClass();
-		$price_type = $getOption->getTypePriceOption();
-		$this->view->price_option = $price_type;
-	
-		//for add product;
-		$formpopup = new Application_Form_FrmPopup(null);
-		$formprice = $formpopup->AddClassPrice(null);
-		Application_Model_Decorator::removeAllDecorator($formprice);
-		$this->view->frm_price = $formprice;
-	}
-	
-	
-	public function updateItemPriceAction()
-	{
-		$db = new Application_Model_DbTable_DbGlobal();
-		$id = $this->getRequest()->getParam("id");
-		$dbprice= new Product_Model_DbTable_DbPrice();
-		
-		if($this->getRequest()->isPost())
-		{
-			$post=$this->getRequest()->getPost();
-			//print_r($post);exit();
-			try{
-				$post=$this->getRequest()->getPost();
-				$dbprice= new Product_Model_DbTable_DbPrice();
-				$dbprice->updateItemPrice($post);
- 				$this->_redirect("/product/adjust-stock/price");
-			}catch (Exception $e){
-				Application_Form_FrmMessage::message("Product Price update failed !");
-			}
-		}
-		$rows = $dbprice->getPriceByItem($id);
-		$frm = new Product_Form_FrmItemPrice();
-		$add_price =$frm->AddItemPrice($rows);
-		Application_Model_Decorator::removeAllDecorator($add_price);
-		$this->view->frm_addprice = $add_price;
-		
-		$this->view->pricetype_option = $rows;
-	
-		$getOption = new Application_Model_GlobalClass();
-		$price_type = $getOption->getTypePriceOption();
-		$this->view->price_option = $price_type;
-	
-		//for add product;
-		$formpopup = new Application_Form_FrmPopup(null);
-		$formprice = $formpopup->AddClassPrice(null);
-		Application_Model_Decorator::removeAllDecorator($formprice);
-		$this->view->frm_price = $formprice;
-	}
 	/// Ajax Section
-	public function getproductAction(){
+	public function getProductAction(){
 		if($this->getRequest()->isPost()) {
-			$db = new Product_Model_DbTable_DbDamagedStock();
+			$db = new Product_Model_DbTable_DbAdjustStock();
 			$data = $this->getRequest()->getPost();
-			$rs = $db->getProductQtyById($data["id"],$data["location_ids"]);
+			$rs = $db->getProductById($data["id"]);
 			echo Zend_Json::encode($rs);
 			exit();
 		}

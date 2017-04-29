@@ -7,44 +7,42 @@
 	
 	$rs = $this->product;
 ?>
-<title><?php echo $tr->translate("TRANSFER_LIST");?></title>
+<title><?php echo $tr->translate("MENU_REQUEST_TRANSFER_APPROVE_LIST");?></title>
 
 	<div class="portlet box blue">
 		<div class="portlet-title">
 			<div class="caption">
-					<i class="fa fa-globe"></i><?php echo $tr->translate("TRANSFER_LIST");?>
+					<i class="fa fa-globe"></i><?php echo $tr->translate("MENU_REQUEST_TRANSFER_APPROVE_LIST");?>
 			</div>
-			<div class="caption" style="float:right">
+			<!--<div class="caption" style="float:right">
 					<?php $formList = new Application_Form_Frmlist(); //echo $formList->showAddBuntton($url_new);?>
-			</div>
+			</div>-->
 		</div>
 		<div class="portlet-body form">
 			<form class="form-horizontal" method="post" action="" >
 				<div class="form-body">
 							<div class="form-group">
-								<div class="col-md-3">
-									<?php echo $formFilter->getElement('avd_search');?>
-								</div>
-								<div class="col-md-3">
-									<?php echo $formFilter->getElement('branch');?>
+								<div class="col-md-2">
+									<?php echo $formFilter->getElement('tran_num');?>
 								</div>
 								<div class="col-md-2">
-									<?php echo $formFilter->getElement('start_date');?>
+									<?php echo $formFilter->getElement('to_loc');?>
 								</div>
 								<div class="col-md-2">
-									<?php echo $formFilter->getElement('end_date');?>
+									<?php echo $formFilter->getElement('tran_date');?>
 								</div>
-								<!--<div class="col-md-2">
-									<?php //echo $formFilter->getElement('type');?>
+								<div class="col-md-2">
+									<?php echo $formFilter->getElement('type');?>
 								</div>
 								<div class="col-md-2">
 									<?php echo $formFilter->getElement('status');?>
-								</div>-->
+								</div>
 								<div class="col-md-2">
 									<button type="submit" class="btn green"><?php echo $tr->translate("SEARCH");?></button>
 								</div>
 							</div>
-					</div>
+							
+				</div>
 			</form>
 			
 		</div>
@@ -56,11 +54,11 @@
 							<table class="collape tablesorter" id="table" width="100%">
 						<thead>
 							<tr>
-								<th class="tdheader"><?php echo  $tr->translate("NO");?></th>
+								<th class="tdheader"><?php echo  $tr->translate("NUM");?></th>
 								<th class="tdheader"><?php echo  $tr->translate("REQUEST_NO");?></th>
-								<th class="tdheader"><?php echo  $tr->translate("REQUEST_LOCATION");?></th>
-								<th class="tdheader"><?php echo  $tr->translate("REQUEST_TO");?></th>
 								<th class="tdheader"><?php echo  $tr->translate("REQUEST_DATE");?></th>
+								<th class="tdheader"><?php echo  $tr->translate("LOCATION");?></th>
+								<th class="tdheader"><?php echo  $tr->translate("REQUEST_LOCATION");?></th>
 								<th class="tdheader"><?php echo  $tr->translate("APP_STATUS");?></th>
 								<th class="tdheader"><?php echo  $tr->translate("PEDDING");?></th>
 								<th class="tdheader"><?php echo  $tr->translate("STATUS");?></th>
@@ -107,7 +105,7 @@
 							$footer="";
 							if(!empty($rs)){ foreach ($rs as $key => $row){
 									$edit_status = '';
-									if($row["ap_pedding"]>2){
+									if($row["ap_pedding"]>3){
 										$edit_status = "style='pointer-events: none;cursor: default;color: #ccc;'";
 									}
 							?>
@@ -115,9 +113,9 @@
 								<tr class="odd gradeX">
 									<td class="center"><?php echo $key+1;?></td>
 									<td><?php echo $row["tran_no"]?></td>
-									<td><?php echo $row["re_tran"]?></td>
+									<td><?php echo date('d-M-Y',strtotime($row["date_tran"]))?></td>
 									<td><?php echo $row["to_tran"]?></td>
-									<td><?php echo $row["date_tran"]?></td>
+									<td><?php echo $row["re_tran"]?></td>
 									<td><?php echo $row["appr_status"]?></td>
 									<td><?php echo $row["appr_pedding"]?></td>
 									<td class="center">
@@ -129,7 +127,7 @@
 									</td>
 									<td><?php echo $row["user"]?> </td>
 									<td>
-										<a <?php echo $edit_status;?> href="<?php echo $this->baseUrl();?>/product/transfer/addrequestappr/id/<?php echo $row["id"]?>"><?php echo $tr->translate("CHECK");?></a> | 
+										<a <?php echo $edit_status;?> href="<?php echo $this->baseUrl();?>/product/transfer/addrequestappr/id/<?php echo $row["id"]?>"><?php echo $tr->translate("APPROVE");?></a> | 
 										<a href="<?php echo $this->baseUrl();?>/product/transfer/requestnote/id/<?php echo $row["id"]?>"><?php echo $tr->translate("PRINT");?></a>
 									</td>
 								</tr>
