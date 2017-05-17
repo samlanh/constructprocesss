@@ -1,5 +1,5 @@
 <?php
-class Sales_quoatationController extends Zend_Controller_Action
+class Sales_SellingController extends Zend_Controller_Action
 {	
     public function init()
     {
@@ -64,20 +64,57 @@ class Sales_quoatationController extends Zend_Controller_Action
 			}
 		}
 		///link left not yet get from DbpurchaseOrder
-		$frm_purchase = new Sales_Form_FrmQuoatation(null);
+// 		$frm_purchase = new Sales_Form_FrmQuoatation(null);
+// 		$form_sale = $frm_purchase->SaleOrder(null);
+// 		Application_Model_Decorator::removeAllDecorator($form_sale);
+// 		$this->view->form_sale = $form_sale;
+		 
+// 		$items = new Application_Model_GlobalClass();
+// 		$this->view->items = $items->getProductOption();
+// 		$this->view->term_opt = $db->getAllTermCondition(1);
+// 		$this->view->rsterm = $db->getAllTermCondition(null,1);//call default quotion
+
+// 		$formpopup = new Sales_Form_FrmCustomer(null);
+// 		$formpopup = $formpopup->Formcustomer(null);
+// 		Application_Model_Decorator::removeAllDecorator($formpopup);
+// 		$this->view->form_customer = $formpopup;
+// 		$this->view->userinfo = $this->GetuserInfoAction();
+
+		$db = new Application_Model_DbTable_DbGlobal();
+		if($this->getRequest()->isPost()) {
+			$data = $this->getRequest()->getPost();
+			try {
+				$dbq = new Sales_Model_DbTable_DbSaleOrder();
+				if(!empty($data['identity'])){
+					$dbq->addNewBOQ($data);
+				}
+				Application_Form_FrmMessage::message("INSERT_SUCESS");
+				if(!empty($data['btnsavenew'])){
+					Application_Form_FrmMessage::redirectUrl("/sales/quoatation");
+				}
+			}catch (Exception $e){
+				Application_Form_FrmMessage::message('INSERT_FAIL');
+				$err =$e->getMessage();
+				Application_Model_DbTable_DbUserLog::writeMessageError($err);
+			}
+		}
+		///link left not yet get from DbpurchaseOrder
+		$frm_purchase = new Sales_Form_FrmSale(null);
 		$form_sale = $frm_purchase->SaleOrder(null);
 		Application_Model_Decorator::removeAllDecorator($form_sale);
 		$this->view->form_sale = $form_sale;
-		 
+			
+		// item option in select
 		$items = new Application_Model_GlobalClass();
 		$this->view->items = $items->getProductOption();
 		$this->view->term_opt = $db->getAllTermCondition(1);
-		$this->view->rsterm = $db->getAllTermCondition(null,1);//call default quotion
-
+		$this->view->sale_term_defual = $db->getAllTermCondition(null,2,1);
+		
 		$formpopup = new Sales_Form_FrmCustomer(null);
 		$formpopup = $formpopup->Formcustomer(null);
 		Application_Model_Decorator::removeAllDecorator($formpopup);
 		$this->view->form_customer = $formpopup;
+		
 		$this->view->userinfo = $this->GetuserInfoAction();
 		
 	}
