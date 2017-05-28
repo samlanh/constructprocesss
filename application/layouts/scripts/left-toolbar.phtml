@@ -78,6 +78,18 @@
 	$url_pricelevel = array($this->url(array('module'=>'product','controller'=>'pricelevel','action'=>'index'),null, true), "Price Level");
 	$module=$request->getModuleName();
 	$class_active='start active open';
+	
+	$url_request = array($this->url(array('module'=>'requestfromsite','controller'=>'request','action'=>'index'),null, true), "SITE_ITEM_REQUEST");
+	$url_request_add = array($this->url(array('module'=>'requestfromsite','controller'=>'request','action'=>'add'),null, true), "ADD_SITE_ITEM_REQUEST");
+	$url_request_edit = array($this->url(array('module'=>'requestfromsite','controller'=>'request','action'=>'edit'),null, true), "EDIT_SITE_ITEM_REQUEST");
+	
+	$url_plan = array($this->url(array('module'=>'sales','controller'=>'plan','action'=>'index'),null, true), "PLAN");
+	$url_plan_add = array($this->url(array('module'=>'sales','controller'=>'plan','action'=>'add'),null, true), "ADD_PLAN");
+	$url_plan_edit = array($this->url(array('module'=>'sales','controller'=>'plan','action'=>'edit'),null, true), "EDIT_PLAN");
+	
+	$url_plan_print = array($this->url(array('module'=>'sales','controller'=>'plan','action'=>'printplan'),null, true), "PRINT_PLAN");
+	$url_plan_check_list = array($this->url(array('module'=>'sales','controller'=>'plan','action'=>'planchecklist'),null, true), "CHECK_PLAN_LIST");
+	$url_plan_check_ = array($this->url(array('module'=>'sales','controller'=>'plan','action'=>'plancheck'),null, true), "CHECK_PLAN");
 	?>
 <!-- BEGIN SIDEBAR -->
 	<div class="page-sidebar-wrapper">
@@ -289,7 +301,18 @@
 					<span class="title"><?php echo strtoupper($tr->translate("SALES")); ?></span>
 					<span class="arrow "></span>
 					</a>
+					
 					<ul class="sub-menu">
+						<li>
+							<a href="<?php echo $url_plan[0]; ?>">
+								<i class="icon-arrow-right"></i><?php echo $tr->translate($url_plan[1]);?>
+							</a>
+						</li>
+						<li>
+							<a href="<?php echo $url_plan_check_list[0]; ?>">
+								<i class="icon-arrow-right"></i><?php echo $tr->translate($url_plan_check_list[1]);?>
+							</a>
+						</li> 
 						<li>
             			<a href="<?php echo $url_sales_list[0]; ?>">
 						    <i class="icon-arrow-right"></i><?php echo $tr->translate($url_sales_list[1]);?>
@@ -545,6 +568,32 @@
 					</ul>
 				</li>
 				<?php }?>
+				
+				<li>
+					<a href="javascript:;">
+					<i class="icon-screen-desktop"></i>
+					<span class="title"><?php echo strtoupper($tr->translate("SITE_ITEM_REQUEST"));?></span>
+					<span class="arrow "></span>
+					</a>
+					<ul class="sub-menu">
+						<li>
+	            			<a href="<?php echo $url_request[0]; ?>">
+		            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_request[1]);?>
+		            		</a>
+	            		</li> 
+	            		<li>
+            			<a href="<?php echo $url_request_add[0]; ?>">
+	            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_request_add[1]);?>
+	            		</a>
+            		    </li>
+            		    <li>
+	            			<a href="<?php echo $url_request_edit[0]; ?>">
+							    <i class="icon-bulb"></i> <?php echo $tr->translate($url_request_edit[1]);?>
+		            		</a>
+	            		</li>
+	            		
+					</ul>
+				</li>
 			</ul>
 		</div>
 	</div>

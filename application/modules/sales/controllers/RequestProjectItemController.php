@@ -1,5 +1,5 @@
 <?php
-class Sales_IndexController extends Zend_Controller_Action
+class Sales_RequestProjectItemController extends Zend_Controller_Action
 {	
 	
     public function init()
@@ -125,8 +125,6 @@ class Sales_IndexController extends Zend_Controller_Action
 		$items = new Application_Model_GlobalClass();
 		$this->view->items = $items->getProductOption();
 		$this->view->term_opt = $db->getAllTermCondition(1);
-		
-		
 	}	
 	function viewappAction(){
 		if($this->getRequest()->isPost()) {

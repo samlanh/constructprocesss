@@ -1,0 +1,169 @@
+<?php 
+defined('BASE_URL')	|| define('BASE_URL', Zend_Controller_Front::getInstance()->getBaseUrl());
+	$tr = Application_Form_FrmLanguages::getCurrentlanguage();
+	$url_submit =  $this->url(array('module'=>'sales','controller'=>'plan','action'=>'add'));
+    $url_cencel =  $this->url(array('module'=>'sales','controller'=>'plan','action'=>'index'));
+    $url_check =  $this->url(array('module'=>'sales','controller'=>'plan','action'=>'check'));
+    $url_new = $this->url(array('module'=>'sales','controller'=>'plan','action'=>'add'));
+    $form=$this->form;
+?>						 
+<title><?php echo $tr->translate("PLAN");?></title>
+<body>
+	<form class="form-horizontal" method="post" action="<?php //echo $url_submit;?>" >				
+		<div class="portlet box blue">
+			<div class="portlet-title">
+				<div class="caption">
+					<i class="fa fa-gift"></i><?php echo $tr->translate("PLAN");?>
+				</div>
+				<div class="btn-group pull-right">
+							 <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="1000" data-close-others="true" aria-expanded="false">
+							   <?php echo $tr->translate("ACTIONS");?> <i class="fa fa-angle-down"></i>
+							 </button>
+								<ul class="dropdown-menu" role="menu">
+									<li>
+										<a href="#" onclick="doPrint();">
+											<i class="fa fa-print" aria-hidden="true"></i>&nbsp;&nbsp;<?php echo $tr->translate("PRINT");?>
+										</a>
+									</li>
+									<li>
+										<a href="javascript:;"><i class="fa fa-file-excel-o" aria-hidden="true"></i>&nbsp;&nbsp;Export Excel </a>
+									</li>
+									
+								</ul>
+					</div>
+				<div class="tools">
+					<label><a href="<?php echo $url_cencel;?>"><button type="button" name="calcel" class="btn red"><i class="fa fa-times"></i><?php echo $tr->translate("GO_BACK");?></button></a></label>
+				</div>
+			</div>
+			<div class="portlet-body">
+				<div class="tabbable-custom ">
+					<div class="tab-content">
+						<div class="portlet-body form">			 
+							<div class="form-body">
+							<div id="divPrint" style="width: 100%;">
+							<style>
+								.style{
+									line-height: 20px;font-size: 9px !important;
+									font-family: 'Khmer OS Battambang';
+								}
+								th{padding: 5px;}
+								.hover:hover{background: #ccc;}
+							</style>
+								<div class="form-group">
+									<table width="100%">
+										<tr>
+											<td width="40%">
+												<table width="100%">
+													<tr>
+														<td><?php echo $tr->translate("CUSTOMER_NAME");?></td>
+														<td>: <?php echo $this->rs["customer_name"]?></td>
+													</tr>
+													<tr>
+														<td><?php echo $tr->translate("CONTACT_NAME");?></td>
+														<td>: <?php echo $this->rs["contact_name"]?></td>
+													</tr>
+													<tr>
+														<td><?php echo $tr->translate("PHONE");?></td>
+														<td>: <?php echo $this->rs["phone"]?></td>
+													</tr>
+													<tr>
+														<td><?php echo $tr->translate("EMAIL");?></td>
+														<td>: <?php echo $this->rs["email"]?></td>
+													</tr>
+													<tr>
+														<td><?php echo $tr->translate("ADDRESS");?></td>
+														<td>: <?php echo $this->rs["address"]?></td>
+													</tr>
+												</table>
+											</td>
+											<td width="20%"></td>
+											<td width="40%">
+												<table width="100%">
+													<tr>
+														<td><?php echo $tr->translate("CODE");?></td>
+														<td>: <?php echo $this->rs["code"]?></td>
+													</tr>
+													<tr>
+														<td><?php echo $tr->translate("PLAN_NAME");?></td>
+														<td>: <?php echo $this->rs["name"]?></td>
+													</tr>
+													<tr>
+														<td><?php echo $tr->translate("PLAN_TYPE");?></td>
+														<td>: <?php echo $this->rs["plan_type"]?></td>
+													</tr>
+													<tr>
+														<td><?php echo $tr->translate("SALE_AGENT");?></td>
+														<td><?php echo $this->rs["sale_agent"]?></td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+									
+								</div>
+								<div class="form-group" style="margin:0 auto;text-align:center">
+									<h4><?php echo $tr->translate("REQUIREMENT");?></h4>
+								</div>
+								 <div class="form-group" style="border:1px solid #ccc; padding:10px;margin:0 auto">
+									<?php if(!empty($this->rs['file'])){?>
+									<table class="collape tablesorter" width="100%">
+										 <tr>
+											<th class="tdheader header"><?php echo $tr->translate("NUM");?></th>
+											<th class="tdheader header"><?php echo $tr->translate("FILE_NAME");?></th>
+											<th class="tdheader header"><?php echo $tr->translate("DOWNLOAD");?></th>
+										 </tr>
+										 <?php 
+											$files=explode(',',$this->rs['file']);
+												foreach($files as $key=>$rs){
+										 ?>
+											<tr class="normal">
+												<td class="items-no"><?php echo $key+1?></td>
+												<td class="items"><?php echo $rs?></td>
+												<td class="items"><a href="<?php echo $this->baseUrl();?>/files/<?php echo $rs;?>"><?php echo $tr->translate("DOWNLOAD");?></a></td>
+											</tr>
+										<?php }?>
+									</table>
+									<?php }?>
+									<?php echo $this->rs["description"]?>
+								 </div>
+								
+								<div class="form-group" style="margin-top:10px">
+									<label class="col-md-2 control-label"><?php echo $tr->translate("REASON");?></label>
+									<div class="col-md-4">
+										<textarea name="reason" class="form-control"></textarea>
+									</div>	
+									<label class="col-md-2 control-label"><?php //echo $tr->translate("LAYOUT_FILE");?></label>
+									<div class="col-md-4">
+										<select name="check" class="form-control">
+											<option value="1"><?php echo $tr->translate("CHECKED");?></option>
+											<option value="2"><?php echo $tr->translate("REJECT");?></option>
+										</select>
+										
+									</div>
+								</div>
+							    <div class="form-group">
+									<div  class="col-md-12 col-md-offset-4 col-md-8">
+										<a href="<?php echo $this->baseUrl();?>/sales/plan"><button type="button" class="btn red"><i class="fa fa-times"></i> <?php echo $tr->translate("EXIT")?></button></a>
+									    <button type="submit" name="save_close" value="saveclose" class="btn btn-primary" ><i class="glyphicon glyphicon-log-in"></i> <?php echo $tr->translate("SAVE_CLOSE")?></button>
+									</div>
+								</div>
+							</div>
+						</div>
+						</div>
+					</div>	
+				</div>
+			</div>	
+        </div>			
+	</form>		
+</body>
+</html>
+
+<iframe name=print_frame width=0 height=0 frameborder=0 src=about:blank></iframe>
+<script>
+function doPrint() {
+	window.frames["print_frame"].document.body.innerHTML=document.getElementById('divPrint').innerHTML;
+    window.frames["print_frame"].window.focus();
+    window.frames["print_frame"].window.print();
+    //hideDialog();
+}
+</script>

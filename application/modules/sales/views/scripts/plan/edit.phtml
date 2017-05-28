@@ -1,0 +1,316 @@
+<?php 
+defined('BASE_URL')	|| define('BASE_URL', Zend_Controller_Front::getInstance()->getBaseUrl());
+	$tr = Application_Form_FrmLanguages::getCurrentlanguage();
+	$url_submit =  $this->url(array('module'=>'sales','controller'=>'plan','action'=>'add'),null,true);
+    $url_cencel =  $this->url(array('module'=>'sales','controller'=>'plan','action'=>'index'),null,true);
+    $url_check =  $this->url(array('module'=>'sales','controller'=>'plan','action'=>'check'),null,true);
+    $url_new = $this->url(array('module'=>'sales','controller'=>'plan','action'=>'add'),null,true);
+    $form=$this->form;
+?>						 
+<title><?php echo $tr->translate("PLAN");?></title>
+<body>
+	<form class="form-horizontal" method="post" action="<?php //echo $url_submit;?>" enctype="multipart/form-data" >				
+		<div class="portlet box blue">
+			<div class="portlet-title">
+				<div class="caption">
+					<i class="fa fa-gift"></i><?php echo $tr->translate("PLAN");?>
+				</div>
+				<div class="tools">
+					<label><a href="<?php echo $url_cencel;?>"><button type="button" name="calcel" class="btn red"><i class="fa fa-times"></i><?php echo $tr->translate("GO_BACK");?></button></a></label>
+				</div>
+			</div>
+			<div class="portlet-body">
+				<div class="tabbable-custom ">
+					<div class="tab-content">
+						
+						<div class="portlet-body form">			 
+							<div class="form-body">
+								<div class="form-group">
+									<label class="col-md-2 control-label"><?php //echo $tr->translate("PLAN_NAME");?></label>
+									<div class="col-md-4">
+										<?php //echo $form->getElement('name');?>
+									</div>
+									<label class="col-md-2 control-label"><?php echo $tr->translate("CODE");?></label>
+									<div class="col-md-4">
+										<?php echo $form->getElement('code');?>
+									</div>					
+													
+								</div>
+								<div class="form-group">
+									<label class="col-md-2 control-label"><?php echo $tr->translate("PLAN_NAME");?></label>
+									<div class="col-md-4">
+										<?php echo $form->getElement('name');?>
+									</div>
+									<label class="col-md-2 control-label"><?php echo $tr->translate("PLAN_TYPE");?></label>
+									<div class="col-md-4">
+										<?php echo $form->getElement('type');?>
+									</div>					
+													
+								</div>
+								<div class="form-group">
+									<label class="col-md-2 control-label"><?php echo $tr->translate("CUSTOMER");?></label>
+									<div class="col-md-3">
+										<div class="input-icon right">
+											<?php echo $form->getElement("customer_id");?>
+											<a href="#" onclick="viewCustomer();"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>&nbsp;View Customer</a>
+										</div>
+									</div>
+									<div class="col-md-1">
+										<button type="button" onclick="popupcustomer();" class="btn green delete col-md-12 ">
+											<i class="fa fa-plus" style="margin-left: -11px;"></i>
+											<span>Add New </span>
+										</button>
+									</div>				
+										<label class="col-md-2 control-label"><?php echo $tr->translate("SALE_AGENT");?></label>
+									<div class="col-md-4">
+										<?php echo $form->getElement('saleagent_id');?>
+									</div>				
+								</div>
+							    <div class="form-group">
+								    <label class="col-md-2 control-label"><?php echo $tr->translate("ADDRESS");?></label>
+									<div class="col-md-4">
+										<?php echo $form->getElement('address');?>
+									</div>	
+									<label class="col-md-2 control-label"><?php echo $tr->translate("DEAD_LINE_PLAN");?></label>
+									<div class="col-md-4">
+										<?php echo $form->getElement('date_line_plan');?>
+									</div>
+							    </div>
+								 <div class="form-group">
+								    <label class="col-md-2 control-label"><?php echo $tr->translate("REMARK");?></label>
+									<div class="col-md-4">
+										<?php echo $form->getElement('remark');?>
+									</div>	
+									<label class="col-md-2 control-label"><?php echo $tr->translate("DEAD_LINE_QO");?></label>
+									<div class="col-md-4">
+										<?php echo $form->getElement('date_line_qo');?>
+									</div>
+							    </div>
+								<div class="form-group">
+								   <label class="col-md-2 control-label"><?php echo $tr->translate("PLAN_GOLD");?></label>
+									<div class="col-md-4">
+										<?php echo $form->getElement('plan_goald');?>
+									</div>	
+									<label class="col-md-2 control-label"><?php echo $tr->translate("LAYOUT_FILE");?></label>
+									<div class="col-md-4">
+										<?php  echo $form->getElement('old_file');?>
+										<input type="file" name="filesToUpload[]" multiple="multiple"/>
+										
+									</div>
+							    </div>
+								
+								<div class="form-group">
+									<label class="col-md-2 control-label"></label>
+									<div class="col-md-4">
+										
+									</div>
+									<label class="col-md-2 control-label"><?php echo $tr->translate("STATUS");?></label>
+									<div class="col-md-4">
+										<?php echo $form->getElement('status');?>
+									</div>
+							    </div>
+								 <div class="form-group">
+									<fieldset>
+										<legend>Description<legend>
+											<?php echo $form->getElement('desc');?>
+										
+									</fieldset>
+							    </div>
+							    <div class="form-group">
+									<div  class="col-md-12 col-md-offset-4 col-md-8">
+										<a href="<?php echo $this->baseUrl();?>/sales/plan"><button type="button" class="btn red"><i class="fa fa-times"></i> <?php echo $tr->translate("EXIT")?></button></a>
+									    <button type="submit" name="save_close" value="saveclose" class="btn btn-primary" ><i class="glyphicon glyphicon-log-in"></i> <?php echo $tr->translate("SAVE_CLOSE")?></button>
+										<button type="submit" name="btnsavenew" class="btn btn-primary"><i class="fa fa-save"></i> <?php echo $tr->translate("SAVE_NEW")?> </button>			
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>	
+				</div>
+			</div>	
+        </div>			
+	</form>	
+
+<?php $form = $this->form_customer; ?>
+<div id="customerpopup" class="modal fade" tabindex="-1" data-width="1200">
+       <div class="modal-dialog">
+      <div class="modal-content">
+      <div class="modal-header">   
+		<div class="row">
+		<div class="col-md-12">
+			<div class="portlet box blue">
+			<div class="portlet-title">
+				<div class="caption">
+					<i class="icon-home"></i><?php echo $tr->translate("ADD_NEW_CUSTOMER");?>
+				</div>
+				<div class="caption pull-right">
+					<a href="<?php echo $url_new;?>" >
+						 <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+					</a>
+				</div>
+			</div>
+			<div class="portlet-body form">
+				<form id="frmcustomer" name="frmcustomer" class="form-horizontal" enctype="multipart/form-data" method="post">
+				<div class="form-body">
+						<div class="form-group">
+							<label class="control-label col-md-2"><?php //echo $tr->translate("Branch Name");?><span class="required">
+								</span>
+							</label>
+							<div class="col-md-4">
+								<div class="input-icon right">
+									<i class="fa"></i>
+									<?php //echo $form->getElement("branch_id");?>
+								</div>
+							</div>
+							<label class="control-label col-md-2">
+							<?php echo $tr->translate("COMPANY_NUMBER");?><span class="required">
+								</span>
+							</label>
+							<div class="col-md-4">
+								<div class="input-icon right">
+									<i class="fa"></i>
+									<?php echo $form->getElement('cu_code'); ?>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-md-2"><?php echo $tr->translate("COMPANY_NAME");?> <span class="required">
+								</span>
+							</label>
+							<div class="col-md-4">
+								<div class="input-icon right">
+									<i class="fa"></i>
+									<?php echo $form->getElement('txt_name'); ?>
+								</div>
+							</div>
+							<label class="control-label col-md-2">
+							<?php echo $tr->translate("COMPANY_NUMBER");?><span class="required">
+								</span>
+							</label>
+							<div class="col-md-4">
+								<div class="input-icon right">
+									<i class="fa"></i>
+									<?php echo $form->getElement('txt_phone'); ?>
+								</div>
+							</div>
+						</div>
+					<div class="form-group">
+							<label class="control-label col-md-2"><?php echo $tr->translate("CON_NAME");?><span class="required">
+								</span>
+							</label>
+							<div class="col-md-4">
+								<div class="input-icon right">
+									<i class="fa"></i>
+									<?php echo $form->getElement('txt_contact_name'); ?>
+								</div>
+							</div>
+							<label class="control-label col-md-2">
+							<?php echo $tr->translate("CON_NUMBER");?><span class="required"></span>
+							</label>
+							<div class="col-md-4">
+								<div class="input-icon right">
+									<i class="fa"></i><?php echo $form->getElement('contact_phone'); ?>
+								</div>
+							</div>
+					</div>
+					<div class="form-group">
+							<label class="control-label col-md-2"><?php echo $tr->translate("ADDRESS");?><span class="required">
+								</span>
+							</label>
+							<div class="col-md-4">
+								<div class="input-icon right">
+									<i class="fa"></i>
+									<?php echo $form->getElement("txt_address");?>
+								</div>
+							</div>
+							<label class="control-label col-md-2">
+							<?php echo $tr->translate("PROVINCE");?><span class="required">
+								</span>
+							</label>
+							<div class="col-md-4">
+								<div class="input-icon right">
+									<i class="fa"></i>
+									<?php echo $form->getElement('province'); ?>
+								</div>
+							</div>
+					</div>
+					<div class="form-group">
+							<label class="control-label col-md-2">
+							<?php echo $tr->translate("EMAIL");?><span class="required">
+								</span>
+							</label>
+							<div class="col-md-4">
+								<div class="input-icon right">
+									<i class="fa"></i>
+									<?php echo $form->getElement('txt_mail'); ?>
+								</div>
+							</div>
+						<label class="control-label col-md-2">
+							<span class="required">
+								</span>
+						</label>
+						<div class="col-md-4">
+								<div class="input-icon right">
+									<i class="fa"></i>
+								</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label  class="col-md-12 col-md-offset-4 col-md-8">
+							<button type="button" name="btnsavenew" onclick="addNewCustomer();" class="btn btn-primary"><i class="fa fa-save"></i> <?php echo $tr->translate("SAVE_CUSTOMER")?> </button>
+						</label>
+					</div>
+				</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+          </div>
+        </div>
+    </div>
+ </div>	
+</body>
+</html>
+
+<script>
+function getCustomerInfo(){
+	customer_id = $("#customer_id").val();
+	if(customer_id==-1){
+		$('#customerpopup').modal('show');
+	}
+}
+function popupcustomer(){
+	$('#customerpopup').modal('show');
+}
+<?php $url_add_customer =  $this->url(array('module'=>'sales','controller'=>'customer','action'=>'add-customer')); ?>
+function addNewCustomer(){
+	txt_contact_name = $("#txt_contact_name").val();
+	if(txt_contact_name==''){alert("សូមបញ្ជូលឈ្មោះអ្នកទំនាក់ទំនង !"); $("#txt_contact_name").focus();return false;} 
+	contact_phone = $("#contact_phone").val();
+	if(contact_phone==''){alert("សូមបញ្ជូលលេខទំនាក់ទំនង !"); $("#contact_phone").focus();return false;} 
+	txt_address = $("#txt_address").val();
+	if(txt_address==''){alert("សូមបញ្ជូលអាសយដ្ឋានរបស់អតិថិជន !"); $("#txt_address").focus();return false;} 
+	$.ajax({
+        url: "<?php echo $url_add_customer;?>",
+        type: "post",
+        data: $('#frmcustomer').serialize(),
+        success: function(data){
+            rs = $.parseJSON(data);
+            $('#customer_id').append($("<option></option>").attr("value",rs['cus_id']).attr("selected",true).text(txt_contact_name));                       
+            $("#customer_id").select2();
+			$('#customerpopup').modal('hide');
+			$('#frmcustomer').trigger("reset");
+        },
+        error:function(err){
+            alert("faile insert");
+        }
+    });
+}
+function viewCustomer(){
+	id = $("#customer_id").val();
+	if(id!=-1 && id!='' && id!=0){
+		window.open('<?php echo $this->url(array('module'=>'sales','controller'=>'customer','action'=>'edit'),null,true); ?>'+'/id/'+id, '_blank');
+	}
+}
+</script>
