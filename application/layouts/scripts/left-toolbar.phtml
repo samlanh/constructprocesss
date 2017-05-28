@@ -44,8 +44,8 @@
 	$url_qoute_approved = array($this->url(array('module'=>'sales','controller'=>'quoteapprove','action'=>'index'),null, true), "MENU_QOUTEAPPROVED");
 	
 	$url_sales_add = array($this->url(array('module'=>'sales','controller'=>'index','action'=>'add'),null, true), "MENU_SALES_SALES_ORDER_ADD_CUSTOMER_ORDER");
-	$url_quotelist = array($this->url(array('module'=>'sales','controller'=>'quoatation','action'=>'index'),null, true), "QUOTATION_LIST");
-	$url_sales_quote = array($this->url(array('module'=>'sales','controller'=>'quoatation','action'=>'add'),null, true), "MENU_SALES_SALES_ORDER_ADD_CUSTOMER_QUOTE");
+	$url_quotelist = array($this->url(array('module'=>'sales','controller'=>'index','action'=>'index'),null, true), "QUOTATION_LIST");
+	$url_sales_quote = array($this->url(array('module'=>'sales','controller'=>'index','action'=>'add'),null, true), "MENU_SALES_SALES_ORDER_ADD_CUSTOMER_QUOTE");
 	$url_cust_list = array($this->url(array('module'=>'sales','controller'=>'customer','action'=>'index'),null, true), "MENU_SALES_CUSTOMER_INDEX");
 	$url_add_cust = array($this->url(array('module'=>'sales','controller'=>'customer','action'=>'add'),null, true), "MENU_SALES_CUSTOMER_ADD");
 	$url_sals_agent = array($this->url(array('module'=>'sales','controller'=>'saleagent','action'=>'index')), "MENU_SALES_AGENT");
@@ -303,7 +303,7 @@
 					</a>
 					
 					<ul class="sub-menu">
-						<li>
+					<li>
 							<a href="<?php echo $url_plan[0]; ?>">
 								<i class="icon-arrow-right"></i><?php echo $tr->translate($url_plan[1]);?>
 							</a>
@@ -319,50 +319,9 @@
 	            		</a>
             		</li> 
             		<li>
-            			<a href="<?php echo $url_qoute_approved[0]; ?>">
-	            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_qoute_approved[1])?>
-	            	</a>
-	            	</li>
-					<!--
-            		<li>
-            			<a href="<?php //echo $url_sales_add[0]; ?>">
-	            			<i class="icon-arrow-right"></i><?php //echo $tr->translate($url_sales_add[1])?>
-	            		</a>
-            		</li>-->
-            		<?php //if($result["level"]==3 ){ ?>
-            		<!-- <li>
-            			<a href="<?php echo  $url_return_in[0]; ?>">
-	            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_return_in[1]);?>
-	            		</a>
-            		</li>
-            		<li>
-            			<a href="<?php echo  $url_return_out[0]; ?>">
-						      <i class="icon-arrow-right"></i><?php echo $tr->translate($url_return_out[1]);?>
-	            		</a>
-            		</li>
-            		<?php //};?>
-            		<?php //if($result["level"]==1 OR $result["level"]==2 ){ ?>
-            		<li>
-            			<a href="<?php echo  $url_return_in[0]; ?>">
-						      <i class="icon-arrow-right"></i><?php echo $tr->translate($url_return_in[1]);?>
-	            		</a>
-            		</li>
-            		<li>
-            			<a href="<?php echo  $url_return_out[0]; ?>">
-	            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_return_out[1]);?>
-	            		</a>
-            		</li> -->
-            		<li>
-            			<a href="<?php echo $url_quotelist[0]; ?>">
-	            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_quotelist[1])?>
-	            	    </a>
+            			<a href="<?php echo $this->url(array('module'=>'sales','controller'=>'selling','action'=>'index'),null, true);?>">
+						    <i class="icon-arrow-right"></i>Build of Quote List(BOQ)</a>
             		</li> 
-					
-            		<li>
-            			<a href="<?php echo $url_sales_quote[0]; ?>">
-	            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_sales_quote[1])?>
-	            		</a>
-            		</li>
 	            	<li>
             			<a href="<?php echo $url_cust_list[0]; ?>">
 						    <i class="icon-arrow-right"></i><?php echo $tr->translate($url_cust_list[1]);?>
@@ -374,17 +333,34 @@
 	            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_add_cust[1])?>
 	            		</a>
             		</li>
+					<!--
+					<li>
+            			<a href="<?php echo $url_quotelist[0]; ?>">
+	            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_quotelist[1])?>
+	            	    </a>
+            		</li> 
+					
+            		<li>
+            			<a href="<?php echo $url_sales_quote[0]; ?>">
+	            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_sales_quote[1])?>
+	            		</a>
+            		</li>
+					<li>
+            			<a href="<?php echo $url_qoute_approved[0]; ?>">
+	            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_qoute_approved[1])?>
+	            	</a>
+	            	</li>
 					<li>
             			<a href="<?php echo $this->url(array('module'=>'sales','controller'=>'comment','action'=>'index'),null, true); ?>">
 	            			<i class="icon-arrow-right"></i><?php echo $tr->translate("CUSTOMER_COMMENT");?>
 	            		</a>
             		</li>
 					<?php if($level==1  OR $level==2){?>
-					<li>
+					 <li>
             			<a href="<?php echo $url_customer_type[0]; ?>">
 	            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_customer_type[1])?>
 	            		</a>
-            		</li>
+            		</li> -->
 					<?php }?>
 					</ul>
 				</li>

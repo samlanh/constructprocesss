@@ -28,7 +28,7 @@ class Sales_IndexController extends Zend_Controller_Action
 					'customer_id'=>-1,
 					);
 		}
-		$db = new Sales_Model_DbTable_DbSaleOrder();
+		$db = new Sales_Model_DbTable_Dbcost();
 		$rows = $db->getAllSaleOrder($search);
 		$columns=array("Com.Name","CON_NAME","SALE_AGENT","SALE_ORDER","Project Name","Duration","Project Type",
 				"TOTAL","DISCOUNT","TOTAL_AMOUNT","DATE","APPROVED_STATUS","PENDING_STATUS","BY_USER");
@@ -52,13 +52,13 @@ class Sales_IndexController extends Zend_Controller_Action
 		if($this->getRequest()->isPost()) {
 			$data = $this->getRequest()->getPost();
 			try {
-				$dbq = new Sales_Model_DbTable_DbSaleOrder();
+				$dbq = new Sales_Model_DbTable_Dbcost();
 				if(!empty($data['identity'])){
-					$dbq->addNewBOQ($data);
+					$dbq->addNewSaleCost($data);
 				}
 				Application_Form_FrmMessage::message("INSERT_SUCESS");
 				if(!empty($data['btnsavenew'])){
-					Application_Form_FrmMessage::redirectUrl("/sales/quoatation");
+					Application_Form_FrmMessage::redirectUrl("/sales/index");
 				}
 			}catch (Exception $e){
 				Application_Form_FrmMessage::message('INSERT_FAIL');
