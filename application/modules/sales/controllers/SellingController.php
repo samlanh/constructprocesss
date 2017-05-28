@@ -28,17 +28,20 @@ class Sales_SellingController extends Zend_Controller_Action
 					'customer_id'=>-1,
 					);
 		}
-		$db = new Sales_Model_DbTable_Dbquoatation();
-		$rows = $db->getAllQuoatation($search);
-		$list = new Application_Form_Frmlist();
-		$columns=array("BRANCH_NAME","Com.Name","CON_NAME","SALE_AGENT","QUOTATION_NO", "ORDER_DATE",
-			"TOTAL","DISCOUNT","TOTAL_AMOUNT","APPROVED_STATUS","PENDING_STATUS","BY_USER");
+		$db = new Sales_Model_DbTable_DbSaleOrder();
+		$rows = $db->getAllSaleOrder($search);
+		$columns=array("Com.Name","CON_NAME","SALE_AGENT","SALE_ORDER","Project Name","Duration","Project Type",
+				"TOTAL","DISCOUNT","TOTAL_AMOUNT","DATE","APPROVED_STATUS","PENDING_STATUS","BY_USER");
 		$link=array(
-				'module'=>'sales','controller'=>'quoatation','action'=>'edit',
+				'module'=>'sales','controller'=>'index','action'=>'edit',
 		);
-		$linkview=array(
-				'module'=>'sales','controller'=>'quoatation','action'=>'quotadetail',);
-		$this->view->list=$list->getCheckList(0, $columns, $rows, array('is_approved'=>$linkview,'contact_name'=>$link,'branch_name'=>$link,'customer_name'=>$link,'staff_name'=>$link,'quoat_number'=>$link));
+		$link1=array(
+				'module'=>'sales','controller'=>'index','action'=>'viewapp',
+		);
+		
+		$list = new Application_Form_Frmlist();
+		$this->view->list=$list->getCheckList(0, $columns, $rows, array('contact_name'=>$link,'branch_name'=>$link,'customer_name'=>$link,'staff_name'=>$link,
+				'sale_no'=>$link,'approval'=>$link1));
 		
 		$formFilter = new Sales_Form_FrmSearch();
 		$this->view->formFilter = $formFilter;
@@ -46,40 +49,6 @@ class Sales_SellingController extends Zend_Controller_Action
 		
 	}
 	function addAction(){
-		$db = new Application_Model_DbTable_DbGlobal();
-		if($this->getRequest()->isPost()) {
-			$data = $this->getRequest()->getPost();
-			try {
-				$dbq = new Sales_Model_DbTable_Dbquoatation();
-				if(!empty($data['identity'])){
-					$dbq->addQuoatationOrder($data);
-				}
-				Application_Form_FrmMessage::message("INSERT_SUCESS");
-				if(empty($data['btnsavenew'])){
-					Application_Form_FrmMessage::redirectUrl("/sales/quoatation");
-				}
-			}catch (Exception $e){
-				Application_Form_FrmMessage::message('INSERT_FAIL');
-				Application_Model_DbTable_DbUserLog::writeMessageError($err);
-			}
-		}
-		///link left not yet get from DbpurchaseOrder
-// 		$frm_purchase = new Sales_Form_FrmQuoatation(null);
-// 		$form_sale = $frm_purchase->SaleOrder(null);
-// 		Application_Model_Decorator::removeAllDecorator($form_sale);
-// 		$this->view->form_sale = $form_sale;
-		 
-// 		$items = new Application_Model_GlobalClass();
-// 		$this->view->items = $items->getProductOption();
-// 		$this->view->term_opt = $db->getAllTermCondition(1);
-// 		$this->view->rsterm = $db->getAllTermCondition(null,1);//call default quotion
-
-// 		$formpopup = new Sales_Form_FrmCustomer(null);
-// 		$formpopup = $formpopup->Formcustomer(null);
-// 		Application_Model_Decorator::removeAllDecorator($formpopup);
-// 		$this->view->form_customer = $formpopup;
-// 		$this->view->userinfo = $this->GetuserInfoAction();
-
 		$db = new Application_Model_DbTable_DbGlobal();
 		if($this->getRequest()->isPost()) {
 			$data = $this->getRequest()->getPost();
@@ -98,6 +67,7 @@ class Sales_SellingController extends Zend_Controller_Action
 				Application_Model_DbTable_DbUserLog::writeMessageError($err);
 			}
 		}
+
 		///link left not yet get from DbpurchaseOrder
 		$frm_purchase = new Sales_Form_FrmSale(null);
 		$form_sale = $frm_purchase->SaleOrder(null);

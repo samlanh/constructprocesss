@@ -1,9 +1,9 @@
 <?php 
 	$tr = Application_Form_FrmLanguages::getCurrentlanguage();
 	$form=$this->form_sale;
-	$url_submit = $this->url(array('module'=>'sales','controller'=>'index','action'=>'add'));
-	$url_cancel = $this->url(array('module'=>'sales','controller'=>'index','action'=>'index'));
-	$url_new = $this->url(array('module'=>'sales','controller'=>'index','action'=>'add'));
+	$url_submit = $this->url(array('module'=>'sales','controller'=>'selling','action'=>'add'));
+	$url_cancel = $this->url(array('module'=>'sales','controller'=>'selling','action'=>'index'));
+	$url_new = $this->url(array('module'=>'sales','controller'=>'selling','action'=>'add'));
 ?>
 <title><?php echo $tr->translate("Selling Price");?></title>
 <div class="row">
@@ -51,33 +51,33 @@
 												</label>
 												<div class="col-md-2">
 													<div class="input-icon right">
-														<input type="text" onkeyup='calcualteselling();' name="allowance" id="allowance" value="" class="form-control">
+														<input type="text" readonly='readonly' name="allowance" id="allowance" value="" class="form-control">
 													</div>
 												</div>
 											</div>
 											<div class="form-group">
-												<label class="control-label col-md-2"><?php echo $tr->translate("Overhead");?></label>
+												<label class="control-label col-md-2"><?php echo $tr->translate("Overhead Included");?></label>
 												<div class="col-md-3">
 													<div class="input-icon right">
-														<input type="text" onkeyup='calcualteselling();' name="overhead" id="overhead" value="" class="form-control">
+														<input type="text" readonly='readonly' name="overhead" id="overhead" value="" class="form-control">
 													</div>
 												</div>
 												<label class="control-label col-md-2"><?php echo $tr->translate("Profit Margin");?></label>
 												<div class="col-md-2">
 													<div class="input-icon right"></div>
-													<input type="text" onkeyup='calcualteselling();' name="profit_margin" id="profit_margin" value="" class="form-control">
+													<input type="text" onkeyup='calcualteselling();' name="profit_margin" id="profit_margin" value="" class="validate[required,custom[number]] form-control">
 												</div>
 												<label class="control-label col-md-1"><?php echo $tr->translate("Hour Rate Cost");?>
 												</label>
 												<div class="col-md-2">
-													<input type="text" onkeyup='calcualteselling();' name="hour_ratecose" id="hour_ratecose" value="" class="form-control">
+													<input type="text" onkeyup='calcualteselling();' name="hour_ratecose" id="hour_ratecose" value="" class="validate[required,custom[number]] input form-control">
 												</div>
 											</div>
 											<div class="form-group">
 												<label class="control-label col-md-2"><?php echo $tr->translate("KOH");?></label>
 												<div class="col-md-3">
 													<div class="input-icon right">
-														<input type="text" onkeyup='calcualteselling();' name="koh" id="koh" value="" class="form-control">
+														<input readonly="readonly" type="text" onkeyup='calcualteselling();' name="koh" id="koh" value="" class="validate[required,custom[number]] form-control">
 													</div>
 												</div>
 												<label class="control-label col-md-2"><?php echo $tr->translate("K Train");?></label>
@@ -88,7 +88,7 @@
 												<label class="control-label col-md-1"><?php //echo $tr->translate("Hour Rate Cost");?>
 												</label>
 												<div class="col-md-2">
-													<input type="hidden" onkeyup='calcualteselling();' name="hour_ratecose" id="hour_ratecose" value="" class="form-control">
+													<input type="hidden" onkeyup='calcualteselling();' name="hour_ratecose" id="hour_ratecose" value="" class="validate[required,custom[number]] input form-control">
 												</div>
 											</div>
 											<div class="form-group">
@@ -119,13 +119,12 @@
 														<th><?php echo $tr->translate("CURRENT_QTY");?></th>
 														<th><?php echo $tr->translate("Qty(Measure)");?></th>
 														<th><?php echo $tr->translate("Unit");?></th>
-														<th><?php echo $tr->translate("Cost");?></th>
+														<th><?php echo $tr->translate("Labor Cost");?></th>
+														<th><?php echo $tr->translate("Total Labor Cost");?></th>
 														<th><?php echo $tr->translate("Uniy Price Labour");?></th>
-														<th><?php echo $tr->translate("Materia Price");?></th>
-														<!--
-														<th><?php //echo $tr->translate("FREE");?></th>
-														<th><?php //echo $tr->translate("EXTRA_PRICE");?></th>
-														<th style="white-space:nowrap;"><?php //echo $tr->translate("DISCOUNT");?></th>-->
+														<th><?php echo $tr->translate("Materail Cost");?></th>
+														<th><?php echo $tr->translate("Total Materail Cost");?></th>
+														<th><?php echo $tr->translate("Material Price");?></th>
 														<th><?php echo $tr->translate("Amount");?></th>
 														<th style="white-space:nowrap;width:150px;"><?php echo $tr->translate("NOTE");?></th>
 												</tr>
@@ -134,6 +133,30 @@
 											 <input type="hidden" id="identity_term" name="identity_term" />
 										</div>
 											<!-- blog bottom -->
+											<div class="form-group">
+												<label class="control-label col-md-2"><?php echo $tr->translate("តម្លៃដើមសម្ភារៈ");?><span class="required">* </span>
+												</label>
+												<div class="col-md-4">
+													<div class="input-icon right"><input type="text" name="total_costmaterial" id="total_costmaterial" style="text-align:right" class="form-control"></div>
+												</div>
+												<label class="control-label col-md-2"><?php echo $tr->translate("តម្លៃសម្ភារៈ");?><span class="required">* </span>
+												</label>
+												<div class="col-md-4">
+													<div class="input-icon right"><input type="text" name="total_material" id="total_material" style="text-align:right" class="form-control"></div>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="control-label col-md-2"><?php echo $tr->translate("តម្លៃដើមពលកម្ម​ :");?><span class="required">* </span>
+												</label>
+												<div class="col-md-4">
+													<div class="input-icon right"><input type="text" name="total_cost_labor" id="total_cost_labor" style="text-align:right" class="form-control"></div>
+												</div>
+													<label class="control-label col-md-2"><?php echo $tr->translate("តម្លៃពលកម្ម​ :");?><span class="required">* </span>
+												</label>
+												<div class="col-md-4">
+													<div class="input-icon right"><input type="text" name="total_labor" id="total_labor" style="text-align:right" class="form-control"></div>
+												</div>
+											</div>
 											<div class="form-group">
 												<label class="control-label col-md-2"><span class="required">
 													 </span>
@@ -203,7 +226,7 @@
 										  </div>
 											<div class="form-group">
 												<div class="col-md-4">
-													<a href="<?php echo $this->baseUrl();?>/sales/index/"><button type="button" class="btn blue btn-block btn-lg"><i class="fa fa-times"></i> <?php echo $tr->translate("GO_BACK")?></button></a>
+													<a href="<?php echo $this->baseUrl();?>/sales/selling/"><button type="button" class="btn blue btn-block btn-lg"><i class="fa fa-times"></i> <?php echo $tr->translate("GO_BACK")?></button></a>
 												</div>
 												<div class="col-md-4">
 													<div class="input-icon right">
@@ -241,13 +264,13 @@
 													<input type="text" name="food_work1_1" id="food_work1_1" onkeyup="calculatefood(1,1);" value="" class="validate[custom[number]] form-control" >
 												</div>
 												<div class="col-md-2">
-													<input type="text" name="supervisor1_2" id="supervisor1_2" onkeyup="calculatefood(1,2);" value="" class="form-control">
+													<input type="text" name="supervisor1_2" id="supervisor1_2" onkeyup="calculatefood(1,2);" value="" class="validate[custom[number]] form-control">
 												</div>
 												<div class="col-md-2">
-													<input type="text" name="tool1_3" id="tool1_3" value="" onkeyup="calculatefood(1,3);" class="form-control">
+													<input type="text" name="tool1_3" id="tool1_3" value="" onkeyup="calculatefood(1,3);" class="validate[custom[number]] form-control">
 												</div>
 												<div class="col-md-2">
-													<input type="text" name="other1_4" id="other1_4" onkeyup="calculatefood(1,4);" value="" class="form-control">
+													<input type="text" name="other1_4" id="other1_4" onkeyup="calculatefood(1,4);" value="" class="validate[custom[number]] form-control">
 												</div>
 											</div>
 											<div class="form-group">
@@ -258,13 +281,13 @@
 													<input type="text" name="food_work2_1" id="food_work2_1" onkeyup="calculatefood(2,1);" value="" class="validate[custom[number]] form-control" >
 												</div>
 												<div class="col-md-2">
-													<input type="text" name="supervisor2_2" id="supervisor2_2" onkeyup="calculatefood(2,2);" value="" class="form-control">
+													<input type="text" name="supervisor2_2" id="supervisor2_2" onkeyup="calculatefood(2,2);" value="" class="validate[custom[number]] form-control">
 												</div>
 												<div class="col-md-2">
-													<input type="text" name="tool2_3" id="tool2_3" onkeyup="calculatefood(2,3);" value="" class="form-control">
+													<input type="text" name="tool2_3" id="tool2_3" onkeyup="calculatefood(2,3);" value="" class="validate[custom[number]] form-control">
 												</div>
 												<div class="col-md-2">
-													<input type="text" name="other2_4" id="other2_4" onkeyup="calculatefood(2,4);" value="" class="form-control">
+													<input type="text" name="other2_4" id="other2_4" onkeyup="calculatefood(2,4);" value="" class="validate[custom[number]] form-control">
 												</div>
 											</div>
 											<div class="form-group">
@@ -275,13 +298,13 @@
 													<input type="text" name="food_work3_1" id="food_work3_1" onkeyup="calculatefood(3,1);" value="" class="validate[custom[number]] form-control" >
 												</div>
 												<div class="col-md-2">
-													<input type="text" name="supervisor3_2" id="supervisor3_2" onkeyup="calculatefood(3,2);" value="" class="form-control">
+													<input type="text" name="supervisor3_2" id="supervisor3_2" onkeyup="calculatefood(3,2);" value="" class="validate[custom[number]] form-control">
 												</div>
 												<div class="col-md-2">
-													<input type="text" name="tool3_3" id="tool3_3" value="" onkeyup="calculatefood(3,3);" class="form-control">
+													<input type="text" name="tool3_3" id="tool3_3" value="" onkeyup="calculatefood(3,3);" class="validate[custom[number]] form-control">
 												</div>
 												<div class="col-md-2">
-													<input type="text" name="other3_4" id="other3_4" value="" onkeyup="calculatefood(3,4);" class="form-control">
+													<input type="text" name="other3_4" id="other3_4" value="" onkeyup="calculatefood(3,4);" class="validate[custom[number]] form-control">
 												</div>
 											</div>
 											<div class="form-group">
@@ -292,31 +315,53 @@
 													<input type="text" name="food_work4_1" id="food_work4_1" onkeyup="calculatefood(4,1);" value="" class="validate[custom[number]] form-control" >
 												</div>
 												<div class="col-md-2">
-													<input type="text" name="supervisor4_2" id="supervisor4_2" onkeyup="calculatefood(4,2);" value="" class="form-control">
+													<input type="text" name="supervisor4_2" id="supervisor4_2" onkeyup="calculatefood(4,2);" value="" class="validate[custom[number]] form-control">
 												</div>
 												<div class="col-md-2">
-													<input type="text" name="tool4_3" id="tool4_3" value="" onkeyup="calculatefood(4,3);" class="form-control">
+													<input type="text" name="tool4_3" id="tool4_3" value="" onkeyup="calculatefood(4,3);" class="validate[custom[number]] form-control">
 												</div>
 												<div class="col-md-2">
-													<input type="text" name="other4_4" id="other4_4" value="" onkeyup="calculatefood(4,4);" class="form-control">
+													<input type="text" name="other4_4" id="other4_4" value="" onkeyup="calculatefood(4,4);" class="validate[custom[number]] form-control">
 												</div>
 											</div>
 											<div class="form-group">
-												<div class="col-md-4" style="text-align: right;">
+												<div class="col-md-2">
+												Total Overhead
+												</div>
+												<div class="col-md-1">
+													<input type="text" name="totaloverhead" id="totaloverhead" readonly='readonly' value="" class="validate[custom[number]] form-control" >
+												</div>
+												<div class="col-md-1" style="text-align: right;">
 													Total
 												</div>
 												<div class="col-md-2">
-													<input type="text" readonly="readonly" name="food_work5" id="food_work5" value="" class="form-control">
+													<input type="text" readonly="readonly" name="food_work5" id="food_work5" value="" class="validate[custom[number]] form-control">
 												</div>
 												<div class="col-md-2">
-													<input type="text" readonly="readonly"name="supervisor5" id="supervisor5" value="" class="form-control">
+													<input type="text" readonly="readonly"name="supervisor5" id="supervisor5" value="" class="validate[custom[number]] form-control">
 												</div>
 												<div class="col-md-2">
-													<input type="text" readonly="readonly" name="tool5" id="tool5" value="" class="form-control">
+													<input type="text" readonly="readonly" name="tool5" id="tool5" value="" class="validate[custom[number]] form-control">
 												</div>
 												<div class="col-md-2">
-													<input type="text" readonly="readonly" name="other5" id="other5" value="" class="form-control">
+													<input type="text" readonly="readonly" name="other5" id="other5" value="" class="validate[custom[number]] form-control">
 												</div>
+											</div>
+											<div class="form-group">
+												<div class="col-md-2" style="text-align: right;">
+													Overhead %
+												</div>
+												<div class="col-md-1">
+													<input type="text" name="overheadpercent" id="overheadpercent" onkeyup="calculateIncludeOverhead();" value="" class="validate[custom[number]] form-control" >
+												</div>
+												<div class="col-md-1" >
+													Overhead Include
+												</div>
+												<div class="col-md-2">
+													<input readonly='readonly' type="text" name="overheadinclude" id="overheadinclude" value="" class="validate[custom[number]] form-control" >
+												</div>
+												
+												
 											</div>
 									</div>
 								</div>
@@ -353,27 +398,25 @@ function calculatefood(rows,cols){
 		total_amount=parseFloat(total_amount)+parseFloat(allowance);
    }
 	   $('#'+str_data).val(total_amount);
-}
-function calcualteselling(){
-	allowance = $('#allowance').val();	
-	overhead = $('#overhead').val();	
-	profit_margin = $('#profit_margin').val();	
-	hour_ratecose = $('#hour_ratecose').val();	
-	koh = $('#koh').val();	
-	var netTotal=0;
-	var rowId = $('#identity').val();
-	var rowIDArray = rowId.split(',');
-	for(var n = 0; n < rowIDArray.length; n++) {
-		unit= $('#qty'+rowIDArray[n]).val();
-		labor_price = (parseFloat(hour_ratecose)*parseFloat(unit)*parseFloat(koh))*parseFloat(profit_margin);
-		labor_price=labor_price.toFixed(2);
-		$('#labour_price'+rowIDArray[n]).val(labor_price);
-		cost_price= $('#cost_price'+rowIDArray[n]).val();
-		materail_price = (parseFloat(cost_price)*parseFloat(koh))*parseFloat(profit_margin);
-		$('#material_price'+rowIDArray[n]).val(materail_price);
-	}
-	
-	
+	   
+	   food_work5 = $('#food_work5').val();	
+	   if(food_work5==''){food_work5=0;}
+	   
+	   supervisor5 = ($('#supervisor5').val());	
+	   if(supervisor5==''){supervisor5=0;}
+	   
+	   tool5 = ($('#tool5').val());	
+	   if(tool5==''){tool5=0;}
+	   
+	   other5 = ($('#other5').val());	
+	   if(other5==''){other5=0;}
+	   
+	   total_overhead = parseFloat(food_work5)+parseFloat(supervisor5)+parseFloat(tool5)+parseFloat(other5);
+
+	   $('#totaloverhead').val(total_overhead);
+	   $('#allowance').val(total_overhead);
+	   	
+	   calculateIncludeOverhead();
 }
 function calculateDuration(){
 	start_date = $('#start_date').val();	
@@ -453,11 +496,15 @@ function addRow(item_id) {
 	template+='<td align="center"  width="2%">'+index5+'</td>';
 	template+='<td width="20%"><select style="width:330px;" class="form-control select2me" Onchange="ShowPopupProduct('+ index5 + ');" id="item_id_'+index5+'" name="item_id_'+index5+'" >'+option5+'<option></option></select>'+inp+'</td>';
 	template+='<td><input style="background:#f5e1e1;" readonly type="text" class="form-control" id="lblcurrent_qty'+index5+'" name="lblcurrent_qty'+index5+'" /><input style="background:#f5e1e1;" readonly type="hidden" class="form-control" id="current_qty'+index5+'" name="current_qty'+index5+'" /></td>';
-	template+='<td ><input type="text" class="form-control" required="1" id="measure'+index5+'" name="measure'+index5+'"/></td>';
+	template+='<td ><input type="text" class="validate[required] form-control" required="1" id="measure'+index5+'" name="measure'+index5+'"/></td>';
 	template+='<td ><input type="text" onkeyup="calculatePrice('+index5+')" class="validate[required,custom[number]] input form-control" id="qty'+index5+'" name="qty'+index5+'" /><input type="hidden" id="oldprice_'+index5+'" name="oldprice_'+index5+'"/></td>';
-	template+='<td ><input type="text" onkeyup="calculatePrice('+index5+')" class="validate[custom[number]] input form-control" id="cost_price'+index5+'" name="cost_price'+index5+'" /></td>';
-	template+='<td ><input type="text" onkeyup="calculatePrice('+index5+')" class="validate[required,custom[number]] input form-control" id="labour_price'+index5+'" name="labour_price'+index5+'" /></td>';
-	template+='<td ><input type="text" onkeyup="calculatePrice('+index5+')" class="validate[required,custom[number]] input form-control" id="material_price'+index5+'" name="material_price'+index5+'" value="" /></td>';
+	template+='<td ><input type="text" onkeyup="calculatePrice('+index5+')" class="validate[custom[number]] input form-control" id="laborcost_price'+index5+'" name="laborcost_price'+index5+'" /></td>';
+	template+='<td ><input type="text" readonly="readonly" onkeyup="calculatePrice('+index5+')" class="validate[custom[number]] input form-control" id="totallaborprice'+index5+'" name="totallaborprice'+index5+'" /></td>';	
+	template+='<td ><input type="text" readonly="readonly" class="validate[required,custom[number]] input form-control" id="labour_price'+index5+'" name="labour_price'+index5+'" /></td>';
+	template+='<td ><input type="text" onkeyup="calculatePrice('+index5+')" class="validate[custom[number]] input form-control" id="materailcost_price'+index5+'" name="materailcost_price'+index5+'" /></td>';
+	template+='<td ><input type="text" readonly="readonly" class="validate[custom[number]] input form-control" id="totalmaterailcost'+index5+'" name="totalmaterailcost'+index5+'" /></td>';	
+	template+='<td ><input type="text" readonly="readonly" class="validate[required,custom[number]] input form-control" id="material_price'+index5+'" name="material_price'+index5+'" value="" /></td>';
+
 	template+='<td ><input type="text" class="form-control" readonly="readonly" id="total'+index5+'" name="total'+index5+'" /></td>';
 	template+='<td ><input type="text" class="form-control"  id="note_'+index5+'" name="note_'+index5+'" /><input type="hidden" class="form-control"  id="is_service'+index5+'" name="is_service'+index5+'" value="0" /></td>';
 	template+="</tr>";
@@ -534,7 +581,7 @@ function getQtyById(index){//use
 							$("#qty"+index).val(total_qty.toFixed(3));
 							$("#qty_perunit"+index).val(item_qty.qty_perunit);
 							
-							$('#cost_price_'+index).val(item_qty.price);
+							$('#laborcost_price_'+index).val(item_qty.price);
 							//getProductPrice(item_id,index);
 						},
 						error:function(e){
@@ -609,17 +656,7 @@ function deleteTermRecord(termid){
 	$('#identity_term').val(strings);
 	$("#row_term_"+termid).remove();
 }
-function netTotal() {//use
-	var netTotal=0;
-	var rowId = $('#identity').val();
-	var rowIDArray = rowId.split(',');
-	for(var n = 0; n < rowIDArray.length; n++) {
-		if($('#is_service'+rowIDArray[n]).val()==1){continue;}
-		netTotal += Number($('#total'+rowIDArray[n]).val());
-	}
-	$('#all_total').val(netTotal.toFixed(2));
-	calculateDiscount();
-}
+
 function calculateDiscount(){//use
 	var discountValue = ($('#dis_value').val());
 	$('#discount_type').val(0);
@@ -650,18 +687,175 @@ function totalQty(index){
 	getQtyById(index);
 }
 function calculatePrice(index) {
-	//qty = parseFloat(main_qty) + parseFloat(detail_qty/(qty_perunit));
-	//current_qty = $("#current_qty").val();
-	//if(current_qty<qty){alert("សូមបញ្ចូលចំនួនផលិតផលលក់ តូចជាងឫស្មើរ ចំនួននៅក្នុងស្តុក !");$('#qty'+index).focus();}
+	//alert(1);
 	qty= $('#qty'+index).val();if(qty==''){qty=0;}
 	if(qty==""){qty=0;}
-	var price = $('#material_price'+index).val();
+	var costlabour_price = $('#laborcost_price'+index).val();
+	if(costlabour_price==""){costlabour_price=0;}
+	var total =parseFloat(qty)*parseFloat(costlabour_price);
+	$('#totallaborprice'+index).val(parseFloat(total).toFixed(2));//ok
+
+	var materailcost_price = $('#materailcost_price'+index).val();
+	if(materailcost_price==""){materailcost_price=0;}
+	var total =parseFloat(qty)*parseFloat(materailcost_price);
+	$('#totalmaterailcost'+index).val(parseFloat(total).toFixed(2));//ok
+	
+	netTotalCost();
+	/*var price = $('#material_price'+index).val();
 	var labour_price = $('#labour_price'+index).val();
 	if(price==""){price=0;}
 	if(labour_price==""){labour_price=0;}
 	var total = (parseFloat(price)* parseFloat(qty))+(parseFloat(qty)*labour_price);
-	$('#total'+index).val(parseFloat(total).toFixed(2));
+	$('#total'+index).val(parseFloat(total).toFixed(2));*/
+	//netTotal();
+	//calculateIncludeOverhead();
+}
+function netTotalCost() {//use
+	//alert(2);
+	//var netTotal=0;
+	total_laborcost=0;
+	total_materailcost=0;
+	
+	var rowId = $('#identity').val();
+	var rowIDArray = rowId.split(',');
+	for(var n = 0; n < rowIDArray.length; n++) {
+		if($('#is_service'+rowIDArray[n]).val()==1){continue;}
+		
+		total_laborcost += Number($('#totallaborprice'+rowIDArray[n]).val());
+		total_materailcost += Number($('#totalmaterailcost'+rowIDArray[n]).val());
+	}
+	
+	$('#total_costmaterial').val(total_materailcost.toFixed(2));
+	$('#total_cost_labor').val(total_laborcost.toFixed(2));
+	
+	calCulateKOH();
 	netTotal();
+	//$('#total_material').val(total_materail.toFixed(2));
+	//$('#total_labor').val(total_labor.toFixed(2));
+
+	//calculateDiscount();
+}
+function netTotal() {//use
+	//alert(4);
+	var netTotal=0;
+	total_laborcost=0;
+	total_materailcost=0;
+	
+	total_labor=0;
+	total_materail=0;
+	var rowId = $('#identity').val();
+	var rowIDArray = rowId.split(',');
+	for(var n = 0; n < rowIDArray.length; n++) {
+		if($('#is_service'+rowIDArray[n]).val()==1){continue;}
+		netTotal += Number($('#total'+rowIDArray[n]).val());
+
+		total_labor += Number($('#labour_price'+rowIDArray[n]).val());
+		total_materail += Number($('#material_price'+rowIDArray[n]).val());
+	}
+	
+	if(isNaN(total_material)){
+		total_material=0;
+	}
+	//alert("netTotalvalue"+netTotal);
+	$('#all_total').val(netTotal.toFixed(2));
+	$('#total_material').val(total_materail.toFixed(2));
+	$('#total_labor').val(total_labor.toFixed(2));
+	calculateDiscount();
+}
+function calculateIncludeOverhead(){
+	overheadpercent = $('#overheadpercent').val();	
+	totaloverhead = $('#totaloverhead').val();	
+	all_total = $('#all_total').val();	
+	if(all_total==''){
+		all_total=0;}
+	overheadinclude = (overheadpercent*totaloverhead/100);//+parseFloat(all_total);
+	overheadinclude = (overheadinclude).toFixed(2);
+	
+	$('#overheadinclude').val(overheadinclude);
+	
+	totaloverheadinclude = parseFloat(overheadinclude)+parseFloat(totaloverhead);
+	$('#overhead').val(totaloverheadinclude);
+	
+	calCulateKOH();
+	//netTotalCost();
+}
+function calCulateKOH(){
+	total_costmaterial = $('#total_costmaterial').val();	
+	total_cost_labor = $('#total_cost_labor').val();	
+	if(all_total==''){all_total=1;}
+	
+	if(total_cost_labor==''){total_cost_labor=1;}
+
+	all_total = parseFloat(total_cost_labor)+parseFloat(total_costmaterial);
+
+	overheadinclude = $('#overheadinclude').val();	
+	
+	if(overheadinclude==''){overheadinclude=0;}
+	koh=0;
+	if(all_total>0){
+		koh=(parseFloat(all_total)+parseFloat(overheadinclude))/parseFloat(all_total);
+	}else{
+		koh=1;
+	}
+	if(isNaN(koh)){
+		koh=0;
+	}
+	$('#koh').val(koh.toFixed(4));	
+	var rowId = $('#identity').val();
+	if(rowId!=''){
+		calcualteselling();
+	}
+}
+function calcualteselling(){
+	total_labor=0;
+	total_materail=0;
+	netTotal=0;
+	
+	allowance = $('#allowance').val();	
+	if(allowance==''){allowance=0;}
+	overhead = $('#overhead').val();	
+	if(overhead==''){overhead=0;}
+	profit_margin = $('#profit_margin').val();	
+	if(profit_margin==''){profit_margin=0;}
+	hour_ratecose = $('#hour_ratecose').val();	
+	if(hour_ratecose==''){hour_ratecose=0;}
+	koh = $('#koh').val();	
+	if(koh==''){koh=0;}
+	var netTotal=0;
+	var rowId = $('#identity').val();
+	var rowIDArray = rowId.split(',');
+	for(var n = 0; n < rowIDArray.length; n++) {
+		unit= $('#qty'+rowIDArray[n]).val();
+		labor_price = (parseFloat(hour_ratecose)*parseFloat(unit)*parseFloat(koh))*parseFloat(profit_margin);
+		labor_price=labor_price.toFixed(2);
+		if(isNaN(labor_price)){labor_price=0;}
+		$('#labour_price'+rowIDArray[n]).val(labor_price);
+		
+		cost_price= $('#materailcost_price'+rowIDArray[n]).val();
+		if(isNaN(cost_price) || cost_price==''){cost_price=0;}
+
+		materail_price = (parseFloat(cost_price)*parseFloat(koh))*parseFloat(profit_margin);
+		if(isNaN(materail_price)){materail_price=0;}
+		$('#material_price'+rowIDArray[n]).val(materail_price.toFixed(2));
+
+		if($('#is_service'+rowIDArray[n]).val()==1){continue;}
+		total_amount = parseFloat(materail_price)+parseFloat(labor_price);
+		total_amount = total_amount.toFixed(2);
+		$('#total'+rowIDArray[n]).val(total_amount);
+		
+		total_labor += Number($('#labour_price'+rowIDArray[n]).val());
+		total_materail += Number($('#material_price'+rowIDArray[n]).val());
+		netTotal += Number(total_amount);
+		
+	}	
+	if(isNaN(total_material)){
+		total_material=0;
+	}
+//alert("netTotal"+netTotal);
+	$('#total_material').val(total_materail.toFixed(2));
+	$('#total_labor').val(total_labor.toFixed(2));
+	$('#all_total').val(netTotal);
+	//calCulateKOH();
 }
 var record_id = 1;
 function ShowPopupProduct(product_id){
