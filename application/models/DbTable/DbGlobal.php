@@ -790,6 +790,18 @@ class Application_Model_DbTable_DbGlobal extends Zend_Db_Table_Abstract
    	}
    	return  $db->fetchAll($sql);
    }
-   	
+   function getAllPlan($opt=null){
+   	$db= $this->getAdapter();
+   	$sql=" SELECT id,`name` FROM `tb_plan` WHERE STATUS=1 AND `name`!='' ";
+   	$sql.=" ORDER BY id DESC ";
+   	$row =  $db->fetchAll($sql);
+   	if($opt==null){
+   		return $row;
+   	}else{
+   		$options=array(-1=>"Select Plan");
+   		if(!empty($row)) foreach($row as $read) $options[$read['id']]=$read['name'];
+   		return $options;
+   	}
+   }
 }
 ?>

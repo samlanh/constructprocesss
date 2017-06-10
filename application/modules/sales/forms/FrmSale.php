@@ -25,7 +25,7 @@ class Sales_Form_FrmSale extends Zend_Form
     	$customerid->setMultiOptions($options);
     	
     	$roder_element= new Zend_Form_Element_Text("txt_order");
-    	$roder_element->setAttribs(array('placeholder' => 'Optional','class'=>'form-control',"readonly"=>true,
+    	$roder_element->setAttribs(array('placeholder' => 'Optional','class'=>'form-control',
     			"onblur"=>"CheckPOInvoice();"));
     	$qo = $db->getSalesNumber(1);
     	$roder_element->setValue($qo);
@@ -63,8 +63,11 @@ class Sales_Form_FrmSale extends Zend_Form
     	$project_type->setAttribs(array('class'=>'demo-code-language form-control select2me'));
     	$project_type->setMultiOptions(array(1=>"Only Labour",2=>"Labour and Material"));
     	
-    	$project_name = new Zend_Form_Element_Text('project_name');
-    	$project_name->setAttribs(array('class'=>'form-control'));
+    	
+    	$project_name = new Zend_Form_Element_Select('project_name');
+    	$project_name->setAttribs(array('class'=>'form-control select2me'));
+    	$optplan = $db->getAllPlan(1);
+    	$project_name->setMultiOptions($optplan);
     	
     	$duration = new Zend_Form_Element_Text('duration');
     	$duration->setAttribs(array('class'=>'form-control'));

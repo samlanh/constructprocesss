@@ -283,8 +283,6 @@
 		            			<i class="icon-arrow-right"></i><?php echo $tr->translate("PURCHASE_PAYMENT");?>
 		            		</a>
 	            		</li> 
-						
-						
 							<li>
 	            			<a href="<?php echo $this->url(array('module'=>'purchase','controller'=>'expensetitle','action'=>'index'),null, true); ?>">
 		            			<i class="icon-arrow-right"></i><?php echo $tr->translate("EXPENSE_TITLE");?>
@@ -301,7 +299,6 @@
 					<span class="title"><?php echo strtoupper($tr->translate("SALES")); ?></span>
 					<span class="arrow "></span>
 					</a>
-					
 					<ul class="sub-menu">
 					<li>
 							<a href="<?php echo $url_plan[0]; ?>">
@@ -320,14 +317,14 @@
             		</li> 
             		<li>
             			<a href="<?php echo $this->url(array('module'=>'sales','controller'=>'selling','action'=>'index'),null, true);?>">
-						    <i class="icon-arrow-right"></i>Build of Quote List(BOQ)</a>
+						    <i class="icon-arrow-right"></i>Build of Quote List(BOQ)
+						</a>
             		</li> 
 	            	<li>
             			<a href="<?php echo $url_cust_list[0]; ?>">
 						    <i class="icon-arrow-right"></i><?php echo $tr->translate($url_cust_list[1]);?>
 	            		</a>
             		</li> 
-					
             		<li>
             			<a href="<?php echo $url_add_cust[0]; ?>">
 	            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_add_cust[1])?>
@@ -339,7 +336,6 @@
 	            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_quotelist[1])?>
 	            	    </a>
             		</li> 
-					
             		<li>
             			<a href="<?php echo $url_sales_quote[0]; ?>">
 	            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_sales_quote[1])?>

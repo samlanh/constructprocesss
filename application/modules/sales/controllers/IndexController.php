@@ -31,7 +31,7 @@ class Sales_IndexController extends Zend_Controller_Action
 		$db = new Sales_Model_DbTable_Dbcost();
 		$rows = $db->getAllSaleOrder($search);
 		$columns=array("Com.Name","CON_NAME","SALE_AGENT","SALE_ORDER","Project Name","Duration","Project Type",
-				"TOTAL","DISCOUNT","TOTAL_AMOUNT","DATE","APPROVED_STATUS","PENDING_STATUS","BY_USER");
+				"Total Labor Cost","Total Materail Cost","TOTAL_AMOUNT","DATE","APPROVED_STATUS","PENDING_STATUS","BY_USER");
 		$link=array(
 				'module'=>'sales','controller'=>'index','action'=>'edit',
 		);
