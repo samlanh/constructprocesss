@@ -27,15 +27,29 @@
 	$receive_transfer_list = array($this->url(array('module'=>'product','controller'=>'transfer','action'=>'receiverequest'),null, true), "MENU_RECEIVE_TRANSFER_LIST");
 	
 	//module purchase
-	$url_purchasepayment =  array($this->url(array('module'=>'purchase','controller'=>'payment','action'=>'index'),null, true), "PAYMENT");
-	
 	$url_purchase =  array($this->url(array('module'=>'purchase','controller'=>'index','action'=>'index'),null, true), "MENU_PURCHASE_INDEX_INDEX");
 	$url_add_purchase = array($this->url(array('module'=>'purchase','controller'=>'index','action'=>'add'),null, true), "MENU_PURCHASE_INDEX_ADD_PURCHASE");
 	$url_vendor = array($this->url(array('module'=>'purchase','controller'=>'vendor','action'=>'index'),null, true), "MENU_PURCHASE_VENDOR_INDEX");
 	$url_vendor_add = array($this->url(array('module'=>'purchase','controller'=>'vendor','action'=>'add'),null, true), "MENU_PURCHASE_VENDOR_ADD");
 	$url_return = array($this->url(array('module'=>'purchase','controller'=>'return','action'=>'index'),null, true), "MENU_PURCHASE_RETURN");
 	$url_return_vendor_in = array($this->url(array('module'=>'purchase','controller'=>'return','action'=>'return-in')), "MENU_PURCHASE_RETURN_IN");
-	$url_recieved  = array($this->url(array('module'=>'purchase','controller'=>'receive','action'=>'index'),null, true), "Receive Stock");
+	$url_recieved  = array($this->url(array('module'=>'purchase','controller'=>'receive','action'=>'index'),null, true), "RECEIVE_STOCK");
+	$url_purchase_approval = array($this->url(array('module'=>'purchase','controller'=>'purchaseapprove','action'=>'index')), "MENU_PURCHASE_APPROVAL");
+	$url_audit_approval  = array($this->url(array('module'=>'purchase','controller'=>'auditapprove','action'=>'index'),null, true), "MENU_AUDIT_APPROVAL");
+	
+	$url_mr_request = array($this->url(array('module'=>'purchase','controller'=>'purchaserequest','action'=>'index'),null, true), "MENU_MR_REQUEST");
+	$url_mr_check = array($this->url(array('module'=>'purchase','controller'=>'mrcheck','action'=>'index'),null, true), "MENU_MR_CHECK");
+	$url_mr_app = array($this->url(array('module'=>'purchase','controller'=>'mrapprove','action'=>'index'),null, true), "MENU_MR_APPROVE");
+	$url_make_price_compare= array($this->url(array('module'=>'purchase','controller'=>'compareprice','action'=>'addcompare'),null, true), "MENU_MR_MAKE_PRICE_COMPARE");
+	$url_price_compare = array($this->url(array('module'=>'purchase','controller'=>'comparepricecheck','action'=>'index'),null, true), "MENU_MR_PRICE_COMPARE");
+	$url_price_compare_app = array($this->url(array('module'=>'purchase','controller'=>'comparepriceapprove','action'=>'index'),null, true), "MENU_MR_PRICE_COMPARE_APPROVE");
+	$url_make_purchase = array($this->url(array('module'=>'purchase','controller'=>'makepurchase','action'=>'index'),null, true), "MENU_MAKE_PURCHASE");
+	$url_invoice_controling = array($this->url(array('module'=>'purchase','controller'=>'invoicecontrolling','action'=>'index'),null, true), "MENU_INVOICE_CONTROLLING");
+	$url_pol = array($this->url(array('module'=>'purchase','controller'=>'payment','action'=>'index'),null, true), "MENU_PAYMENT_ORDER_LETTER");
+	$url_pol_pay = array($this->url(array('module'=>'purchase','controller'=>'payment','action'=>'polpay'),null, true), "MENU_RECEIVE_POL");
+	$url_pur_invoice = array($this->url(array('module'=>'purchase','controller'=>'receive','action'=>'makeinvoice'),null, true), "MENU_MAKE_PURCHASE_INVOICE");
+	$url_party_cash = array($this->url(array('module'=>'purchase','controller'=>'partycash','action'=>'index'),null, true), "MENU_MAKE_PURCHASE_PARTY_CASH");
+	$url_party_cash_purchase = array($this->url(array('module'=>'purchase','controller'=>'partycash','action'=>'partypurchase'),null, true), "MENU_PARTY_CASH_PURCHASE");
 	
 	// module sales
 	$url_sales_list = array($this->url(array('module'=>'sales','controller'=>'index','action'=>'index'),null, true), "MENU_SALES_SALES_ORDER_INDEX");
@@ -83,6 +97,7 @@
 	$url_request_add = array($this->url(array('module'=>'requestfromsite','controller'=>'request','action'=>'add'),null, true), "ADD_SITE_ITEM_REQUEST");
 	$url_request_edit = array($this->url(array('module'=>'requestfromsite','controller'=>'request','action'=>'edit'),null, true), "EDIT_SITE_ITEM_REQUEST");
 	
+	$url_plan_type = array($this->url(array('module'=>'sales','controller'=>'plantype','action'=>'index'),null, true), "PLAN_TYPE");
 	$url_plan = array($this->url(array('module'=>'sales','controller'=>'plan','action'=>'index'),null, true), "PLAN");
 	$url_plan_add = array($this->url(array('module'=>'sales','controller'=>'plan','action'=>'add'),null, true), "ADD_PLAN");
 	$url_plan_edit = array($this->url(array('module'=>'sales','controller'=>'plan','action'=>'edit'),null, true), "EDIT_PLAN");
@@ -235,16 +250,51 @@
 					</a>
 					<ul class="sub-menu">
 						<li>
+            				<a href="<?php echo $url_mr_request[0]; ?>">
+						        <i class="icon-arrow-right"></i><?php echo $tr->translate($url_mr_request[1]);?>
+	            			</a>
+	            		</li>
+						<li>
+            				<a href="<?php echo $url_mr_check[0]; ?>">
+						        <i class="icon-arrow-right"></i><?php echo $tr->translate($url_mr_check[1]);?>
+	            			</a>
+	            		</li>
+						<!--<li>
+            				<a href="<?php echo $url_mr_app[0]; ?>">
+						        <i class="icon-arrow-right"></i><?php echo $tr->translate($url_mr_app[1]);?>
+	            			</a>
+	            		</li>-->
+						<li>
+            				<a href="<?php echo $url_make_price_compare[0]; ?>">
+						        <i class="icon-arrow-right"></i><?php echo $tr->translate($url_make_price_compare[1]);?>
+	            			</a>
+	            		</li>
+						<li>
+            				<a href="<?php echo $url_price_compare[0]; ?>">
+						        <i class="icon-arrow-right"></i><?php echo $tr->translate($url_price_compare[1]);?>
+	            			</a>
+	            		</li>
+						<li>
+            				<a href="<?php echo $url_price_compare_app[0]; ?>">
+						        <i class="icon-arrow-right"></i><?php echo $tr->translate($url_price_compare_app[1]);?>
+	            			</a>
+	            		</li>
+						<li>
+            				<a href="<?php echo $url_make_purchase[0]; ?>">
+						        <i class="icon-arrow-right"></i><?php echo $tr->translate($url_make_purchase[1]);?>
+	            			</a>
+	            		</li> 
+						<li>
             				<a href="<?php echo $url_purchase[0]; ?>">
 						        <i class="icon-arrow-right"></i><?php echo $tr->translate($url_purchase[1]);?>
 	            			</a>
 	            		</li> 
-	            		<li>
+	            		<!--<li>
 	            			<a href="<?php echo $url_add_purchase[0]; ?>">
 							         <i class="icon-arrow-right"></i><?php echo $tr->translate($url_add_purchase[1]);?>
 		            		</a>
-	            		</li> 
-	            		<?php //if($result["level"]==1 OR $result["level"]==2){?>
+	            		</li> -->
+	            		<?php if($result["level"]==1 OR $result["level"]==2){?>
 	            		<!-- 
 	            		
 	            		<li>
@@ -256,39 +306,79 @@
 	            			<a href="<?php echo $url_return_vendor_in[0]; ?>">
 		            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_return_vendor_in[1]);?>
 		            		</a>
-	            		</li> 
+	            		</li> -->
 	            		<li>
 	            			<a href="<?php echo $url_recieved[0]; ?>">
 		            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_recieved[1]);?>
 		            		</a>
-	            		</li>  
-	            		-->
+	            		</li> 
+						<li>
+	            			<a href="<?php echo $url_pur_invoice[0]; ?>">
+		            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_pur_invoice[1]);?>
+		            		</a>
+	            		</li> 
+						<li>
+	            			<a href="<?php echo $url_invoice_controling[0]; ?>">
+		            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_invoice_controling[1]);?>
+		            		</a>
+	            		</li> 	
+						<li>
+	            			<a href="<?php echo $url_pol[0]; ?>">
+		            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_pol[1]);?>
+		            		</a>
+	            		</li>
+						
+						<li>
+	            			<a href="<?php echo $url_pol_pay[0]; ?>">
+		            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_pol_pay[1]);?>
+		            		</a>
+	            		</li>
+
+						<li>
+	            			<a href="<?php echo $url_party_cash[0]; ?>">
+		            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_party_cash[1]);?>
+		            		</a>
+	            		</li>	
+						<li>
+	            			<a href="<?php echo $url_party_cash_purchase[0]; ?>">
+		            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_party_cash_purchase[1]);?>
+		            		</a>
+	            		</li>	
+	            		
 	            		<li>
 	            			<a href="<?php echo $url_vendor[0]; ?>">
 		            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_vendor[1])?>
 		            		</a>
 	            		</li> 
-	            		<li>
+	            		<!--<li>
 	            			<a href="<?php echo $url_vendor_add[0]; ?>">
 		            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_vendor_add[1]);?>
 		            		</a>
-	            		</li> 
-						<li>
-	            			<a href="<?php echo $this->url(array('module'=>'purchase','controller'=>'expense','action'=>'index'),null, true); ?>">
-		            			<i class="icon-arrow-right"></i><?php echo $tr->translate("Expense List");?>
+	            		</li>-->
+						
+						<!--<li>
+	            			<a href="<?php echo $url_purchase_approval[0]; ?>">
+		            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_purchase_approval[1])?>
 		            		</a>
 	            		</li> 
-						<li>
-	            			<a href="<?php echo $url_purchasepayment[0]; ?>">
-		            			<i class="icon-arrow-right"></i><?php echo $tr->translate("PURCHASE_PAYMENT");?>
+	            		<li>
+	            			<a href="<?php echo $url_audit_approval[0]; ?>">
+		            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_audit_approval[1]);?>
 		            		</a>
+	            		</li> -->
+	            		
+	            		<?php }?>
+
 	            		</li> 
+						
+						
 							<li>
 	            			<a href="<?php echo $this->url(array('module'=>'purchase','controller'=>'expensetitle','action'=>'index'),null, true); ?>">
 		            			<i class="icon-arrow-right"></i><?php echo $tr->translate("EXPENSE_TITLE");?>
 		            		</a>
 	            		</li> 
 	            		<?php //}?>
+
 					</ul>
 				</li>
 				<?php }?>
@@ -301,6 +391,11 @@
 					</a>
 					<ul class="sub-menu">
 					<li>
+							<a href="<?php echo $url_plan_type[0]; ?>">
+								<i class="icon-arrow-right"></i><?php echo $tr->translate($url_plan_type[1]);?>
+							</a>
+						</li>
+						<li>
 							<a href="<?php echo $url_plan[0]; ?>">
 								<i class="icon-arrow-right"></i><?php echo $tr->translate($url_plan[1]);?>
 							</a>

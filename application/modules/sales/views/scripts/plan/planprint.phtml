@@ -48,61 +48,74 @@ defined('BASE_URL')	|| define('BASE_URL', Zend_Controller_Front::getInstance()->
 								}
 								th{padding: 5px;}
 								.hover:hover{background: #ccc;}
+								.right{text-align:right}
+								.center{text-align:center}
 							</style>
 								<div class="form-group">
 									<div class="col-md-4"><img src="<?php echo $this->baseUrl();?>/images/soralogotop.png"></div>
-									<div class="col-md-4">
-										
+									<div class="col-md-4 center">
+										<span style="font-size:18px;"><b>SRCEC Co,Ltd</b></span>
 									</div>
 									<div class="col-md-4"></div>
 								</div>
 								<div class="form-group">
 									
-									<table width="100%" style="font-size:12px;">
+									<table width="100%" style="font-size:11px !important;">
 										 
 										<tr>
 											<td width="40%">
-												<table width="100%">
+												<table width="100%" style="font-size:12px !important;">
 													<tr>
-														<td><?php echo $tr->translate("CUSTOMER_NAME");?> :</td>
-														<td><?php echo $this->rs["customer_name"]?></td>
+														<td><?php echo $tr->translate("COMPANY_NAME");?> &nbsp;&nbsp;:&nbsp;&nbsp;<?php echo $this->rs["customer_name"]?></td>
 													</tr>
 													<tr>
-														<td><?php echo $tr->translate("CONTACT_NAME");?> :</td>
-														<td><?php echo $this->rs["contact_name"]?></td>
+														<td><?php echo $tr->translate("CONTACT_NAME");?> &nbsp;&nbsp;:&nbsp;&nbsp;<?php echo $this->rs["contact_name"]?></td>
 													</tr>
 													<tr>
-														<td><?php echo $tr->translate("PHONE");?> :</td>
-														<td><?php echo $this->rs["phone"]?></td>
+														<td><?php echo $tr->translate("CONTACT_PHONE");?> &nbsp;&nbsp;:&nbsp;&nbsp;<?php echo $this->rs["phone"]?></td>
 													</tr>
 													<tr>
-														<td><?php echo $tr->translate("EMAIL");?> :</td>
-														<td><?php echo $this->rs["email"]?></td>
+														<td><?php echo $tr->translate("CONTACT_EMAIL");?> &nbsp;&nbsp;:&nbsp;&nbsp;<?php echo $this->rs["email"]?></td>
 													</tr>
 													<tr>
-														<td><?php echo $tr->translate("ADDRESS");?> :</td>
-														<td><?php echo $this->rs["address"]?></td>
+														<td><?php echo $tr->translate("CONTACT_ADDRESS");?> &nbsp;&nbsp;:&nbsp;&nbsp;<?php echo $this->rs["address"]?></td>
 													</tr>
 												</table>
 											</td>
 											<td width="20%"></td>
 											<td width="40%">
-												<table width="100%">
+												<table width="100%" style="font-size:12px !important;">
 													<tr>
-														<td><?php echo $tr->translate("CODE");?> :</td>
+														<td class="right"><?php echo $tr->translate("CODE");?> &nbsp;&nbsp;:&nbsp;&nbsp;</td>
 														<td><?php echo $this->rs["code"]?></td>
 													</tr>
 													<tr>
-														<td><?php echo $tr->translate("PLAN_NAME");?> :</td>
+														<td class="right"><?php echo $tr->translate("PLAN_NAME");?> &nbsp;&nbsp;:&nbsp;&nbsp;</td>
 														<td><?php echo $this->rs["name"]?></td>
 													</tr>
 													<tr>
-														<td><?php echo $tr->translate("PLAN_TYPE");?> :</td>
+														<td class="right"><?php echo $tr->translate("PLAN_TYPE");?> &nbsp;&nbsp;:&nbsp;&nbsp;</td>
 														<td><?php echo $this->rs["plan_type"]?></td>
 													</tr>
 													<tr>
-														<td><?php echo $tr->translate("SALE_AGENT");?> :</td>
+														<td class="right"><?php echo $tr->translate("ADDRESS");?> &nbsp;&nbsp;:&nbsp;&nbsp;</td>
+														<td><?php echo $this->rs["address"];?></td>
+													</tr>
+													<tr>
+														<td class="right"><?php echo $tr->translate("DATE");?> &nbsp;&nbsp;:&nbsp;&nbsp;</td>
+														<td><?php echo date("M-d-Y",strtotime($this->rs["date"]));?></td>
+													</tr>
+													<tr>
+														<td class="right"><?php echo $tr->translate("PREPARE_BY");?> &nbsp;&nbsp;:&nbsp;&nbsp;</td>
 														<td><?php echo $this->rs["sale_agent"]?></td>
+													</tr>
+													<tr>
+														<td class="right"><?php echo $tr->translate("PHONE");?> &nbsp;&nbsp;:&nbsp;&nbsp;</td>
+														<td><?php echo $this->rs["sale_phone"]?></td>
+													</tr>
+													<tr>
+														<td class="right"><?php echo $tr->translate("EMAIL");?> &nbsp;&nbsp;:&nbsp;&nbsp;</td>
+														<td><?php echo $this->rs["sale_email"]?></td>
 													</tr>
 												</table>
 											</td>
@@ -110,13 +123,16 @@ defined('BASE_URL')	|| define('BASE_URL', Zend_Controller_Front::getInstance()->
 									</table>
 									
 								</div>
-								<div class="form-group" style="margin:0 auto;text-align:center">
+								<div class="form-group" style="text-align:center">
 									<h4><?php echo $tr->translate("REQUIREMENT");?></h4>
 								</div>
 								 <div class="form-group" style="border:1px solid #ccc; padding:10px;margin:0 auto">
-								 <?php if(!empty($this->rs['file'])){?>
-								 <table class="collape tablesorter" width="100%">
-									 <tr>
+								 
+									<?php echo $this->rs["description"]?>
+									
+									<?php if(!empty($this->rs['file'])){?>
+								 <table class="collape tablesorter" width="100%" border="1" style="border-collapse:collapse;border:1px solid #000; font-size:12px;">
+									 <tr style="background:#ccc">
 										<th class="tdheader header"><?php echo $tr->translate("NUM");?></th>
 										<th class="tdheader header"><?php echo $tr->translate("FILE_NAME");?></th>
 										<th class="tdheader header"><?php echo $tr->translate("DOWNLOAD");?></th>
@@ -126,14 +142,13 @@ defined('BASE_URL')	|| define('BASE_URL', Zend_Controller_Front::getInstance()->
 											foreach($files as $key=>$rs){
 									 ?>
 									<tr class="normal">
-										<td class="items-no"><?php echo $key+1?></td>
-										<td class="items"><?php echo $rs?></td>
-										<td class="items"><a href="<?php echo $this->baseUrl();?>/files/<?php echo $rs;?>"><?php echo $tr->translate("DOWNLOAD");?></a></td>
+										<td class="items-no center"><?php echo $key+1?></td>
+										<td class="items center"><?php echo $rs?></td>
+										<td class="items center"><a href="<?php echo $this->baseUrl();?>/files/<?php echo $rs;?>"><?php echo $tr->translate("DOWNLOAD");?></a></td>
 									</tr>
 								<?php }?>
 								</table>
 								<?php }?>
-									<?php echo $this->rs["description"]?>
 								 </div>
 								
 							    <!--<div class="form-group">

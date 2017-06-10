@@ -196,7 +196,23 @@ $(document).ready(function() {
     //displayPhoto();
     //FormFileUpload.init();
  }); 
- 
+ function formatDateToString(date){
+	/*var monthNames = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];*/
+var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+];
+   // 01, 02, 03, ... 29, 30, 31
+   var dd = (date.getDate() < 10 ? '0' : '') + date.getDate();
+   // 01, 02, 03, ... 10, 11, 12
+   var MM = ((monthNames[date.getMonth()]) < 10 ? '0' : '') + (monthNames[date.getMonth()]);
+   // 1970, 1971, ... 2015, 2016, ...
+   var yyyy = date.getFullYear();
+
+   // create the format you want
+   return (dd + "-" + MM + "-" + yyyy);
+}
  function exports() {
 			title=document.title;
 			var today = new Date();

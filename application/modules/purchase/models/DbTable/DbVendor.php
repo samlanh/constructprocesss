@@ -9,8 +9,7 @@ class Purchase_Model_DbTable_DbVendor extends Zend_Db_Table_Abstract
 	}
 	function getAllVender($search){
 		$db = $this->getAdapter();
-		$sql=" SELECT v.vendor_id, v.v_name,v.v_phone,v.contact_name,v.phone_person,v.email, v.website,v.add_name,
-		(SELECT vi.`name_en` FROM `tb_view` AS vi WHERE vi.`type`=5 AND vi.key_code=v.status) AS status
+		$sql=" SELECT v.vendor_id, v.v_name,v.v_phone,v.contact_name,v.phone_person,v.email, v.website,v.add_name
 		FROM tb_vendor AS v WHERE v_name!='' ";
 		$from_date =(empty($search['start_date']))? '1': " date >= '".$search['start_date']." 00:00:00'";
 		$to_date = (empty($search['end_date']))? '1': " date <= '".$search['end_date']." 23:59:59'";
@@ -30,9 +29,6 @@ class Purchase_Model_DbTable_DbVendor extends Zend_Db_Table_Abstract
 		}
 		if($search['suppliyer_id']>0){
 			$where .= " AND vendor_id = ".$search['suppliyer_id'];
-		}
-		if($search['status']>-1){
-			$where .= " AND v.status = ".$search['status'];
 		}
 		$order=" ORDER BY v.vendor_id DESC";
 		//echo $sql.$where.$order;
@@ -61,11 +57,10 @@ class Purchase_Model_DbTable_DbVendor extends Zend_Db_Table_Abstract
 // 						'website'		=> $post['txt_website'],
 // 						'fax'			=> $post['txt_fax'],
 // 						'note'	=> $post['remark'],
-						'is_over_sea'	=>	$post["is_over_sea"],
+						'is_over_sea'	=>	@$post["is_over_sea"],
 						'last_usermod'	=> $GetUserId,
 						'last_mod_date' => new Zend_Date(),
 						'date'			=>	date("Y-m-d"),
-						'status'			=>	$post["status"],
 				);
 			}else {
 				$data=array(
@@ -82,7 +77,9 @@ class Purchase_Model_DbTable_DbVendor extends Zend_Db_Table_Abstract
 						'last_usermod'	=> $GetUserId,
 						'last_mod_date' => new Zend_Date(),
 						'date'			=>	date("Y-m-d"),
-						'status'			=>	$post["status"],
+						'bank_name'		=>	$post['bank_name'],
+						'bank_no'		=>	$post['bank_acc_name'],
+						//'vat'		=>	$post['tax'],
 				);
 			}
 			if(!empty($post['id'])){
@@ -105,22 +102,17 @@ class Purchase_Model_DbTable_DbVendor extends Zend_Db_Table_Abstract
 		$userName=$session_user->user_name;
 		$GetUserId= $session_user->user_id;
 		try{
-			$data=array(
-					'v_name'		=> $post['vendor_name'],
-					'v_phone'		=> $post['com_phone'],
-					'contact_name'	=> $post['txt_contact_name'],
-					'phone_person'	=> $post['v_phone'],
-					'add_name'		=> $post['txt_address'],
-					'email'			=> $post['txt_mail'],
-	// 				'website'		=> $post['txt_website'],
-	// 				'fax'			=> $post['txt_fax'],
-					'note'			=> $post['vendor_note'],
-					'is_over_sea'	=>	0,
-					'last_usermod'	=> $GetUserId,
-					'last_mod_date' => new Zend_Date(),
-					'date'			=>	date("Y-m-d"),
-			);
-		   return $this->insert($data);
+		$data=array(
+				"v_name"	   => $post["v_name"],
+				"v_phone"=> $post["com_phone"],
+				"contact_name" => $post["contact"],
+				"phone_person"=> $post["phone"],
+				"add_name"	   => $post["address"],
+				"email"		   => $post["txt_mail"],
+				"last_usermod" => $GetUserId,
+				"last_mod_date"=>new Zend_Date()
+		);
+		return $this->insert($data);
 		}catch(Exception $e){
 			Application_Form_FrmMessage::message('INSERT_FAIL');
 			$err =$e->getMessage();

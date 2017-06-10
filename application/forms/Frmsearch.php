@@ -7,6 +7,41 @@ class Application_Form_Frmsearch extends Zend_Form
 		$db=new Application_Model_DbTable_DbGlobal();
 		
 		$tr=Application_Form_FrmLanguages::getCurrentlanguage();
+		
+		$branch = new Zend_Form_Element_Select("branch");
+		$opt = array(''=>$tr->translate("SELECT_BRANCH"));
+		$row_branch = $db->getBranch();
+		if(!empty($row_branch)){
+			foreach ($row_branch as $rs){
+				$opt[$rs["id"]] = $rs["name"];
+			}
+		}
+		$branch->setAttribs(array(
+				'class'=>'form-control select2me',
+				//'required'=>'required',
+				'Onchange'	=>	'addNewProLocation()'
+		));
+		$branch->setMultiOptions($opt);
+		$branch->setValue($request->getParam('branch'));
+		$this->addElement($branch);
+		
+		$po_pedding = new Zend_Form_Element_Select("po_pedding");
+		$opt = array(''=>$tr->translate("SELECT"));
+		$rspo_pedding = $db->getPurchasePedding();
+		if(!empty($rspo_pedding)){
+			foreach ($rspo_pedding as $rs){
+				$opt[$rs["id"]] = $rs["name"];
+			}
+		}
+		$po_pedding->setAttribs(array(
+				'class'=>'form-control select2me',
+				//'required'=>'required',
+				'Onchange'	=>	'addNewProLocation()'
+		));
+		$po_pedding->setMultiOptions($opt);
+		$po_pedding->setValue($request->getParam('po_pedding'));
+		$this->addElement($po_pedding);
+		
 		$nameValue = $request->getParam('text_search');
 		$nameElement = new Zend_Form_Element_Text('text_search');
 		$nameElement->setAttribs(array(
@@ -27,13 +62,7 @@ class Application_Form_Frmsearch extends Zend_Form
 		));
 		$vendor_element->setValue($vendorValue);
 		$this->addElement($vendor_element);
-		$_stutas = new Zend_Form_Element_Select('status');
-		$_stutas ->setAttribs(array(
-				'class'=>' form-control',			
-		));
-		$options= array(-1=>"ទាំងអស់",1=>"ប្រើប្រាស់",0=>"មិនប្រើប្រាស់");
-		$_stutas->setMultiOptions($options);
-		$this->addElement($_stutas);
+
 		
 		/////////////Date of lost item		/////////////////
 		$startDateValue = $request->getParam('start_date');
@@ -43,6 +72,10 @@ class Application_Form_Frmsearch extends Zend_Form
 			$endDateValue=date("m/d/Y");
 			//$startDateValue=date("m/d/Y");
 		}
+		if($startDateValue==""){
+			$startDateValue=date("m/01/Y");
+			//$startDateValue=date("m/d/Y");
+		}
 		
 		$startDateElement = new Zend_Form_Element_Text('start_date');
 		$startDateElement->setValue($startDateValue);
@@ -50,34 +83,30 @@ class Application_Form_Frmsearch extends Zend_Form
 				'class'=>'form-control form-control-inline date-picker',
 				'placeholder'=>'Start Date'
 		));
-		
+		$startDateElement->setValue($startDateValue);
 		$this->addElement($startDateElement);
-		$endDateElement = new Zend_Form_Element_Text('end_date');
 		
+		$endDateElement = new Zend_Form_Element_Text('end_date');
 		$endDateElement->setValue($endDateValue);
 		$this->addElement($endDateElement);
 		$endDateElement->setAttribs(array(
 				'class'=>'form-control form-control-inline date-picker'
 		));
 		
-		$options = $db->getAllLocation(1);
-		$locationID = new Zend_Form_Element_Select('branch_id');
-		$locationID ->setAttribs(array('class'=>'validate[required] form-control select2me'));
-		$locationID->setMultiOptions($options);
-		$locationID->setattribs(array());
-		$locationID->setValue($request->getParam('branch_id'));
-		$this->addElement($locationID);
-		
-		$status_paid = new Zend_Form_Element_Select('status_paid');
-		$status_paid ->setAttribs(array(
-				'class'=>' form-control',
-		));
-		$options= array(-1=>"ជ្រើសរើសការបង់",1=>"បង់ដាច់",2=>"នៅជំពាក់");
-		$status_paid->setMultiOptions($options);
-		$this->addElement($status_paid);
-		$status_paid->setValue($request->getParam("status_paid"));
-		
-		
+// 		$rs=$db->getGlobalDb('SELECT DISTINCT name,id FROM tb_sublocation WHERE Name!="" AND status=1 ');
+// 		$options=array($tr->translate('Please_Select'));
+// 		$locationValue = $request->getParam('LocationId');
+// 		foreach($rs as $read) $options[$read['id']]=$read['name'];
+// 		$location_id=new Zend_Form_Element_Select('id');
+// 		$location_id->setMultiOptions($options);
+// 		$location_id->setAttribs(array(
+// 				'id'=>'LocationId',
+// 				'onchange'=>'this.form.submit()',
+// 				'class'=>'form-control'
+				
+// 		));
+// 		$location_id->setValue($locationValue);
+// 		$this->addElement($location_id);
 	  
 		$statusCOValue=4;
 		$statusCOValue = $request->getParam('purchase_status');
@@ -92,17 +121,15 @@ class Application_Form_Frmsearch extends Zend_Form
 		$statusCO->setValue($statusCOValue);
 		$this->addElement($statusCO);
 		
-		$optexpense = $db->getAllExpense(1);
-		$title = new Zend_Form_Element_Select('title');
-		$title->setAttribs(array(
-				'class'=>' form-control select2me',
-				'onchange'=>'showexpense();'
+		$po_invoice_status = new Zend_Form_Element_Select('po_invoice_status');
+		$po_invoice_status->setAttribs(array(
+			'class'=>'form-control',
+			
 		));
-		$title->setMultiOptions($optexpense);
-		$valuetitle = $request->getParam('title');
-		$title->setValue($valuetitle);
-		$this->addElement($title);
-		
+		$opt_in_stat = array(''=>$tr->translate("SELECT"),1=>$tr->translate("RECEIVED_INVOICE"),2=>$tr->translate('RECEIVE_INVOICE'));
+		$po_invoice_status->setMultiOptions($opt_in_stat);
+		$po_invoice_status->setValue($request->getParam('po_invoice_status'));
+		$this->addElement($po_invoice_status);
 	}
 	
 }

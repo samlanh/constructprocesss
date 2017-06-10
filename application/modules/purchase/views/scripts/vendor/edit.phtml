@@ -12,26 +12,23 @@ $tr = Application_Form_FrmLanguages::getCurrentlanguage();
 		<div class="portlet box blue">
 			<div class="portlet-title">
 				<div class="caption">
-					<i class="icon-home"></i><?php echo $tr->translate("VENDOR_NAME");?>
+					<i class="icon-home"></i><?php echo $tr->translate("Vendor");?>
 				</div>
 			</div>
 			<div class="portlet-body form">
-				<form id="form_sample_2" action="<?php echo $url_submit; ?>" class="form-horizontal" enctype="multipart/form-data" method="post">
+				<form id="form_sample_2" action="<?php //echo $url_submit; ?>" class="form-horizontal" enctype="multipart/form-data" method="post">
 				<div class="form-body">
 					<div class="form-group">
-						<label class="control-label col-md-2"><?php echo $tr->translate("OVER_SEA_VENDOR");?> <span class="required"></span></label>
+						<!--<label class="control-label col-md-2"><?php echo $tr->translate("OVER_SEA_VENDOR");?> <span class="required"></span></label>
 						<div class="col-md-4" style="margin-top: 10px;">
 								<div class="input-icon right">
 									<i class="fa"></i>
-									<input type="checkbox" <?php if($this->is_over_sea == 1){echo 'checked="checked"';}?> name="is_over_sea" id="is_over_sea" value="1" onClick="isOverSea()">
+									<input type="checkbox" name="is_over_sea" id="is_over_sea" value="1" onClick="isOverSea()">
 								</div>
 							</div>
-					</div>
+					</div>-->
 						<div class="form-group">
-							<label class="control-label col-md-2"><?php echo $tr->translate("COMPANY_NAME");?> <span class="required">
-							<?php echo $form->getElement('id');?>
-							</span>
-							</label>
+							<label class="control-label col-md-2"><?php echo $tr->translate("COMPANY_NAME");?> <span class="required"></span></label>
 							<div class="col-md-4">
 								<div class="input-icon right">
 									<i class="fa"></i>
@@ -110,13 +107,34 @@ $tr = Application_Form_FrmLanguages::getCurrentlanguage();
 							</div>
 					</div>
 					<div class="form-group hides">
-						<label class="control-label col-md-2"><?php echo $tr->translate("BALANCE");?> <span class="required">
+						<label class="control-label col-md-2"><?php echo $tr->translate("BANK_ACCOUNT");?> <span class="required">
 								</span>
 						</label>
 						<div class="col-md-4">
 								<div class="input-icon right">
 									<i class="fa"></i>
-									<?php echo $form->getElement('txt_balance'); ?>
+									<?php echo $form->getElement('bank_name'); ?>
+								</div>
+						</div>
+						<label class="control-label col-md-2">
+							<?php echo $tr->translate("BANK_ACCOUNT_NO");?><span class="required">
+								</span>
+						</label>
+						<div class="col-md-4">
+								<div class="input-icon right">
+									<i class="fa"></i>
+									<?php echo $form->getElement("bank_acc_name");?>
+								</div>
+						</div>
+					</div>
+					<div class="form-group hides">
+						<label class="control-label col-md-2"><?php //echo $tr->translate("TAX");?> <span class="required">
+								</span>
+						</label>
+						<div class="col-md-4">
+								<div class="input-icon right">
+									<i class="fa"></i>
+									<?php //echo $form->getElement('tax'); ?>
 								</div>
 						</div>
 						<label class="control-label col-md-2">
@@ -131,34 +149,11 @@ $tr = Application_Form_FrmLanguages::getCurrentlanguage();
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="control-label col-md-2"><?php //echo $tr->translate("BALANCE");?> <span class="required">
-								</span>
-						</label>
-						<div class="col-md-4">
-								<div class="input-icon right">
-									<i class="fa"></i>
-									<?php //echo $form->getElement('txt_balance'); ?>
-								</div>
-						</div>
-						<label class="control-label col-md-2">
-							<?php echo $tr->translate("STATUS");?><span class="required">
-								</span>
-						</label>
-						<div class="col-md-4">
-								<div class="input-icon right">
-									<i class="fa"></i>
-									<?php echo $form->getElement("status");?>
-								</div>
-						</div>
-					</div>
-					<div class="form-group">
-						<div class="col-md-4">
-						</div>
-						<div class="col-md-4">
-							<a href="<?php echo $this->baseUrl();?>/purchase/vendor"><button type="button" class="btn blue btn-block btn-lg"><i class="fa fa-times"></i> <?php echo $tr->translate("EXIT")?></button></a>
-						</div>
-						<div class="col-md-4">
-							<button type="submit" name="btnsavenew" class="btn blue btn-block btn-lg"><i class="fa fa-save"></i> <?php echo $tr->translate("GO_EDIT")?> </button>
+						<div  class="col-md-12 col-md-offset-4 col-md-8">
+							<a href="<?php echo $this->baseUrl();?>/purchase/vendor"><button type="button" class="btn red"><i class="fa fa-times"></i> <?php echo $tr->translate("EXIT")?></button></a>
+							<button type="submit" name="saveclose" value="saveclose" class="btn btn-primary" ><i class="glyphicon glyphicon-log-in"></i> <?php echo $tr->translate("SAVE_CLOSE")?></button>
+							<button type="submit" name="btnsavenew" class="btn btn-primary"><i class="fa fa-save"></i> <?php echo $tr->translate("SAVE_NEW")?> </button>
+							
 						</div>
 					</div>
 				</div>

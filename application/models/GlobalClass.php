@@ -2,6 +2,27 @@
 
 class Application_Model_GlobalClass  extends Zend_Db_Table_Abstract
 {
+	function getWorkType(){
+		$db = $this->getAdapter();
+		$user_info = new Application_Model_DbTable_DbGetUserInfo();
+		$result = $user_info->getUserInfo();
+		$tr = Application_Form_FrmLanguages::getCurrentlanguage();
+		$option="";	
+		
+		$sql = "SELECT id,name FROM tb_work_type WHERE name!='' AND status=1";
+		$rows = $db->fetchAll($sql);
+		//$option .= '<optgroup  label="'.htmlspecialchars($cate['name'], ENT_QUOTES).'">';
+		if($rows){
+					foreach($rows as $value){
+						$option .= '<option value="'.$value['id'].'" label="'.htmlspecialchars($value['name'], ENT_QUOTES).'">'.
+							htmlspecialchars($value['name'], ENT_QUOTES)
+						.'</option>';
+					}
+		}
+			//$option.="</optgroup>";
+			
+		return $option;
+	}
 	public function getImgStatus($rows,$base_url, $case=''){
 		if($rows){			
 			$imgnone='<img src="'.$base_url.'/images/icon/cross.png"/>';

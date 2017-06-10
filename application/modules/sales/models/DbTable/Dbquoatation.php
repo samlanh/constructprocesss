@@ -4,7 +4,19 @@ class Sales_Model_DbTable_Dbquoatation extends Zend_Db_Table_Abstract
 {
 	//use for add purchase order 29-13
 	protected $_name="tb_quoatation"; 
-	
+	function getItemQty($item_id,$branch){
+		$db = $this->getAdapter();
+		$sql = "SELECT 
+				  p.`qty_perunit`,
+				  (SELECT qty FROM `tb_prolocation` WHERE location_id = $branch AND pro_id = $item_id LIMIT 1) AS qty ,
+				   (SELECT price FROM `tb_prolocation` WHERE location_id = $branch AND pro_id = $item_id LIMIT 1) AS price ,
+				  (SELECT m.name FROM tb_measure as m where m.id=p.measure_id) as measure
+				FROM
+				  tb_product as p
+				WHERE p.id = $item_id 
+				LIMIT 1 ";
+		return $db->fetchRow($sql);
+	}
 	function getAllQuoatation($search){
 			$db= $this->getAdapter();
 			$sql=" SELECT id,

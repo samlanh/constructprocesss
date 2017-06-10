@@ -22,6 +22,49 @@ class Purchase_Model_DbTable_DbRecieve extends Zend_Db_Table_Abstract
 		$sql="SELECT r.* FROM `tb_recieve_order` AS r WHERE r.`purchase_id`=$id";
 		return $db->fetchRow($sql);
 	}
+	function getRecieve($id,$type){
+		$db = $this->getAdapter();
+		if($type==1){
+			$sql = "SELECT 
+					  r.`order_id`,
+					  r.`recieve_number`,
+					   r.`dn_number`,
+					  r.`date_in`,
+					  r.`all_total`,
+					  r.`all_total_after`,
+					  r.`net_total`,
+					  r.`net_total_after`,
+					  r.`paid`,
+					  r.`paid_after`,
+					  r.`balance_after`,
+					  r.`balance` ,
+					  r.`vendor_id`,
+					  r.tax
+					FROM
+					  `tb_recieve_order` AS r 
+					WHERE r.`vendor_id` = $id AND is_invoice_controlling =0";
+		}else{
+			$sql = "SELECT 
+					  r.`order_id`,
+					  r.`recieve_number`,
+					   r.`dn_number`,
+					  r.`date_in`,
+					  r.`all_total`,
+					  r.`all_total_after`,
+					  r.`net_total`,
+					  r.`net_total_after`,
+					  r.`paid`,
+					  r.`paid_after`,
+					  r.`balance_after`,
+					  r.`balance` ,
+					  r.`vendor_id`,
+					  r.tax
+					FROM
+					  `tb_recieve_order` AS r 
+					WHERE r.`order_id` = $id AND is_invoice_controlling =0";
+		}
+		return $db->fetchAll($sql);
+	}
 	function getVendorByPuId($id){
 		$db = $this->getAdapter();
 		$sql="SELECT 
@@ -59,48 +102,71 @@ class Purchase_Model_DbTable_DbRecieve extends Zend_Db_Table_Abstract
 		$sql = "SELECT 
 				  ro.order_id AS id,
 				  ro.recieve_number,
+				  ro.`invoice_no`,
+				  ro.`invoice_date`,
+				  ro.`payment_number`,
+				  ro.`receive_invoice_date`,
 				  (SELECT v.`v_name` FROM `tb_vendor` AS v WHERE v.`vendor_id`=ro.`vendor_id`) AS v_name,
 				  (SELECT v.`v_phone` FROM `tb_vendor` AS v WHERE v.`vendor_id`=ro.`vendor_id`) AS v_phone,
 				  (SELECT v.`add_name` FROM `tb_vendor` AS v WHERE v.`vendor_id`=ro.`vendor_id`) AS add_name,
+				  (SELECT v.`vat` FROM `tb_vendor` AS v WHERE v.`vendor_id`=ro.`vendor_id`) AS vat,
 				  (SELECT p.`order_number` FROM `tb_purchase_order` AS p WHERE p.id=ro.`purchase_id`) AS po_no,
-				  (SELECT p.`re_code` FROM `tb_purchase_request` AS p WHERE p.`id`=(SELECT p.`id` FROM `tb_purchase_order` AS p WHERE p.re_id LIMIT 1)) AS mr_no,
-				  (SELECT p.`date_request` FROM `tb_purchase_request` AS p WHERE p.`id`=(SELECT p.`id` FROM `tb_purchase_order` AS p WHERE p.re_id LIMIT 1)) AS mr_date,
-				  (SELECT p.item_name FROM `tb_product` AS p WHERE p.`id`=(SELECT r.`pro_id` FROM `tb_recieve_order_item` AS r WHERE r.`recieve_id`=ro.`order_id` LIMIT 1)) AS item_name,
-				  (SELECT p.item_code FROM `tb_product` AS p WHERE p.`id`=(SELECT r.`pro_id` FROM `tb_recieve_order_item` AS r WHERE r.`recieve_id`=ro.`order_id` LIMIT 1)) AS item_code,
+				  (SELECT pl.name FROM `tb_plan` AS pl WHERE pl.id=(SELECT p.`plan_id` FROM `tb_purchase_request` AS p WHERE p.`id`=(SELECT p.`re_id` FROM `tb_purchase_order` AS p WHERE p.id=ro.`purchase_id` LIMIT 1))) AS plan,
+				  (SELECT p.`re_code` FROM `tb_purchase_request` AS p WHERE p.`id`=(SELECT p.`re_id` FROM `tb_purchase_order` AS p WHERE p.id=ro.`purchase_id` LIMIT 1)) AS mr_no,
+				  (SELECT p.`date_request` FROM `tb_purchase_request` AS p WHERE p.`id`=(SELECT p.`re_id` FROM `tb_purchase_order` AS p WHERE p.id=ro.`purchase_id` LIMIT 1)) AS mr_date,
+				  (SELECT p.item_name FROM `tb_product` AS p WHERE p.`id`=r.`pro_id` LIMIT 1) AS item_name,
+				  (SELECT p.item_code FROM `tb_product` AS p WHERE p.`id`=r.`pro_id` LIMIT 1) AS item_code,
 				  (SELECT m.name FROM `tb_measure` AS m WHERE m.id =(SELECT p.measure_id FROM `tb_product` AS p WHERE p.`id`=(SELECT r.`pro_id` FROM `tb_recieve_order_item` AS r WHERE r.`recieve_id`=ro.`order_id` LIMIT 1))) AS measur,
-				  (SELECT c.`name` FROM `tb_category` AS c WHERE c.id=(SELECT pr.cate_id FROM `tb_product` AS pr WHERE pr.id=(SELECT r.`pro_id` FROM `tb_recieve_order_item` AS r WHERE r.`recieve_id`=ro.`order_id` LIMIT 1)) LIMIT 1) AS type,
+				  (SELECT c.`name` FROM `tb_category` AS c WHERE c.id=(SELECT pr.cate_id FROM `tb_product` AS pr WHERE pr.id=(SELECT r.`pro_id` FROM `tb_recieve_order_item` AS r WHERE r.`recieve_id`=ro.`order_id` LIMIT 1)) LIMIT 1) AS TYPE,
 				  (SELECT v.name_en  FROM tb_view AS v WHERE v.key_code=(SELECT pr.size_id FROM `tb_product` AS pr WHERE pr.id=(SELECT r.`pro_id` FROM `tb_recieve_order_item` AS r WHERE r.`recieve_id`=ro.`order_id` LIMIT 1) AND v.type=3) LIMIT 1) AS size,
 				  (SELECT v.name_en  FROM tb_view AS v WHERE v.key_code=(SELECT pr.size_id FROM `tb_product` AS pr WHERE pr.id=(SELECT r.`pro_id` FROM `tb_recieve_order_item` AS r WHERE r.`recieve_id`=ro.`order_id` LIMIT 1) AND v.type=2) LIMIT 1) AS model,
 				  (SELECT v.name_en  FROM tb_view AS v WHERE v.key_code=(SELECT pr.size_id FROM `tb_product` AS pr WHERE pr.id=(SELECT r.`pro_id` FROM `tb_recieve_order_item` AS r WHERE r.`recieve_id`=ro.`order_id` LIMIT 1) AND v.type=4) LIMIT 1) AS color,
-				  (SELECT r.`qty_order` FROM `tb_recieve_order_item` AS r WHERE r.`recieve_id`=ro.`order_id` LIMIT 1) AS qty,
-				  (SELECT r.`qty_receive` FROM `tb_recieve_order_item` AS r WHERE r.`recieve_id`=ro.`order_id` LIMIT 1) AS qty_receive,
-				  (SELECT r.`price` FROM `tb_recieve_order_item` AS r WHERE r.`recieve_id`=ro.`order_id` LIMIT 1) AS price,
-				  (SELECT r.`sub_total` FROM `tb_recieve_order_item` AS r WHERE r.`recieve_id`=ro.`order_id` LIMIT 1) AS sub_total,
+				  r.`qty_order` AS qty,
+				  r.`qty_receive`,
+				  r.`price`,
+				   r.`remark` AS note,
+				  r.`sub_total`,
 				  ro.date_order,
 				  date_in,
 					ro.`remark`,
 				  (SELECT pl.name FROM `tb_sublocation` AS pl WHERE pl.id=ro.`LocationId`) AS branch,
 				  (SELECT v.v_name FROM tb_vendor AS v WHERE v.vendor_id = ro.vendor_id) AS vendor_name,
 				  ro.all_total,
-				  (SELECT  u.username FROM tb_acl_user AS u WHERE u.user_id = ro.user_mod) AS user_name 
+				  (SELECT  u.username FROM tb_acl_user AS u WHERE u.user_id = ro.user_mod) AS user_name ,
+				   (SELECT p.name FROM tb_plan AS p WHERE p.id=(SELECT pr.plan_id FROM `tb_purchase_request` AS pr WHERE pr.id=ro.`purchase_id` LIMIT 1) LIMIT 1) AS plan
 				FROM
-				  tb_recieve_order AS ro 
-				WHERE ro.order_id=$id";
+				  tb_recieve_order AS ro ,`tb_recieve_order_item` AS r
+				WHERE ro.order_id=$id AND ro.`order_id`=r.`recieve_id`";
 		
 		return $db->fetchAll($sql);
 	}
 	function getItemByPuId($id){
 		$db = $this->getAdapter();
-		$sql="SELECT p.`pro_id`,p.`qty_order`,p.qty_unit,p.qty_detail,pd.`item_name`,pd.qty_perunit,p.`price`,p.`sub_total`,p.`disc_value` 
-				FROM `tb_purchase_order_item` AS p ,`tb_product` AS  pd 
-			  WHERE p.`pro_id`=pd.`id` AND p.`purchase_id`=$id";
+		$sql="SELECT 
+				  p.`pro_id`,
+				  p.`qty_order`,
+				  p.`qty_after`,
+				  pd.`item_code`,
+				  pd.`item_name`,
+				  p.`price`,
+				  p.`sub_total`,
+				  p.`disc_value` ,
+				  pd.is_convertor,
+				  pd.convertor_measure,
+				  pd.sign,
+				  (SELECT m.name FROM `tb_measure` AS m WHERE m.id=pd.`measure_id`) AS measure
+				FROM
+				  `tb_purchase_order_item` AS p,
+				  `tb_product` AS pd 
+				WHERE p.`pro_id` = pd.`id` 
+				  AND p.`purchase_id` = $id";
 		return $db->fetchAll($sql);
 	}
 	
-	function getRecieveCode(){
+	function getRecieveCode($location){
 		$db = $this->getAdapter();
 		$user = $this->GetuserInfo();
-		$location = $user['branch_id'];
+		//$location = $user['branch_id'];
 		
 		$sql_pre = "SELECT pl.`prefix` FROM `tb_sublocation` AS pl WHERE pl.`id`=$location";
 		$prefix = $db->fetchOne($sql_pre);
@@ -110,99 +176,249 @@ class Purchase_Model_DbTable_DbRecieve extends Zend_Db_Table_Abstract
 		
 		$num_lentgh = strlen((int)$num+1);
 		$num = (int)$num+1;
-		$pre = $prefix."RP";
+		$pre = "GN";
 		for($i=$num_lentgh;$i<4;$i++){
 			$pre.="0";
 		}
 		return $pre.$num;
 	}
 	
+	function getPayCode($location){
+	    $db = $this->getAdapter();
+	    $user = $this->GetuserInfo();
+	    //$location = $user['branch_id'];
+	
+	    $sql_pre = "SELECT pl.`prefix` FROM `tb_sublocation` AS pl WHERE pl.`id`=$location";
+	    $prefix = $db->fetchOne($sql_pre);
+	
+	    $sql="SELECT r.`order_id` FROM `tb_recieve_order` AS r WHERE r.`LocationId`=$location ORDER BY r.`order_id` DESC LIMIT 1";
+	    $num = $db->fetchOne($sql);
+	
+	    $num_lentgh = strlen((int)$num+1);
+	    $num = (int)$num+1;
+	    $pre = "POL-";
+	    for($i=$num_lentgh;$i<4;$i++){
+	        $pre.="0";
+	    }
+	    return $pre.$num;
+	}
+	
+	function closeReceive($id,$re_id){
+		$db = $this->getAdapter();
+		$db->beginTransaction();
+		$user = $this->GetuserInfo();
+		$GetUserId = $user['user_id'];
+		try{
+			$arr_update = array('is_completed' =>	1,);
+			$this->_name="tb_purchase_order";
+			$where = "id=".$id;
+			$this->update($arr_update,$where);
+			
+			
+			$arr = array(
+				'is_purchase'	=>	1,
+				'appr_status'	=>	3,
+				'pedding'		=>	8,
+				'pur_user'		=>	$GetUserId,
+				'pur_date'		=>  date('Y-m-d'),
+			);
+			$this->_name = "tb_su_price_idcompare";
+			$where = "re_id=".$re_id;
+			$this->update($arr,$where);
+					
+			$arr = array(
+				'status'	=>	5,
+				'is_recieved'	=>	1,
+				'purchase_status'	=>	3,
+				'pending_status'	=>	8
+			);
+			$where = "id=".$id;
+			$this->_name = "tb_purchase_order";
+			$this->update($arr, $where);
+			
+			$arr_re = array(
+					'pedding'		=>	8,
+					'appr_status'	=>	3,
+					'appr_user'		=>	$GetUserId,
+					'appr_date'		=>  date('Y-m-d'),
+			);
+			$this->_name = "tb_purchase_request";
+			$where = "id=".$re_id;
+			$this->update($arr_re,$where);
+			
+			$db->commit();
+			
+			return 1;
+		}catch(Exception $e){
+			$db->rollBack();
+			$err =$e->getMessage();
+			Application_Model_DbTable_DbUserLog::writeMessageError($err);
+			echo $err;
+		}
+	}
 	function  add($data){
 		$db = $this->getAdapter();
 		$db->beginTransaction();
 		$user = $this->GetuserInfo();
 		$GetUserId = $user['user_id'];
-		//print_r($data);
-		
+		//print_r($data);exit();
 		try{
 			$identity = $data["identity"];
 			if($identity!=""){
 				
 				$orderdata = array(
 					'purchase_id'		=>	$data["pu_code"],
+					'dn_number'			=>	$data["dn_no"],
+					'invoice_no'		=>	$data["invoice_no"],
 					"vendor_id"      	=> 	$data['vendor'],
 					"LocationId"     	=> 	$data["branch"],
 					"recieve_number" 	=> 	$data["recieve_no"],
-					"date_order"     	=> 	$data['date_order'],
-					"date_in"     		=> 	$data['date_in'],
+					"date_order"     	=> 	date("Y-m-d",strtotime($data['date_order'])),
+					"date_in"     		=> 		date("Y-m-d",strtotime($data['date_recieve'])),
 					"purchase_status"   => 	1,
 					"payment_method" 	=> 	$data['payment_name'],
 					"currency_id"    	=> 	$data['currency'],
 					"remark"         	=> 	$data['remark'],
-					"all_total"      	=> 	$data['totalAmoun'],
-					//"all_total_after"   => 	$data['totalAmoun_after'],
-					"tax"				=>	$data["total_tax"],
+					"all_total"      	=> 	$data['totalAmoun_after']+(($data['totalAmoun_after']*$data["vat"])/100),
+					"all_total_after"   => 	$data['totalAmoun_after']+(($data['totalAmoun_after']*$data["vat"])/100),
+					"tax"				=>	$data["vat"],
 					"discount_value" 	=> 	$data['dis_value'],
 					"discount_real"  	=> 	$data['global_disc'],
-					"net_total"      	=> 	$data['all_total'],
-					//"net_total_after"   => 	$data['all_total_after'],
-					"paid"           	=> 	$data['paid'],
-					"balance"        	=> 	$data['remain'],
-					//"balance_after"		=>	$data["remain_after"],
+					"net_total"      	=> 	$data['totalAmoun_after'],
+					"net_total_after"   => 	$data['totalAmoun_after'],
+					"paid"           	=> 	0,
+					"balance"        	=> 	$data['totalAmoun_after']+(($data['totalAmoun_after']*$data["vat"])/100),
+					"balance_after"		=>	$data['totalAmoun_after']+(($data['totalAmoun_after']*$data["vat"])/100),
 					"user_mod"       	=> 	$GetUserId,
-					"date"      		=> 	$data["date_recieve"],
+					"date"      		=> 		date("Y-m-d",strtotime($data["date_recieve"])),
+				    //"payment_number"    =>$data["payment_number"],
+				    "invoice_date"      => 		date("Y-m-d",strtotime($data["invoice_date"])),
+				    "receive_invoice_date" => 		date("Y-m-d",strtotime($data["date_recieve"])),
 				);
 				
 				$this->_name='tb_recieve_order';
-				$db->getProfiler()->setEnabled(true);
+				
 				$recieved_order = $this->insert($orderdata);
-				Zend_Debug::dump($db->getProfiler()->getLastQueryProfile()->getQuery());
-Zend_Debug::dump($db->getProfiler()->getLastQueryProfile()->getQueryParams());
-$db->getProfiler()->setEnabled(false);
+				
+				
+				
+				
+				if(@$data["is_invoice"]==1){
+					$datainvoice = array(
+						'purchase_id'		=>	$data["pu_code"],
+						'invoice_no'		=>	$data["invoice_no"],
+						"vendor_id"      	=> 	$data['vendor'],
+						"branch_id"     	=> 	$data["branch"],
+						"dn_id" 			=> 	$recieved_order,
+						"invoice_date"     	=> 	date("Y-m-d",strtotime($data['date_order'])),
+						"total"				=>	$data['totalAmoun_after'],
+						"total_vat"			=>	(($data['totalAmoun_after']*$data["vat"])/100),
+						'vat'				=>	$data["vat"],
+						"sub_total"     	=> 	$data['totalAmoun_after']+(($data['totalAmoun_after']*$data["vat"])/100),
+						"sub_total_after"   => 	$data['totalAmoun_after']+(($data['totalAmoun_after']*$data["vat"])/100),
+						"discount" 			=> 	$data['global_disc'],
+						"paid"    			=> 	0,
+						"paid_after"        => 	0,
+						"balance"      		=> 	$data['totalAmoun_after']+(($data['totalAmoun_after']*$data["vat"])/100),
+						"balance_after"   	=> 	$data['totalAmoun_after']+(($data['totalAmoun_after']*$data["vat"])/100),
+						"is_fullpay"		=>	0,
+						"user_id"       	=> 	$GetUserId,
+						//"date"      		=> 		date("Y-m-d",strtotime($data["date_recieve"])),
+						//"payment_number"    =>$data["payment_number"],
+						"invoice_date"      => 	date("Y-m-d",strtotime($data["invoice_date"])),
+						"invoice_date_from_stock" => 	date("Y-m-d",strtotime($data["invoice_recieve_date"])),
+					);
+					
+					$this->_name='tb_purchase_invoice';
+					$invoice_id = $this->insert($datainvoice);
+					
+					$arr_re_update = array(
+						'is_invoice_controlling'	=> 1,
+					);
+					$this->_name='tb_recieve_order';
+					$where = "order_id=".$recieved_order;
+					$this->update($arr_re_update,$where);
+					
+				}
 				
 				$ids=explode(',',$data['identity']);
 				$locationid=$data['branch'];
-				
 				foreach ($ids as $i){
-					
-					//calcualte cost average
-					$rsproduct = $this->getProductCostAndQty($data['item_id_'.$i]);
-					$cost_avg = (($rsproduct['qty']*$rsproduct['price'])+$data['cost_price'.$i]) / ($rsproduct['qty']+$data['qty_recieve_'.$i]);
-					$array=array(
-							'price'=>$cost_avg
-					);
-					$this->_name="tb_product";
-					$where = " id= ".$rsproduct['id'];
-					$db->getProfiler()->setEnabled(true);
-					$this->update($array, $where);
-					Zend_Debug::dump($db->getProfiler()->getLastQueryProfile()->getQuery());
-Zend_Debug::dump($db->getProfiler()->getLastQueryProfile()->getQueryParams());
-$db->getProfiler()->setEnabled(false);
+					$row_product = $this->getProductForCost($data['item_id_'.$i],$locationid);
+					if(!empty($row_product)){
+						//print_r($row_product);
+						$amount_pro = $row_product["price"] * $row_product["qty"];
+						$new_amount_pro = $data['qty_recieve_'.$i] * $data['price_'.$i];
+						$total_qty = $row_product["qty"]+$data['qty_recieve_'.$i];
+						$cost_price = ($amount_pro+$new_amount_pro)/$total_qty;
+						$arr_pro   = array(
+									'price'   	=> 		$cost_price,
+									);
+						$this->_name="tb_product";
+						$where=" id = ".$row_product['id'];
+						
+						$this->update($arr_pro, $where);
+						
+						
+						$arr_pro   = array(
+									'price'   	=> 		$cost_price,
+									);
+						$this->_name="tb_prolocation";
+						$where=" pro_id = ".$row_product['id']." AND location_id=".$locationid;
+						
+						$this->update($arr_pro, $where);
+						
+					}
 					
 					$recieved_item = array(
 							'recieve_id'	  	=> 	$recieved_order,
 							'pro_id'	  		=> 	$data['item_id_'.$i],
+							'origin_qty_order'	=> 	$data['qty_order_'.$i],
 							'qty_order'	  		=> 	$data['qty_order_'.$i],
 							'qty_receive'	  	=> 	$data['qty_recieve_'.$i],
-							'qty_detail'  		=> 	$data['qty_per_unit_'.$i],
-							'qty_unit'  		=> 	$data['qty_unit_'.$i],
+							//'qty_detail'  		=> 	$data['qty_per_unit_'.$i],
 							'price'		  		=> 	$data['price_'.$i],
 							'disc_value'	  	=> $data['dis_value'.$i],
 							'sub_total'	  		=> $data['total_'.$i],
 							'sub_total_after'	=> $data['total_after_'.$i],
 							'remark'			=>	$data["remark_".$i],
-							'cost_avg'=>	$cost_avg,
+							'plat_no'			=>	$data["plat_no"],
+							'su_scale_refer'	=>	$data["su_scale_refer"],
+							'su_scale_qty'		=>	$data["supplier_scale"],
+							'com_scale_refer'	=>	$data["com_scale_refer"],
+							'com_scale_qty'		=>	$data["company_scale"],
+							'su_scale_in_m'		=>	$data["supplier_scale_total"],
+							'com_scale_in_m'	=>	$data["company_scale_total"],
+							'is_con_choose'		=>	@$data["choose"],
+							'is_convertor'		=>	$data["is_convertor_".$i],
 					);
 					$this->_name="tb_recieve_order_item";
-					$db->getProfiler()->setEnabled(true);
+					
 					$this->insert($recieved_item);
-					Zend_Debug::dump($db->getProfiler()->getLastQueryProfile()->getQuery());
-Zend_Debug::dump($db->getProfiler()->getLastQueryProfile()->getQueryParams());
-$db->getProfiler()->setEnabled(false);
 					
 					
+					// Update Purchase Order To Completed
+					$qty_after = $data['qty_order_'.$i]-$data['qty_recieve_'.$i];
+					if($qty_after==0){
+						$is_completed =1; 
+					}else{
+						$is_completed =0; 
+					}
+					
+					// Update Purchase Order Item Qty
+					
+					$po_update = array(
+							'qty_after'		=> 	$qty_after,
+							'is_completed'	=>	$is_completed,
+						);
+					$this->_name="tb_purchase_order_item";
+					$where = "purchase_id=".$data["pu_code"]." AND pro_id=".$data['item_id_'.$i];
+					
+					$this->update($po_update,$where);
+					
+					
+					//unset($recieved_item);
 					$rows=$this->productLocationInventory($data['item_id_'.$i], $locationid);//check stock product location
-					
 					if($rows)
 					{
 						//if($data["status"]==4 OR $data["status"]==5){
@@ -213,53 +429,213 @@ $db->getProfiler()->setEnabled(false);
 							);
 							$this->_name="tb_prolocation";
 							$where=" id = ".$rows['id'];
-							$db->getProfiler()->setEnabled(true);
+							
 							$this->update($datatostock, $where);
-							Zend_Debug::dump($db->getProfiler()->getLastQueryProfile()->getQuery());
-Zend_Debug::dump($db->getProfiler()->getLastQueryProfile()->getQueryParams());
-$db->getProfiler()->setEnabled(false);
+							
+					}
+					
+					if(@$data["is_invoice"] == 1){
+						$recieved_item = array(
+							'invoice_id'	  	=> 	$invoice_id,
+							'receive_id'	  	=> 	$recieved_order,
+							'vendor_id'			=> 	$data['vendor'],
+							'total'	  			=> 	$data['totalAmoun_after']+(($data['totalAmoun_after']*$data["vat"])/100),
+							'paid'	  			=> 	0,
+							'balance'		  	=> 	$data['totalAmoun_after']+(($data['totalAmoun_after']*$data["vat"])/100),
+							'is_complete'	  	=> 0,
+							'status'	  		=> 1,
+							'date'				=> date("Y-m-d"),
+							'receive_date'		=>	date("Y-m-d"),
+						);
+						$this->_name="tb_purchase_invoice_detail";
+						
+						$this->insert($recieved_item);
+						
 					}
 					
 				}
-				
-			}else{
-				
 			}
+			$purchase_sta = 3;
+			if($data['all_total']!=$data['all_total_after']){
+				$purchase_sta = 4;
+			}
+			
+			// Updte Po To Completed
+			
+			$sql = "SELECT p.`purchase_id` FROM `tb_purchase_order_item` AS p WHERE p.`purchase_id`=".$data["pu_code"]." AND p.`is_completed`=0";
+			$rs_po = $db->fetchAll($sql);
+			if(empty($rs_po)){
+				$is_po_completed=1;
+				$appr_status = 3;
+				$pedding = 8;
+			}else{
+				$is_po_completed=0;
+				$appr_status = 4;
+				$pedding = 7;
+			}
+			//echo $purchase_sta;exit();
+			$arr_update = array('is_completed' =>	$is_po_completed,);
+			$this->_name="tb_purchase_order";
+			$where = "id=".$data["pu_code"];
+			
+			$this->update($arr_update,$where);
+			
+			
+			
+			$arr = array(
+				'is_purchase'	=>	1,
+				'appr_status'	=>	$appr_status,
+				'pedding'		=>	$pedding,
+				'pur_user'		=>	$GetUserId,
+				'pur_date'		=>  date('Y-m-d'),
+			);
+			$this->_name = "tb_su_price_idcompare";
+			$where = "re_id=".$data["re_id"];
+			
+			$this->update($arr,$where);
+			
 					
 			$arr = array(
-				
-				'purchase_status'	=>	5,
+				'status'	=>	5,
+				'is_recieved'	=>	1,
+				'purchase_status'	=>	$appr_status,
+				'pending_status'	=>	$pedding
 			);
 			$where = "id=".$data["id"];
 			$this->_name = "tb_purchase_order";
-			$db->getProfiler()->setEnabled(true);
+			
 			$this->update($arr, $where);
-			Zend_Debug::dump($db->getProfiler()->getLastQueryProfile()->getQuery());
-Zend_Debug::dump($db->getProfiler()->getLastQueryProfile()->getQueryParams());
-$db->getProfiler()->setEnabled(false);
 			
 			
+			$arr_re = array(
+					'pedding'		=>	$pedding,
+					'appr_status'	=>	$appr_status,
+					'appr_user'		=>	$GetUserId,
+					'appr_date'		=>  date('Y-m-d'),
+			);
+			$this->_name = "tb_purchase_request";
+			$where = "id=".$data["re_id"];
+			
+			$this->update($arr_re,$where);
+			
+			//exit();
 			
 			$db->commit();
-			//exit();
-			return $recieved_order;
+			//return $recieved_order;
 		}catch(Exception $e){
 			$db->rollBack();
 			$err =$e->getMessage();
-			
-			Application_Model_DbTable_DbUserLog::writeMessageError($err);	
-			echo $err;exit();			
+			Application_Model_DbTable_DbUserLog::writeMessageError($err);
+			echo $err;
 		}
 	}
 	
+	function addInvoice($data){
+		$db = $this->getAdapter();
+		$db->beginTransaction();
+		//print_r($data);
+		$user = $this->GetuserInfo();
+		$GetUserId = $user['user_id'];
+		try{
+			if(!empty($data["identity"])){
+				$datainvoice = array(
+						//'purchase_id'		=>	$data["pu_code"],
+						'invoice_no'		=>	$data["payment_number"],
+						"vendor_id"      	=> 	$data['customer_id'],
+						"branch_id"     	=> 	$data["branch"],
+						//"dn_id" 			=> 	$recieved_order,
+						"invoice_date"     	=> 	date("Y-m-d",strtotime($data["invoice_date"])),
+						//'invoice_date_from_stock'	=>	date("Y-m-d",strtotime($data["invoice_date_from_stock"])),
+						"total"				=>	$data['total'],
+						'vat'				=>	$data["vat"],
+						"total_vat"			=>	$data['total_vat'],
+						"sub_total"     	=> 	$data['all_total'],
+						"sub_total_after"   => 	$data['all_total'],
+						//"discount" 			=> 	$data['global_disc'],
+						"paid"    			=> 	0,
+						"paid_after"        => 	0,
+						"balance"      		=> 	$data['balance'],
+						"balance_after"   	=> 	$data['balance'],
+						"is_fullpay"		=>	0,
+						"user_id"       	=> 	$GetUserId,
+						//"date"      		=> 	$data["date_recieve"],
+						//"payment_number"    =>$data["payment_number"],
+						//"invoice_date"      => 	date("Y-m-d"),	//$data["invoice_date"],
+						//"receive_invoice_date" => 	date("Y-m-d"),
+						"is_invoice_contrilling"	=>	1,
+					);
+					
+					$this->_name='tb_purchase_invoice';
+					$invoice_id = $this->insert($datainvoice);
+					
+				$orderdata = array(
+						'invoice_id'					=>	$invoice_id,
+						//'purchase_id'					=>	$rs["purchase_id"],
+						//'request_id'					=>	$rs["request_id"],
+						'branch_id'						=>	$data["branch"],
+						'vendor_id'						=>	$data["customer_id"],
+						'invoice_no'					=>	$data["payment_number"],
+						//'receive_no'					=>	$rs["recieve_number"],
+						//'purchase_no'					=>	$rs["purchase_no"],
+						'invoice_date'					=>	date("Y-m-d",strtotime($data["invoice_date"])),
+						//"receive_invoice_date"     		=>  date("Y-m-d",strtotime($rs["invoice_date_from_stock"])),
+						"invoice_controlling_date"     	=> 	date("Y-m-d",strtotime($data["invoice_date_from_stock"])),
+						"sub_total"     				=> 	$data["total"],
+						"vat"      						=> 	$data["vat"],
+						"total_vat"						=>	$data['total_vat'],
+						"grand_total" 					=> 	$data["all_total"],
+						"grand_total_after" 			=> 	$data["all_total"],
+						"paid" 							=> 	0,
+						"balance" 						=> 	$data["all_total"],
+						'date'							=>	new Zend_Date(),
+						'user_id'						=>	$GetUserId,
+					);
+					
+					$this->_name='tb_invoice_controlling';
+					$recieved_order = $this->insert($orderdata);
+			$ids=explode(',',$data['identity']);
+			foreach ($ids as $key => $i)
+			{
+			$recieved_item = array(
+							'invoice_id'	  	=> 	$invoice_id,
+							'receive_id'	  	=> $data["dn_id".$i],
+							'vendor_id'			=> 	$data['customer_id'],
+							'total'	  			=> 	$data['subtotal'.$i],
+							'paid'	  			=> 	0,
+							'balance'		  	=> 	$data['subtotal'.$i],
+							'is_complete'	  	=> 0,
+							'status'	  		=> 1,
+							'date'				=> date("Y-m-d"),
+							'receive_date'		=>	date("Y-m-d"),
+						);
+						$this->_name="tb_purchase_invoice_detail";
+						
+						$this->insert($recieved_item);
+						
+
+				$arr_re = array(
+					'is_invoice_controlling'	=>	1,
+				);
+				$this->_name = "tb_recieve_order";
+				$where = "order_id=".$data["dn_id".$i];
+				
+				$this->update($arr_re,$where);
+				
+			}
+			}
+			//exit();
+			$db->commit();
+		}catch(Exception $e){
+			$db->rollBack();
+			$err =$e->getMessage();
+			Application_Model_DbTable_DbUserLog::writeMessageError($err);
+			echo $err;
+		}
+	}
 	function getProductForCost($pro_id,$location){
 		$db = $this->getAdapter();
-		$sql="SELECT p.id,p.`price`,pl.`qty` FROM `tb_product` AS p ,`tb_prolocation` AS pl WHERE p.id=pl.`pro_id` AND pl.`location_id`=$location AND p.id=$pro_id";
-		return $db->fetchRow($sql);
-	}
-	function getProductCostAndQty($pro_id){
-		$db = $this->getAdapter();
-		$sql="SELECT p.id,p.`price`,sum(pl.`qty`) as qty FROM `tb_product` AS p ,`tb_prolocation` AS pl WHERE p.id=pl.`pro_id` AND p.id=$pro_id ";
+		$sql="SELECT p.id,pl.`price`,pl.`qty` FROM `tb_product` AS p ,`tb_prolocation` AS pl WHERE p.id=pl.`pro_id` AND pl.`location_id`=$location AND p.id=$pro_id";
+		//echo $sql;
 		return $db->fetchRow($sql);
 	}
 	public function productLocationInventory($pro_id, $location_id){
@@ -279,13 +655,13 @@ $db->getProfiler()->setEnabled(false);
     				"qty"				=>	0,
     				"qty_warning"		=>	0,
     				"last_mod_userid"	=>	$GetUserId,
-    				"user_id"			=>	$GetUserId,
+    				///"user_id"			=>	$GetUserId,
     				"last_mod_date"		=>	date("Y-m-d")
     				);
     		$this->_name="tb_prolocation";
     		$this->insert($array);
     		
-    		$sql="SELECT id,pro_id,location_id,qty,qty_warning,user_id,last_mod_date,last_mod_userid
+    		$sql="SELECT id,pro_id,location_id,qty,qty_warning,last_mod_date,last_mod_userid
     		FROM tb_prolocation WHERE pro_id =".$pro_id." AND location_id=".$location_id." LIMIT 1 ";
     		return $row = $db->fetchRow($sql);
     	}else{
@@ -298,33 +674,44 @@ $db->getProfiler()->setEnabled(false);
 		$sql=" SELECT 
 				  ro.order_id AS id,
 				  ro.recieve_number,
-				  ro.`order_number`,
+				  ro.`dn_number`,
 				  ro.date_order,
 				  date_in,
 				  (SELECT pl.name FROM `tb_sublocation` AS pl WHERE pl.id=ro.`LocationId`) AS branch,
 				  (SELECT v.v_name FROM tb_vendor AS v WHERE v.vendor_id = ro.vendor_id) AS vendor_name,
 				  ro.all_total,
-				  (SELECT  u.username FROM tb_acl_user AS u WHERE u.user_id = ro.user_mod) AS user_name 
+				  (SELECT  u.username FROM tb_acl_user AS u WHERE u.user_id = ro.user_mod) AS user_name ,
+				  
+				  (SELECT p.`order_number` FROM `tb_purchase_order` AS p WHERE p.id=ro.`purchase_id`) AS po_no,
+				  (SELECT p.name FROM tb_plan AS p WHERE p.id=(SELECT pr.plan_id FROM `tb_purchase_request` AS pr WHERE pr.id=(SELECT po.`re_id` FROM `tb_purchase_order` AS po WHERE po.`id`=ro.`purchase_id`) LIMIT 1) LIMIT 1) AS plan
 				FROM
 				  tb_recieve_order AS ro 
 				WHERE `status` = 1 ";
 		$order=" ORDER BY ro.order_id DESC  ";
-// 		$db = new Application_Model_DbTable_DbGlobal();
-// 		$user = $this->GetuserInfoAction();
-// 		$str_condition = " AND p.LocationId" ;
-// 		$vendor_sql .= $db->getAccessPermission($user["level"], $str_condition, $user["location_id"]);
-// 		if($post['order'] !=''){
-// 			$vendor_sql .= " AND ro.recieve_no LIKE '%".$post['order']."%'";
-// 		}
-// 		if($post['vendor_name'] !='' AND $post['vendor_name'] !=0){
-// 			$vendor_sql .= " AND ro.user_recieve =".$post['vendor_name'];
-// 		}
-// 		$start_date = $post['search_start_date'];
-// 		$end_date = $post['search_end_date'];
-// 		if($start_date != "" && $end_date != "" && strtotime($end_date) >= strtotime($start_date)) {
-// 			$vendor_sql .= " AND ro.date_recieve BETWEEN '$start_date' AND '$end_date'";
-// 		}
-		return $db->fetchAll($sql.$order);
+		$where='';
+		$from_date =(empty($search['start_date']))? '1': "  ro.date_order >= '".$search['start_date']."'";
+		$to_date = (empty($search['end_date']))? '1': "   ro.date_order <= '".$search['end_date']."'";
+		$where = " AND ".$from_date." AND ".$to_date;
+		if(!empty($search['text_search'])){
+			$s_where = array();
+			$s_search = trim(addslashes($search['text_search']));
+			$s_where[] = " re_code LIKE '%{$s_search}%'";
+			$s_where[] = " number_request LIKE '%{$s_search}%'";
+			$s_where[] = " status LIKE '%{$s_search}%'";
+			$s_where[] = " code LIKE '%{$s_search}%'";
+			$where .=' AND ('.implode(' OR ',$s_where).')';
+		}
+		/*if($search['po_pedding']>0){
+			$where .= " AND ro.purchase_status =".$search['po_pedding'];
+		}*/
+		if($search['suppliyer_id']>0){
+			$where .= " AND ro.vendor_id =".$search['suppliyer_id'];
+		}
+		if($search['branch']>0){
+			$where .= " AND ro.LocationId =".$search['branch'];
+		}
+		//echo $sql.$where.$order;
+		return $db->fetchAll($sql.$where.$order);
 	}
 	
 	public function vendorPurchaseOrderPayment($data)
@@ -1004,4 +1391,21 @@ $db->getProfiler()->setEnabled(false);
 					}
 				}
 	
+	function makeFullReceive($id){
+		$db = $this->getAdapter();
+		$db->beginTransaction();
+		
+		try{
+			/*$arr_re = array(
+				'is_completed'	= 1,
+			);	
+			$where = "order_id=";*/
+			$db->commit();
+		}catch(Exception $e){
+			$db->rollBack();
+			$err =$e->getMessage();
+			Application_Model_DbTable_DbUserLog::writeMessageError($err);
+			echo $err;
+		}
+	}
 }

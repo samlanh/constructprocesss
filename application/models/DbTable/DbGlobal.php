@@ -12,7 +12,116 @@ class Application_Model_DbTable_DbGlobal extends Zend_Db_Table_Abstract
 	 * @param string $sql
 	 * @return array $row;
 	 */
-	 
+	 function getDnNo($completed=null,$opt=null){
+   	$db= $this->getAdapter();
+	$tr = Application_Form_FrmLanguages::getCurrentlanguage();
+   	$sql="SELECT r.`order_id`,r.`dn_number`,r.`recieve_number` FROM `tb_recieve_order` AS r WHERE 1";
+   	if($completed!=null){
+   		$sql.="  AND r.is_invoice_controlling=0 ";
+   	}
+   	$sql.=" ORDER BY r.order_id DESC ";
+   	$row =  $db->fetchAll($sql);
+   	if($opt==null){
+   		return $row;
+   	}else{
+   		$options=array(-1=>$tr->translate("SELECT_DN"));
+   		if(!empty($row)) foreach($row as $read) $options[$read['order_id']]=$read['dn_number']."(".$read['recieve_number'].")";
+   		return $options;
+   	}
+   }   
+	 public function getPuInvoiceNumber($branch_id = 1){
+    	$this->_name='tb_purchase_invoice';
+    	$db = $this->getAdapter();
+    	$sql=" SELECT COUNT(id)  FROM $this->_name WHERE branch_id=".$branch_id." LIMIT 1 ";
+    	$pre = $this->getPrefixCode($branch_id)."IV";
+    	$acc_no = $db->fetchOne($sql);
+    
+    	$new_acc_no= (int)$acc_no+1;
+    	$acc_no= strlen((int)$acc_no+1);
+    	for($i = $acc_no;$i<5;$i++){
+    		$pre.='0';
+    	}
+    	return $pre.$new_acc_no;
+    }
+	 function getBranch(){
+		$db = $this->getAdapter();
+		$db_globle = new Application_Model_DbTable_DbGlobal();
+		$sql = "SELECT l.id,l.`name` FROM `tb_sublocation` AS l WHERE l.`status`=1";
+		$location = $db_globle->getAccessPermission('l.`id`');
+		return $db->fetchAll($sql.$location);
+	}
+	function getPurchasePedding(){
+		$db = $this->getAdapter();
+		$db_globle = new Application_Model_DbTable_DbGlobal();
+		$sql = "SELECT v.`key_code` as id,v.`name_en` as name FROM `tb_view` AS v WHERE v.`type`=11 AND v.`status`=1 AND v.`key_code`!=0 ORDER BY v.`key_code`";
+		return $db->fetchAll($sql);
+	}
+	 function getRejectExist($id,$type){
+		$db=$this->getAdapter();
+		$sql="SELECT p.`re_id`,p.type FROM `tb_purchase_request_remark` AS p WHERE p.re_id=$id AND p.type=$type";
+		$row = $db->fetchRow($sql);
+    	return $row;  
+	}
+	function getPriceCompareRejectExist($id,$type){
+		$db=$this->getAdapter();
+		$sql="SELECT p.`re_id`,p.type FROM `tb_price_compare_remark` AS p WHERE p.re_id=$id AND p.type=$type";
+		$row = $db->fetchRow($sql);
+    	return $row;  
+	}
+	
+	function getSaleRejectExist($id,$type){
+		$db=$this->getAdapter();
+		$sql="SELECT p.`re_id`,p.type FROM `tb_sale_request_remark` AS p WHERE p.re_id=$id AND p.type=$type";
+		$row = $db->fetchRow($sql);
+    	return $row;  
+	}
+	 public function getRequestNumber($branch_id = 1){
+    	$this->_name='tb_sales_order';
+    	$db = $this->getAdapter();
+    	$sql=" SELECT COUNT(id)  FROM $this->_name WHERE branch_id=".$branch_id." AND type=2 LIMIT 1 ";
+    	$pre = $this->getPrefixCode($branch_id)."RO-";
+    	$acc_no = $db->fetchOne($sql);
+    
+    	$new_acc_no= (int)$acc_no+1;
+    	$acc_no= strlen((int)$acc_no+1);
+    	for($i = $acc_no;$i<5;$i++){
+    		$pre.='0';
+    	}
+    	return $pre.$new_acc_no;
+    }
+	 public function getAllStaff(){
+		$db=$this->getAdapter();
+		$sql = "SELECT s.id,s.`name` FROM `tb_staff` AS s WHERE s.`status`=1";
+  		$row=$db->fetchAll($sql);
+  		return $row;
+	}
+	public function getAllStaffByID($id){
+		$db=$this->getAdapter();
+		$sql = "SELECT s.`position` FROM `tb_staff` AS s WHERE s.`id`=$id";
+  		$row=$db->fetchOne($sql);
+  		return $row;
+	}
+	
+	function getAllWorkPlanByID($id,$opt=null){
+		$db=$this->getAdapter();
+		$tr = Application_Form_FrmLanguages::getCurrentlanguage();
+		$sql="SELECT p.`id`,p.`name` FROM `tb_work_plan` AS p WHERE p.`plan_id`=$id";
+		///echo $sql;
+		$row = $db->fetchAll($sql);
+		if($opt==null){
+			return $row;
+		}else{
+			$options='<option value="">'.$tr->translate("SELECT").'</option>';
+			//$options=array(0=>  $tr->translate("SELECT"));
+			if(!empty($row)){ foreach($row as $key=> $rs){
+				$options .= '<option value="'.$rs['id'].'" >'.($key+1)." - ".htmlspecialchars($rs['name'], ENT_QUOTES)
+    					.'</option>';
+			}}
+			return $options;
+		}
+		
+		//echo $options;
+    }
 	 public function getTitleReportold($id){
 		$db=$this->getAdapter();
 		$sql="SELECT 
@@ -764,29 +873,62 @@ class Application_Model_DbTable_DbGlobal extends Zend_Db_Table_Abstract
     }
 	function getAllInvoicePO($completed=null,$opt=null){
    	$db= $this->getAdapter();
-   	$sql=" SELECT id,invoice_no,(SELECT v_name FROM `tb_vendor` WHERE tb_vendor.vendor_id = p.vendor_id) AS vendor_name FROM `tb_purchase_order` AS p WHERE  p.status=1 and p.balance>0 ";
+	$tr = Application_Form_FrmLanguages::getCurrentlanguage();
+   	$sql="SELECT i.`id`,i.`invoice_no`,i.`invoice_controlling_date`,i.`receive_invoice_date`,i.`invoice_date` FROM `tb_invoice_controlling` AS i WHERE 1";
    	if($completed!=null){
-   		$sql.="  AND p.is_completed=0 ";
+   		$sql.="  AND i.is_completed=0 ";
    	}
    	$sql.=" ORDER BY id DESC ";
    	$row =  $db->fetchAll($sql);
    	if($opt==null){
    		return $row;
    	}else{
-   		$options=array(-1=>"Select Invoice");
-   		if(!empty($row)) foreach($row as $read) $options[$read['id']]=$read['invoice_no']."-".$read['vendor_name'];
+   		$options=array(-1=>$tr->translate("SELECT_INVOICE"));
+   		if(!empty($row)) foreach($row as $read) $options[$read['id']]=$read['invoice_no'];
    		return $options;
    	}
    }
    function getAllInvoicePaymentPurchase($post_id,$type){
    	$db= $this->getAdapter();
    	if($type==1){//by customer
-   		$sql=" SELECT * FROM tb_purchase_order WHERE vendor_id= $post_id AND status=1  ";
-   		$sql.=" AND is_completed=0 AND balance_after>0 ";
+   		$sql=" SELECT 
+				  i.invoice_id as id,
+				  i.`invoice_no`,
+				  i.`invoice_controlling_date`,
+				  i.`receive_invoice_date`,
+				  i.`invoice_date` ,
+				  i.`grand_total`,
+				  i.grand_total_after,
+				  i.paid,
+				  i.balance,
+				  i.`sub_total`,
+				  i.vat,
+				  i.total_vat,
+				  i.vendor_id
+				FROM
+				  `tb_invoice_controlling` AS i 
+				WHERE i.`vendor_id`=$post_id";
+   		$sql.=" AND is_completed=0";
    		$sql.=" ORDER BY id DESC ";
    	}else{//by invoice
-   		$sql=" SELECT * FROM tb_purchase_order WHERE id= $post_id AND status=1  ";
-   		$sql.=" AND is_completed=0 AND balance_after>0 LIMIT 1 ";
+   		$sql=" SELECT 
+				  i.`id`,
+				  i.`invoice_no`,
+				  i.`invoice_controlling_date`,
+				  i.`receive_invoice_date`,
+				  i.`invoice_date` ,
+				  i.`grand_total`,
+				  i.grand_total_after,
+				  i.paid,
+				   i.`sub_total`,
+				   i.vat,
+				  i.total_vat,
+				  i.balance,
+				  i.vendor_id
+				FROM
+				  `tb_invoice_controlling` AS i 
+				WHERE i.`id`=$post_id";
+   		$sql.=" AND is_completed=0 LIMIT 1 ";
    	}
    	return  $db->fetchAll($sql);
    }

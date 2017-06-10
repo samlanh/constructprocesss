@@ -51,15 +51,22 @@ public function AddVendorForm($data=null) {
     	$balancelement = new Zend_Form_Element_Text('txt_balance');
     	$balancelement->setValue("0.00");
     	$balancelement->setAttribs(array('readonly'=>'readonly',"class"=>"form-control"));
-    	$this->addElement($balancelement); 
-
-		$_stutas = new Zend_Form_Element_Select('status');
-		$_stutas ->setAttribs(array(
-				'class'=>' form-control',			
-		));
-		$options= array(1=>"ប្រើប្រាស់",0=>"មិនប្រើប្រាស់");
-		$_stutas->setMultiOptions($options);
-		$this->addElement($_stutas); 
+    	$this->addElement($balancelement); 		
+		
+		$tax = new Zend_Form_Element_Text('tax');
+    	$tax->setValue("0.00");
+    	$tax->setAttribs(array("class"=>"form-control"));
+    	$this->addElement($tax); 	
+		
+		$bank_name = new Zend_Form_Element_Text('bank_name');
+    	//$bank_name->setValue("0.00");
+    	$bank_name->setAttribs(array("class"=>"form-control"));
+    	$this->addElement($bank_name); 
+		
+		$bank_acc_name = new Zend_Form_Element_Text('bank_acc_name');
+    	//$bank_acc_name->setValue("0.00");
+    	$bank_acc_name->setAttribs(array("class"=>"form-control"));
+    	$this->addElement($bank_acc_name); 
     	
     	if($data != null) {
 	       $idElement = new Zend_Form_Element_Hidden('id');
@@ -76,7 +83,9 @@ public function AddVendorForm($data=null) {
     		$remarkElement->setValue($data['note']);
     		$contact_phone->setValue($data['phone_person']);
     		$balancelement->setValue($data['balance']);
-			$_stutas->setValue($data['status']);
+			$tax->setValue($data["vat"]);
+			$bank_name->setValue($data["bank_name"]);
+			$bank_acc_name->setValue($data["bank_no"]);
     	}
     	return $this;
 	}

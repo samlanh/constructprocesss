@@ -196,7 +196,9 @@ class Sales_Model_DbTable_DbPlan extends Zend_Db_Table_Abstract{
 				  (SELECT c.`phone` FROM `tb_customer` AS c WHERE c.id=p.`customer_id` LIMIT 1) AS `phone`,
 				  (SELECT c.`email` FROM `tb_customer` AS c WHERE c.id=p.`customer_id` LIMIT 1) AS `email`,
 				  (SELECT pt.name FROM `tb_plan_type` AS pt WHERE pt.id=p.`type` LIMIT 1) AS plan_type,
-				  (SELECT s.name FROM `tb_sale_agent` AS s WHERE s.id=p.`sale_id`) AS sale_agent
+				  (SELECT s.name FROM `tb_sale_agent` AS s WHERE s.id=p.`sale_id`) AS sale_agent,
+				  (SELECT s.`phone` FROM `tb_sale_agent` AS s WHERE s.id=p.`sale_id` LIMIT 1) AS sale_phone,
+				  (SELECT s.`email` FROM `tb_sale_agent` AS s WHERE s.id=p.`sale_id` LIMIT 1) AS sale_email
 				FROM
 				  `tb_plan` AS p 
 				WHERE id =$id";

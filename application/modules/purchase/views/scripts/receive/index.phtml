@@ -4,14 +4,14 @@
 	$formFilter = $this->formFilter;
 	//print_r($this->rs)."sfsgesd";
 ?>
-<title><?php echo $tr->translate("MENU_PURCHASE_ADVANCE_INDEX");?></title>
+<title><?php echo $tr->translate("RECEIVE_STOCK");?></title>
 <meta charset="utf-8" />
 <div class="row">
 	<div class="col-md-12">
 		<div class="portlet box blue">
 			<div class="portlet-title">
 				<div class="caption">
-					<i class="fa fa-globe"></i><?php echo $tr->translate("MENU_PURCHASE_ADVANCE_INDEX");?>
+					<i class="fa fa-globe"></i><?php echo $tr->translate("RECEIVE_STOCK");?>
 				</div>
 				<!--<a href="<?php echo $url_new;?>" class="btn btn-sm green  pull-right">
 					<i class="fa fa-plus"></i>&nbsp;<?php echo $tr->translate("ADD_NEW");?>
@@ -21,7 +21,8 @@
 				<form method="post" action="<?php echo $formFilter->getAction(); ?>">
 					<div class="form-group" style="padding-top: 6px;">
 						<label class="control-label col-md-2"><?php echo $formFilter->getElement('text_search');?></label>
-						<label class="control-label col-md-2"><?php echo $formFilter->getElement('purchase_status');?></label>
+						<label class="control-label col-md-2"><?php echo $formFilter->getElement('branch');?></label>
+						<label class="control-label col-md-2"><?php echo $formFilter->getElement('suppliyer_id');?></label>
 						<label class="control-label col-md-2"><?php echo $formFilter->getElement('start_date');?></label>
 						<label class="control-label col-md-2"><?php echo $formFilter->getElement('end_date');?></label>
 						<label class="control-label col-md-2">
@@ -34,13 +35,16 @@
 					<table class="collape tablesorter" id="table" width="100%">
 						<thead>
 							<tr>
-								<th class="tdheader"><?php echo  $tr->translate("NO");?></th>
+								<th class="tdheader"><?php echo  $tr->translate("NUM");?></th>
+								<th class="tdheader"><?php echo  $tr->translate("PO_NO");?></th>
+								<th class="tdheader"><?php echo  $tr->translate("PURCHASE_DATE");?></th>
+								<th class="tdheader"><?php echo  $tr->translate("PLAN");?></th>
 								<th class="tdheader"><?php echo  $tr->translate("LOCATION_NAME");?></th>
-								<th class="tdheader"><?php echo  $tr->translate("PURCHAE_NO");?></th>
-								<th class="tdheader"><?php echo  $tr->translate("INVOICE_NO");?></th>
-								<th class="tdheader"><?php echo  $tr->translate("ORDER_DATE");?></th>
+								<th class="tdheader"><?php echo  $tr->translate("RECEIVE_NO");?></th>
+								<th class="tdheader"><?php echo  $tr->translate("RECEIVE_DATE");?></th>
 								<th class="tdheader"><?php echo  $tr->translate("VENDOR");?></th>
-								<th class="tdheader"><?php echo  $tr->translate("PROCESSING");?></th>
+								<th class="tdheader"><?php echo  $tr->translate("TOTAL_AMOUNT");?></th>
+								<th class="tdheader"><?php echo  $tr->translate("USER");?></th>
 								<th class="tdheader"><?php echo  $tr->translate("ACTION");?></th>
 							</tr>
 						</thead>
@@ -83,26 +87,23 @@
 							$footer="";
 							if(!empty($this->rs)){
 								foreach ($this->rs as $key=>$rs){
-									$receive = 0;
-									if($rs["purchase_status"]==5){
-										$receive = 1;
-									}
 									
 							?>
 								<tr class="normal">
 									<td class="items-no"><?php echo $key+1;?></td>
+									<td class="items"><?php echo $rs["po_no"];?></td>
+									<td class="items"><?php echo date('d-M-Y',strtotime($rs["date_order"]));?></td>
+									<td class="items"><?php echo $rs["plan"];?></td>
 									<td class="items"><?php echo $rs["branch"];?></td>
-									<td class="items"><?php echo $rs["order_number"];?></td>
-									<td class="items"><?php echo $rs["invoice_no"];?></td>
-									<td class="items"><?php echo $rs["date_order"];?></td>
-									<td class="items"><?php echo $rs["vendor"];?></td>
-									<td class="items"><?php echo $rs["p_status"];?></td>
+									<td class="items"><?php echo $rs["recieve_number"];?></td>
+									<td class="items"><?php echo date('d-M-Y',strtotime($rs["date_in"]));?></td>
+									<td class="items"><?php echo $rs["vendor_name"];?></td>
+									<td class="items">$<span style="float:right"><?php echo number_format($rs["all_total"],2);?></span></td>
+									<td class="items"><?php echo $rs["user_name"];?></td>
 									<td class="items-no" style="white-space: nowrap;">
-										<?php if($receive==1){ ?>
-											<a target="_blank" href="<?php echo $this->baseUrl();?>/purchase/receive/receivenote/id/<?php echo $rs["id"]?>"><?php echo  $tr->translate("PRINT_RECEIVE_ORDER");?></a>
-										<?php }else{?>
-											<a href="<?php echo $this->baseUrl();?>/purchase/receive/add/id/<?php echo $rs["id"]?>"><?php echo  $tr->translate("RECEIVE_PURCHASE");?></a>
-										<?php }?>
+										<!--<a <?php //echo $edit_status;?> href="<?php echo $this->baseUrl();?>/purchase/receive/edit/id/<?php echo $rs["id"]?>"><?php echo  $tr->translate("EDIT");?></a> | -->
+										<a target="_blank" href="<?php echo $this->baseUrl();?>/purchase/receive/receivenote/id/<?php echo $rs["id"]?>"><?php echo  $tr->translate("PRINT_RECEIVE_ORDER");?></a>​ 
+										<!--<a target="_blank" href="<?php echo $this->baseUrl();?>/purchase/receive/purproductdetail/id/<?php echo $rs["id"]?>"><?php echo  $tr->translate("PRINT_PAYMENT");?></a>-->
 										
 									</td>
 								</tr>

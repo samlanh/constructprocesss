@@ -15,6 +15,18 @@ class Purchase_Form_FrmPayment extends Zend_Form
     	$tr = Application_Form_FrmLanguages::getCurrentlanguage();
     	$request=Zend_Controller_Front::getInstance()->getRequest();
     	$db=new Application_Model_DbTable_DbGlobal();
+		$db_r = new Purchase_Model_DbTable_Dbpayment();
+		$opt_pay_method = array(1=>$tr->translate("PAYMENT_BY_SUPLLIER"),2=>$tr->translate("PAYMENT_BY_INVOICE"));
+		$payment_method = new Zend_Form_Element_Select("payment_method");
+		$payment_method->setAttribs(array("class"=>"form-control"));
+		$payment_method->setMultiOptions($opt_pay_method);
+		$this->addElement($payment_method);
+		
+		$payment_number = new Zend_Form_Element_text('payment_number');
+		$payment_number->setAttribs(array('class'=>'custom[number] form-control',"readOnly"=>"true"));
+		$this->addElement($payment_number);
+		$pay_code=  $db_r->getPayCode($result["branch_id"]);
+		$payment_number->setvalue($pay_code);
 
     	$customerid=new Zend_Form_Element_Select('customer_id');
     	$customerid ->setAttribs(array(
@@ -27,13 +39,13 @@ class Purchase_Form_FrmPayment extends Zend_Form
     	$customerid->setMultiOptions($options);
     	$this->addElement($customerid);
     	
-    	$roder_element= new Zend_Form_Element_Text("receipt");
+    	/*$roder_element= new Zend_Form_Element_Text("receipt");
     	$roder_element->setAttribs(array('placeholder' => 'Optional','class'=>'form-control',"readonly"=>true,
     			"onblur"=>"CheckPOInvoice();"));
     	$this->addElement($roder_element);
     	$qo = $db->getReceiptNumber(1);
     	$roder_element->setValue($qo);
-    	$this->addElement($roder_element);
+    	$this->addElement($roder_element);*/
     	
     	$locationID = new Zend_Form_Element_Select('invoice_id');
     	$locationID ->setAttribs(array('class'=>'form-control select2me','readonly'=>true));
@@ -43,7 +55,7 @@ class Purchase_Form_FrmPayment extends Zend_Form
     			'Onchange'=>'getInvoice(2)'));
     	$this->addElement($locationID);
     	    	
-    	$rowspayment= $db->getGlobalDb('SELECT * FROM tb_paymentmethod ');
+    	$rowspayment= $db->getGlobalDb('SELECT * FROM tb_paymentmethod WHERE status=1 ');
     	if($rowspayment) {
     		foreach($rowspayment as $readCategory) $options_cg[$readCategory['payment_typeId']]=$readCategory['payment_name'];
     	}
@@ -58,14 +70,14 @@ class Purchase_Form_FrmPayment extends Zend_Form
     	$this->addElement($descriptionElement);
     	
     	$allTotalElement = new Zend_Form_Element_Text('all_total');
-    	$allTotalElement->setAttribs(array("class"=>"form-control",'readonly'=>'readonly','require'=>true));
+    	$allTotalElement->setAttribs(array("class"=>"form-control",'readonly'=>'readonly','require'=>true,'style'=>'text-align:right'));
     	$this->addElement($allTotalElement);
     	
 //     	$netTotalElement = new Zend_Form_Element_Text('paid');
 //     	$netTotalElement->setAttribs(array("class"=>"validate[required] form-control",'onchange'=>'doRemain();'));
 //     	$this->addElement($netTotalElement);
     	
-    	$remainlElement = new Zend_Form_Element_Text('balance');
+    	$remainlElement = new Zend_Form_Element_Hidden('balance');
     	$remainlElement->setAttribs(array('readonly'=>'readonly',"class"=>"red form-control"));
     	$this->addElement($remainlElement);
     	
@@ -77,7 +89,7 @@ class Purchase_Form_FrmPayment extends Zend_Form
     	
     	$holder_name = new Zend_Form_Element_Text('holder_name');
     	$date =new Zend_Date();
-    	$holder_name ->setAttribs(array('class'=>'validate[required] form-control form-control-inline'));
+    	$holder_name ->setAttribs(array('class'=>'validate[required] form-control form-control-inline','readOnly'=>true));
     	$this->addElement($holder_name);
     	
     	$cheque_issue = new Zend_Form_Element_Text('cheque_issuedate');
@@ -92,7 +104,7 @@ class Purchase_Form_FrmPayment extends Zend_Form
     	$cheque_withdraw ->setValue($date->get('MM/d/Y'));
     	$this->addElement($cheque_withdraw);
     	
-    	$paidElement = new Zend_Form_Element_Text('paid');
+    	$paidElement = new Zend_Form_Element_Hidden('paid');
     	$paidElement->setAttribs(array('class'=>'validate[required,custom[number]] form-control','onkeyup'=>'doRemain();'));
     	$this->addElement($paidElement);
     	
@@ -117,28 +129,26 @@ class Purchase_Form_FrmPayment extends Zend_Form
     	$exchange_value = 4100;
     	$exchange_rate->setValue($exchange_value);
     	$this->addElement($exchange_rate);
+		
+		$account_name = new Zend_Form_Element_Text("acc_name");
+		$account_name->setAttribs(array("class"=>"form-control",'readOnly'=>true));
+		$this->addElement($account_name);
+		
+		
     	
     	Application_Form_DateTimePicker::addDateField(array('order_date','date_in'));
     		if($data != null) {
-    			$idElement = new Zend_Form_Element_Hidden('id');
-    			$this->addElement($idElement);
-    			$idElement ->setValue($data["id"]);
-    			
-    			$customerid->setValue($data["customer_id"]);
-    			$customerid->setAttribs(array("readonly"=>true));
-    			$locationID->setValue($data['branch_id']);
-    			$roder_element->setValue($data['receipt_no']);
-    			$paymentmethodElement->setValue($data['payment_id']);
-    			$date_inElement->setValue($data['date_input']);
-    			
-    			$descriptionElement->setValue($data['remark']);
-    			$allTotalElement->setValue($data['total']);
-    			$remainlElement->setValue($data['balance']);
-    			$paidElement->setValue($data['paid']);
-    			$locationID->setAttribs(array("readonly"=>true));
-    			//$dis_valueElement->setValue($data['discount_value']);
-    			//$allTotalElement->setValue($data['net_total']);
-    		
+    			//$idElement = new Zend_Form_Element_Hidden('id');
+    			//$this->addElement($idElement);
+    			//$idElement ->setValue($data["id"]);
+    			$payment_method->setValue($data["payment_type"]);
+				$customerid->setValue($data["vendor_id"]);
+				$payment_number->setValue($data["pol_no"]);
+    			$paymentmethodElement->setValue($data["payment_id"]);
+				$holder_name->setValue($data["withdraw_name"]);
+				$account_name->setValue($data["bank_name"]);
+				$date_inElement->setValue(date("m/d/Y",strtotime($data["expense_date"])));
+				//$locationID->setValue($data["invoice_id"]);
     		} else {
     	}
      	return $this;

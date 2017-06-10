@@ -8,8 +8,11 @@ class Purchase_Form_FrmRecieve extends Zend_Form
 public function add($data=null) {
 		$db_r = new Purchase_Model_DbTable_DbRecieve();
 		$db=new Application_Model_DbTable_DbGlobal();
+		$user_info = new Application_Model_DbTable_DbGetUserInfo();
+		$tr = Application_Form_FrmLanguages::getCurrentlanguage();
+		$result = $user_info->getUserInfo();
 		$rs_code = $db_r->getAllPuCode();
-		$rp_code = $db_r->getRecieveCode();
+		$rp_code = $db_r->getRecieveCode($result["branch_id"]);
 		$date =new Zend_Date();
 		$opt_code = array();
 		if(!empty($rs_code)){
@@ -17,30 +20,63 @@ public function add($data=null) {
 				$opt_code[$rs["id"]] = $rs["order_number"];
 			}
 		}
+		$payment_number = new Zend_Form_Element_text('payment_number');
+		$payment_number->setAttribs(array('class'=>'custom[number] form-control',"readOnly"=>"true"));
+		$this->addElement($payment_number);
+		//$db_pn = new Purchase_Model_DbTable_DbRecieve();
+		//$pn_code=$db_pn->
 		$pu_code = new Zend_Form_Element_Select('pu_code');
-		$pu_code->setAttribs(array('class'=>'validate[required] form-control select2me' ,"readOnly"=>"readOnly",'placeholder'=>'Select Purchase No'));
+		$pu_code->setAttribs(array('class'=>'validate[required] form-control' ,"readOnly"=>"true",'placeholder'=>$tr->translate('SELECT_PURCHASE_NO')));
     	$pu_code->setMultiOptions($opt_code);
 		$this->addElement($pu_code);
 		
 		$recieve_no = new Zend_Form_Element_Text('recieve_no');
-		$recieve_no->setAttribs(array('class'=>'validate[required] form-control','placeholder'=>'Select Purchase No'));
+		$recieve_no->setAttribs(array('class'=>'validate[required] form-control',"readOnly"=>"true",'placeholder'=>$tr->translate('SELECT_RECEIVE_NO')));
 		$recieve_no->setValue($rp_code);
     	$this->addElement($recieve_no);
 		
+		$invoice_no = new Zend_Form_Element_Text('invoice_no');
+		$invoice_no->setAttribs(array('class'=>'validate[required] form-control','required'=>true,'placeholder'=>$tr->translate('INVOICE_NO')));
+    	$this->addElement($invoice_no);
+		
+		$dn_no = new Zend_Form_Element_Text('dn_no');
+		$dn_no->setAttribs(array('class'=>'validate[required] form-control','required'=>true,'placeholder'=>$tr->translate('DN_NO')));
+    	$this->addElement($dn_no);
+		
+		$plan = new Zend_Form_Element_Text('plan');
+		$plan->setAttribs(array('class'=>'validate[required] form-control','readOnly'=>true));
+		//$plan->setValue($rp_code);
+    	$this->addElement($plan);
+		
+		$re_code = new Zend_Form_Element_Text('re_code');
+		$re_code->setAttribs(array('class'=>'validate[required] form-control','readOnly'=>true));
+		//$plan->setValue($rp_code);
+    	$this->addElement($re_code);
+		
+		$re_date = new Zend_Form_Element_Text('re_date');
+		$re_date->setAttribs(array('class'=>'validate[required] form-control','readOnly'=>true));
+		//$plan->setValue($rp_code);
+    	$this->addElement($re_date);
+		
 		$date_order = new Zend_Form_Element_Text('date_order');
-		$date_order->setAttribs(array('class'=>'validate[required] form-control date-picker','placeholder'=>'Select Purchase No'));
+		$date_order->setAttribs(array('class'=>'validate[required] form-control','readOnly'=>true,'placeholder'=>$tr->translate('PURCHASE_DATE')));
 		$date_order->setValue($date->get('MM/dd/YYYY'));
     	$this->addElement($date_order);
 		
 		$date_in = new Zend_Form_Element_Text('date_in');
-		$date_in->setAttribs(array('class'=>'validate[required] form-control date-picker','placeholder'=>'Select Purchase No'));
+		$date_in->setAttribs(array('class'=>'validate[required] form-control','readOnly'=>true,'placeholder'=>$tr->translate('RECEIVE_DATE')));
 		$date_in->setValue($date->get('MM/dd/YYYY'));
     	$this->addElement($date_in);
 		
-		$date_recieve = new Zend_Form_Element_Text('date_recieve');
-		$date_recieve->setAttribs(array('class'=>'validate[required] form-control date-picker','placeholder'=>'Select Purchase No'));
-		$date_recieve->setValue($date->get('MM/dd/YYYY'));
-    	$this->addElement($date_recieve);
+		$invoice_date = new Zend_Form_Element_Text('invoice_date');
+		$invoice_date->setAttribs(array('class'=>'form-control date-picker','readOnly'=>true,'placeholder'=>$tr->translate('INVOICE_DATE')));
+		$invoice_date->setValue($date->get('MM/dd/YYYY'));
+    	$this->addElement($invoice_date);
+		
+		$dn_date = new Zend_Form_Element_Text('dn_date');
+		$dn_date->setAttribs(array('class'=>'validate[required] form-control date-picker','placeholder'=>$tr->translate('DN_DATE')));
+		$dn_date->setValue($date->get('MM/dd/YYYY'));
+    	$this->addElement($dn_date);
 		
 		$sql_v = "SELECT v.`vendor_id`,v.`v_name`  FROM `tb_vendor` AS v WHERE 1";
 		$row_v = $db->getGlobalDb($sql_v);
@@ -51,7 +87,7 @@ public function add($data=null) {
 			}
 		}
 		$vendor = new Zend_Form_Element_Select('vendor');
-		$vendor->setAttribs(array('class'=>'validate[required] form-control select2me',"readOnly"=>"readOnly",'placeholder'=>'Select Purchase No'));
+		$vendor->setAttribs(array('class'=>'validate[required] form-control',"readOnly"=>"readOnly",'placeholder'=>$tr->translate('SELECT_VENDOR')));
     	$vendor->setMultiOptions($opt_v);
 		$this->addElement($vendor);
 		
@@ -64,8 +100,9 @@ public function add($data=null) {
 			}
 		}
 		$branch = new Zend_Form_Element_Select('branch');
-		$branch->setAttribs(array('class'=>'validate[required] form-control select2me','readOnly'=>'readOnly'));
+		$branch->setAttribs(array('class'=>'validate[required] form-control','readOnly'=>'readOnly','onChange'=>'getReceiveCode()'));
 		$branch->setMultiOptions($opt_b);
+		$branch->setValue($result["branch_id"]);
     	$this->addElement($branch);
 		
 		
@@ -158,12 +195,36 @@ public function add($data=null) {
 		$remark = new Zend_Form_Element_Text('remark');
 		$remark->setAttribs(array('class'=>'form-control','placeholder'=>'Remark Here'));
     	$this->addElement($remark);
-		
+    	
+    	$date_recieve = new Zend_Form_Element_Text('date_recieve');
+    	$date_recieve->setAttribs(array('class'=>'validate[required] form-control',"readOnly"=>"true",'placeholder'=>$tr->translate('INVOICE_DATE')));
+    	$date_recieve->setValue($date->get('MM/dd/YYYY'));
+    	$this->addElement($date_recieve);
+    	
+    	$invoice_date = new Zend_Form_Element_Text('invoice_date');
+    	$invoice_date->setAttribs(array('class'=>'validate[required] form-control  date-picker','placeholder'=>$tr->translate('INVOICE_DATE')));
+    	$invoice_date->setValue($date->get('MM/dd/YYYY'));
+    	$this->addElement($invoice_date);
+    	
+    	$invoice_recieve_date = new Zend_Form_Element_Text('invoice_recieve_date');
+    	$invoice_recieve_date->setAttribs(array('class'=>'validate[required] form-control  date-picker','placeholder'=>$tr->translate('INVOICE_RECIEVE_DATE')));
+    	$invoice_recieve_date->setValue($date->get('MM/dd/YYYY'));
+    	$this->addElement($invoice_recieve_date);
+    	
 		$re_id = new Zend_Form_Element_Hidden('re_id');
 		$this->addElement($re_id);
+		
+		$vat = new Zend_Form_Element_Hidden("vat");
+		$this->addElement($vat);
     	
     	if($data != null) {
-			//$re_id->setValue($data["re_id"]);
+			$vat->setValue($data["vat"]);
+			$rp_code = $db_r->getRecieveCode($data["branch_id"]);
+			$pay_code=  $db_r->getPayCode($data["branch_id"]);
+			$payment_number->setvalue($pay_code);
+			//$payment_number
+			$recieve_no->setValue($rp_code);
+			$re_id->setValue($data["re_id"]);
 	        $branch->setValue($data["branch_id"]);
 		   $pu_code->setValue($data["id"]);
 		   $vendor->setValue($data["vendor_id"]);
@@ -182,7 +243,13 @@ public function add($data=null) {
 		$remainlElement->setValue($data["balance"]);
 		$remain_after->setValue($data["balance"]);
 		$globalRealElement->setValue($data["discount_real"]);
-		$paidElement->setValue($data["paid"]);
+		$paidElement->setValue(0);
+		$re_code->setValue($data["re_code"]);
+		$re_date->setValue(date("m/d/Y",strtotime($data["date_request"])));
+		$plan->setValue($data["plan"]);
+		//$payment_number->setvalue($data["payment_number"]);
+		//$invoice_date->setvalue($data["invoice_date"]);
+		//$invoice_recieve_date->setvalue($data["invoice_recieve_date"]);
 		}
     	return $this;
 	}

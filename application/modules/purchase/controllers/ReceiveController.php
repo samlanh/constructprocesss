@@ -6,38 +6,45 @@ class Purchase_ReceiveController extends Zend_Controller_Action
         /* Initialize action controller here */
     	defined('BASE_URL')	|| define('BASE_URL', Zend_Controller_Front::getInstance()->getBaseUrl());
     	$tr = Application_Form_FrmLanguages::getCurrentlanguage();
+		// $db = new Application_Model_DbTable_DbGlobal();
+		// $rs = $db->getValidUserUrl();
+		// if(empty($rs)){
+			// Application_Form_FrmMessage::Sucessfull("YOU_NO_PERMISION_TO_ACCESS_THIS_SECTION","/index/dashboad");
+		// }
     }
     protected function GetuserInfoAction(){
     	$user_info = new Application_Model_DbTable_DbGetUserInfo();
     	$result = $user_info->getUserInfo();
     	return $result;
     }
-	public function indexAction()
-		{
-			if($this->getRequest()->isPost()){
-					$search = $this->getRequest()->getPost();
-			}else{
-				$search= array(
-					'text_search' 		=> "",
-					'purchase_status'	=>	0,
-					'start_date'		=>	1,
+	public function indexAction(){
+		if($this->getRequest()->isPost()){
+				$search = $this->getRequest()->getPost();
+				$search['start_date']=date("Y-m-d",strtotime($search['start_date']));
+				$search['end_date']=date("Y-m-d",strtotime($search['end_date']));
+		}
+		else{
+			$search =array(
+					'text_search'		=>	'',
+					'start_date'		=>	date("Y-m-01"),
+					'branch'			=>	'',
+					'suppliyer_id'		=>	0,
 					'end_date'			=>	date("Y-m-d"),
-				);
-			}
-			$db = new Purchase_Model_DbTable_DbRecieveOrder();
+					//'po_invoice_status'	=>	'',
+					);
+		}
+			$db = new Purchase_Model_DbTable_DbRecieve();
 			$rows = $db->getAllReceivedOrder($search);
-			$this->view->rs = $rows;
 			$glClass = new Application_Model_GlobalClass();
 			$columns=array("PURCHASE_ORDER_CAP","ORDER_DATE_CAP", "VENDOR_NAME_CAP","TOTAL_CAP_DOLLAR","BY_USER_CAP");
 			$link=array(
 					'module'=>'purchase','controller'=>'receive','action'=>'detail-purchase-order',
 			);
-			// url link to update purchase order
-			
 			$urlEdit = BASE_URL . "/purchase/index/update-purchase-order-test";
 			$list = new Application_Form_Frmlist();
 			$this->view->list=$list->getCheckList(1, $columns, $rows, array('order'=>$link),$urlEdit);
 			
+			$this->view->rs = $rows;
 			$formFilter = new Application_Form_Frmsearch();
 			$this->view->formFilter = $formFilter;
 			Application_Model_Decorator::removeAllDecorator($formFilter);
@@ -51,7 +58,6 @@ class Purchase_ReceiveController extends Zend_Controller_Action
 			try{
 				$data = $this->getRequest()->getPost();
 				$data["id"] = $id;
-				
 				$ids = $db->add($data);
 				Application_Form_FrmMessage::message("Purchase has been Receive!"); 		
 				if(isset($data["save_print"])){
@@ -63,14 +69,41 @@ class Purchase_ReceiveController extends Zend_Controller_Action
 				Application_Form_FrmMessage::message('INSERT_FAIL');
 				$err =$e->getMessage();
 				Application_Model_DbTable_DbUserLog::writeMessageError($err);
+				echo $err;exit();
 			}
 		}
-		$this->view->po = $row;
 		$this->view->item = $db->getItemByPuId($id);
 		$frm_purchase = new Purchase_Form_FrmRecieve();
 		$form_add_purchase = $frm_purchase->add($row);
 		Application_Model_Decorator::removeAllDecorator($form_add_purchase);
 		$this->view->form_purchase = $form_add_purchase;
+	}
+	
+	function makeinvoiceAction(){
+		$db = new Application_Model_DbTable_DbGlobal();
+		if($this->getRequest()->isPost()) {
+			$data = $this->getRequest()->getPost();
+			try {
+				$dbq = new Purchase_Model_DbTable_DbRecieve();
+				if(!empty($data['identity'])){
+					$dbq->addInvoice($data);
+				}
+				Application_Form_FrmMessage::message("INSERT_SUCESS");
+				if(!empty($data['btnsavenew'])){
+					Application_Form_FrmMessage::redirectUrl("/purchase/payment/add");
+				}
+				Application_Form_FrmMessage::redirectUrl("/purchase/payment/index");
+			}catch (Exception $e){
+				Application_Form_FrmMessage::message('INSERT_FAIL');
+				$err =$e->getMessage();
+				Application_Model_DbTable_DbUserLog::writeMessageError($err);
+			}
+		}
+		///link left not yet get from DbpurchaseOrder
+		$frm = new Purchase_Form_FrmInvoice(null);
+		$form_pay = $frm->Payment(null);
+		Application_Model_Decorator::removeAllDecorator($form_pay);
+		$this->view->form_sale = $form_pay;
 	}
 	public function purproductdetailAction(){
 		$id = ($this->getRequest()->getParam('id'))? $this->getRequest()->getParam('id'): '0';
@@ -91,6 +124,37 @@ class Purchase_ReceiveController extends Zend_Controller_Action
     	}
     	$query = new Purchase_Model_DbTable_DbRecieve();
     	$this->view->product =  $query->getProductReceiveById($id);
+		$session_user=new Zend_Session_Namespace('auth');
+		$db = new Application_Model_DbTable_DbGlobal();
+		$this->view->title_reprot = $db->getTitleReport($session_user->location_id);
+	}
+	public function getPurchaseVendorAction(){		
+		if($this->getRequest()->isPost()){
+		    $db= new Purchase_Model_DbTable_DbRecieve();
+			$post=$this->getRequest()->getPost();
+			$result= $db->getVendorByPuId($post["id"]);
+			echo Zend_Json::encode($result);
+			exit();
+		}	
+	}
+	public  function getPurchaseItemAction(){
+		if($this->getRequest()->isPost()){
+		    $db= new Purchase_Model_DbTable_DbRecieve();
+			$post=$this->getRequest()->getPost();
+			$result= $db->getItemByPuId($post["id"]);
+			echo Zend_Json::encode($result);
+			exit();
+		}
+	}
+	
+	public  function makefullreceiveAction(){
+		if($this->getRequest()->isPost()){
+		    $db= new Purchase_Model_DbTable_DbRecieve();
+			$post=$this->getRequest()->getPost();
+			$result= $db->makeFullReceive($post["id"]);
+			echo Zend_Json::encode($result);
+			exit();
+		}
 	}
 	public function getPurchaseidAction(){		
 		if($this->getRequest()->isPost()){
@@ -114,5 +178,21 @@ class Purchase_ReceiveController extends Zend_Controller_Action
 			exit();
 		}
 		
+	}
+	
+	function getReceiveCodeAction(){
+		$post=$this->getRequest()->getPost();
+		$db = new Purchase_Model_DbTable_DbRecieve();
+		$rs = $db->getRecieveCode($post["branch_id"]);
+		echo Zend_Json::encode($rs);
+		exit();
+	}
+	
+	function getreceiveAction(){
+		$post=$this->getRequest()->getPost();
+		$db = new Purchase_Model_DbTable_DbRecieve();
+		$rs = $db->getRecieve($post["id"],$post["type"]);
+		echo Zend_Json::encode($rs);
+		exit();
 	}
 }

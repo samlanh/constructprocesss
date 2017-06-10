@@ -6,6 +6,11 @@ class Purchase_indexController extends Zend_Controller_Action
         /* Initialize action controller here */
     	defined('BASE_URL')	|| define('BASE_URL', Zend_Controller_Front::getInstance()->getBaseUrl());
     	$tr = Application_Form_FrmLanguages::getCurrentlanguage();
+		$db = new Application_Model_DbTable_DbGlobal();
+		$rs = $db->getValidUserUrl();
+		if(empty($rs)){
+			Application_Form_FrmMessage::Sucessfull("YOU_NO_PERMISION_TO_ACCESS_THIS_SECTION","/index/dashboad");
+		}
     }
 	public function indexAction()
 	{
@@ -65,7 +70,8 @@ class Purchase_indexController extends Zend_Controller_Action
 		
 		// item option in select
 		$items = new Application_Model_GlobalClass();
-		$this->view->items = $items->getProductOption();;
+		$this->view->items = $items->getProductOption();
+		$this->view->product = $items->getAllProduct();
 		
 		//for add product;
 		$formpopup = new Application_Form_FrmPopup(null);
