@@ -7,10 +7,11 @@ class Sales_Model_DbTable_Dbcost extends Zend_Db_Table_Abstract
 	function getAllSaleOrder($search){
 			$db= $this->getAdapter();
 			$sql=" SELECT id,
+			(SELECT NAME FROM `tb_plan` WHERE id = tb_boqcost.project_name limit 1 ) as project_name,
 			(SELECT cust_name FROM `tb_customer` WHERE tb_customer.id=tb_boqcost.customer_id LIMIT 1 ) AS customer_name,
 			(SELECT contact_name FROM `tb_customer` WHERE tb_customer.id=tb_boqcost.customer_id LIMIT 1 ) AS contact_name,	
 			(SELECT NAME FROM `tb_sale_agent` WHERE tb_sale_agent.id =tb_boqcost.saleagent_id  LIMIT 1 ) AS staff_name,
-			boq_number,project_name,duration,(SELECT name_en FROM `tb_view` WHERE TYPE=2 AND key_code=project_type) AS project_type 
+			boq_number,duration,(SELECT name_en FROM `tb_view` WHERE TYPE=2 AND key_code=project_type) AS project_type 
 			,costlaborprice,costmaterail,all_total,boq_date,
 			(SELECT name_en FROM `tb_view` WHERE TYPE=3 AND key_code=is_approved LIMIT 1) AS approval,
 			(SELECT name_en FROM `tb_view` WHERE TYPE=4 AND key_code=pending_status LIMIT 1) AS processing,
@@ -50,19 +51,25 @@ class Sales_Model_DbTable_Dbcost extends Zend_Db_Table_Abstract
 			$userName=$session_user->user_name;
 			$GetUserId= $session_user->user_id;
 			$dbc=new Application_Model_DbTable_DbGlobal();
+			$this->_name='tb_plan';
+			$arr =array("pedding"=>4,);
+			$where = " id =".$data['project_name'];
+			$this->update($arr, $where);
+			
+			
 			$data["branch_id"]=1;
-			$so = $dbc->getSalesNumber($data["branch_id"]);
+			//$so = $dbc->getSalesNumber($data["branch_id"]);
 
 			$info_purchase_order=array(
 					"customer_id"    => $data['customer_id'],
 					"branch_id"      => 1,
 					"project_name"   => $data['project_name'],
 					"project_address" => $data['project_address'],
-					"boq_number"     => $so,//$data['txt_order'],
+					"boq_number"     => $data['txt_order'],
 					"create_date"    => date("Y-m-d"),
 					"boq_date"       => date("Y-m-d",strtotime($data['boq_date'])),
-					"start_date"     => date("Y-m-d",strtotime($data['start_date'])),
-					"end_date"       => date("Y-m-d",strtotime($data['end_date'])),
+					//"start_date"     => date("Y-m-d",strtotime($data['start_date'])),
+					//"end_date"       => date("Y-m-d",strtotime($data['end_date'])),
 					"duration"       => $data['duration'],
 					"project_type"   => $data['project_type'],
 					"saleagent_id"   => $data['saleagent_id'],
@@ -72,7 +79,7 @@ class Sales_Model_DbTable_Dbcost extends Zend_Db_Table_Abstract
 					"costmaterail" => $data['total_materail'],
 					"labour_note"	 => $data["labor_remark"],
 					"user_id"        => $GetUserId,
-					'pending_status' => 2,);
+					'pending_status' => 4,);
 			$this->_name="tb_boqcost";
 			$sale_id = $this->insert($info_purchase_order); 
 			unset($info_purchase_order);
@@ -112,8 +119,7 @@ class Sales_Model_DbTable_Dbcost extends Zend_Db_Table_Abstract
 		}catch(Exception $e){
 			$db->rollBack();
 			Application_Form_FrmMessage::message('INSERT_FAIL');
-			echo $e->getMessage();
-			exit();
+			$err= $e->getMessage();
 			Application_Model_DbTable_DbUserLog::writeMessageError($err);
 		}
 	}

@@ -86,6 +86,9 @@ class Sales_SellingController extends Zend_Controller_Action
 		$this->view->form_customer = $formpopup;
 		
 		$this->view->userinfo = $this->GetuserInfoAction();
+		$id = ($this->getRequest()->getParam('id'))? $this->getRequest()->getParam('id'): '0';
+		$db = new Sales_Model_DbTable_DbSaleOrder();
+		$this->view->rscost = $db->getAllCostpriceById($id);
 		
 	}
 	function editAction(){
@@ -172,5 +175,14 @@ class Sales_SellingController extends Zend_Controller_Action
 			echo Zend_Json::encode($qo);
 			exit();
 		}
+	}
+	function getprojectcostAction(){
+		if($this->getRequest()->isPost()){
+			$post=$this->getRequest()->getPost();
+			$db = new Sales_Model_DbTable_DbSaleOrder();
+			$qo = $db->getAllProjectCost($post['project_id']);
+			echo Zend_Json::encode($qo);
+			exit();
+		}	
 	}
 }

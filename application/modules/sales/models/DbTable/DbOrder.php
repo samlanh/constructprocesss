@@ -2,7 +2,6 @@
 
 class sales_Model_DbTable_DbOrder extends Zend_Db_Table_Abstract
 {
-	/////get order info to view for update
 	public function getOrderItemInfoByID($id){
 		$db = $this->getAdapter();
 		$sql = "SELECT o.order_id,o.order,o.date_order,o.status,c.cust_name,l.Name,
@@ -16,7 +15,6 @@ class sales_Model_DbTable_DbOrder extends Zend_Db_Table_Abstract
 		$row = $db->fetchRow($sql);
 		return $row;
 	}
-	
 	public function getOrderdeliverInfoByID($id,$deliver_id){
 		$db = $this->getAdapter();
 		$sql = "SELECT 
@@ -31,7 +29,6 @@ class sales_Model_DbTable_DbOrder extends Zend_Db_Table_Abstract
 				  sg.name,
 				  sdi.`delivery_no`,
 				  sdi.delivery_date 
-				  
 				FROM
 				  tb_sales_order AS o 
 				  INNER JOIN tb_customer AS c 
@@ -47,10 +44,6 @@ class sales_Model_DbTable_DbOrder extends Zend_Db_Table_Abstract
 		$row = $db->fetchRow($sql);
 		return $row;
 	}
-	//INNER JOIN tb_paymentmethod AS pay ON pay.payment_typeId = o.payment_method//not use cos update not payment method
-	///modify from sale_ref to join tb_sale_agen and get agent Name
-	
-	//get update order but not well
 	public function getSalesOderID($id){
 		$db = $this->getAdapter();
 		$sql = "SELECT 
@@ -79,7 +72,6 @@ class sales_Model_DbTable_DbOrder extends Zend_Db_Table_Abstract
 		$row = $db->fetchAll($sql);
 		return $row;
 	}	
-	
 	public function getSalesOde($id){
 		$db = $this->getAdapter();
 		$sql = "SELECT
@@ -107,8 +99,7 @@ class sales_Model_DbTable_DbOrder extends Zend_Db_Table_Abstract
 				  AND si.order_id = ".$id ;
 		$row = $db->fetchAll($sql);
 		return $row;
-	}
-	
+	}	
 	public function getDeliveryOderID($id){
 		$db = $this->getAdapter();
 		$sql = "SELECT 
@@ -127,7 +118,6 @@ class sales_Model_DbTable_DbOrder extends Zend_Db_Table_Abstract
 		$row = $db->fetchAll($sql);
 		return $row;
 	}
-	//get customer info 28-8-13 
 	public function getCustomerInfo($post){
 		$db=$this->getAdapter();
 		$sql ="SELECT  add_name AS address ,  contact_name, phone
@@ -136,7 +126,6 @@ class sales_Model_DbTable_DbOrder extends Zend_Db_Table_Abstract
 		$row = $db->fetchRow($sql);
 		return $row;		
 	}
-	// for get current price 28-13
 	public function getcurrentPrice($post){
 		$db=$this->getAdapter();
 		$sql="SELECT price

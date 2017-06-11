@@ -932,9 +932,12 @@ class Application_Model_DbTable_DbGlobal extends Zend_Db_Table_Abstract
    	}
    	return  $db->fetchAll($sql);
    }
-   function getAllPlan($opt=null){
+   function getAllPlan($opt=null,$app=null){
    	$db= $this->getAdapter();
    	$sql=" SELECT id,`name` FROM `tb_plan` WHERE STATUS=1 AND `name`!='' ";
+   	if($app!=null){
+   		$sql.=" AND appr_status=$app";
+   	}
    	$sql.=" ORDER BY id DESC ";
    	$row =  $db->fetchAll($sql);
    	if($opt==null){

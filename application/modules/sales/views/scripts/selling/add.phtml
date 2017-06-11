@@ -137,32 +137,33 @@
 												<label class="control-label col-md-2"><?php echo $tr->translate("តម្លៃដើមសម្ភារៈ");?><span class="required">* </span>
 												</label>
 												<div class="col-md-4">
-													<div class="input-icon right"><input type="text" name="total_costmaterial" id="total_costmaterial" style="text-align:right" class="form-control"></div>
+													<div class="input-icon right"><input readonly type="text" name="total_costmaterial" id="total_costmaterial" style="text-align:right" class="form-control"></div>
 												</div>
 												<label class="control-label col-md-2"><?php echo $tr->translate("តម្លៃសម្ភារៈ");?><span class="required">* </span>
 												</label>
 												<div class="col-md-4">
-													<div class="input-icon right"><input type="text" name="total_material" id="total_material" style="text-align:right" class="form-control"></div>
+													<div class="input-icon right"><input  type="text" name="total_material" id="total_material" class="validate[required,custom[number]] form-control" style="text-align:right" class="form-control"></div>
 												</div>
 											</div>
 											<div class="form-group">
 												<label class="control-label col-md-2"><?php echo $tr->translate("តម្លៃដើមពលកម្ម​ :");?><span class="required">* </span>
 												</label>
 												<div class="col-md-4">
-													<div class="input-icon right"><input type="text" name="total_cost_labor" id="total_cost_labor" style="text-align:right" class="form-control"></div>
+													<div class="input-icon right"><input readonly type="text" name="total_cost_labor" id="total_cost_labor" style="text-align:right" class="form-control"></div>
 												</div>
 													<label class="control-label col-md-2"><?php echo $tr->translate("តម្លៃពលកម្ម​ :");?><span class="required">* </span>
 												</label>
 												<div class="col-md-4">
-													<div class="input-icon right"><input type="text" name="total_labor" id="total_labor" style="text-align:right" class="form-control"></div>
+													<div class="input-icon right">
+													<input class="validate[required,custom[number]] form-control" type="text" name="total_labor" id="total_labor" style="text-align:right" class="form-control">
+													<input type="hidden" name="id" id="id" class="form-control"></div>
 												</div>
 											</div>
 											<div class="form-group">
-												<label class="control-label col-md-2"><span class="required">
-													 </span>
+												<label class="control-label col-md-2"><?php echo $tr->translate("តម្លៃដើមតម្លៃសរុប:");?><span class="required">* </span>
 												</label>
 												<div class="col-md-4">
-													<div class="input-icon right"></div>
+													<div class="input-icon right"><input readonly type="text" name="totalall_cost" id="totalall_cost" style="text-align:right" class="form-control"></div>
 												</div>
 													<label class="control-label col-md-2"><?php echo $tr->translate("តម្លៃសរុប​ :");?><span class="required">* </span>
 												</label>
@@ -171,11 +172,16 @@
 												</div>
 											</div>
 											<div class="form-group">
-												<label class="control-label col-md-2"><span class="required">
-													 </span>
+												<label class="control-label col-md-2">
+													យល់ព្រម
 												</label>
 												<div class="col-md-4">
-													<div class="input-icon right"></div>
+													<div class="input-icon right">
+														<select name="approv_status" id="approv_status" class="form-control select2me">
+															<option value="1">Approved</option>
+															<option value="2">Rejected</option>
+														</select>
+													</div>
 												</div>
 												<label class="control-label col-md-2"><?php echo $tr->translate("DISCOUNT");?>
 												</label>
@@ -187,11 +193,10 @@
 												</div>	
 											</div>
 											<div class="form-group">
-												<label class="control-label col-md-2"><?php //echo $tr->translate("ពន្ធ");?><span class="required">
-												* </span>
-												</label>
+												<label class="control-label col-md-2">សម្គាល់</label>
 												<div class="col-md-4">
 													<div class="input-icon right">
+														<input type="text" name="approval_note" id="approval_note" style="text-align:left" class="form-control">
 													</div>
 												</div>
 												<label class="control-label col-md-2">សាច់ប្រាក់សរុប​ :<span class="required">
@@ -445,7 +450,84 @@ $('#frm').submit(function() {
 $(document).ready(function() {
 	saleTermDefual();
 	getsaleOrderNumber();
+	initList();
+	
 });
+function initList() {
+	index5=0;
+	var template;
+	var option5 = '<?php echo $this->items;?>';
+	<?php if(!empty($this->rscost)) {
+		foreach($this->rscost AS $i=>$r){?>
+		index5++; //var first = index5;
+		index=index+1;		
+		template='<tr id="row_order_'+index5+'" style="height:33px;">';
+		var inp = '';
+		if(index5 == 1) {
+			template+='<td >&nbsp;</td>';
+		} else {
+			template+='<td ><img onClick="deleteRecord('+index5+')" src="<?php echo BASE_URL; ?>/images/icon/delete.gif" /></td>';
+		}
+		template+='<td align="center"  width="2%">'+index5+'</td>';
+		template+='<td width="20%"><select style="width:330px;" class="form-control select2me" Onchange="ShowPopupProduct('+ index5 + ');" id="item_id_'+index5+'" name="item_id_'+index5+'" >'+option5+'<option></option></select>'+inp+'</td>';
+		template+='<td><input style="background:#f5e1e1;" readonly type="text" class="form-control" id="lblcurrent_qty'+index5+'" name="lblcurrent_qty'+index5+'" /><input style="background:#f5e1e1;" readonly type="hidden" class="form-control" id="current_qty'+index5+'" name="current_qty'+index5+'" /></td>';
+		template+='<td ><input type="text" class="validate[required] form-control" required="1" id="measure'+index5+'" name="measure'+index5+'"/></td>';
+		template+='<td ><input type="text" onkeyup="calculatePrice('+index5+')" class="validate[required,custom[number]] input form-control" id="qty'+index5+'" name="qty'+index5+'" /><input type="hidden" id="oldprice_'+index5+'" name="oldprice_'+index5+'"/></td>';
+		template+='<td ><input type="text" onkeyup="calculatePrice('+index5+')" class="validate[custom[number]] input form-control" id="laborcost_price'+index5+'" name="laborcost_price'+index5+'" /></td>';
+		template+='<td ><input type="text" readonly="readonly" onkeyup="calculatePrice('+index5+')" class="validate[custom[number]] input form-control" id="totallaborprice'+index5+'" name="totallaborprice'+index5+'" /></td>';	
+		template+='<td ><input type="text" readonly="readonly" class="validate[required,custom[number]] input form-control" id="labour_price'+index5+'" name="labour_price'+index5+'" /></td>';
+		template+='<td ><input type="text" onkeyup="calculatePrice('+index5+')" class="validate[custom[number]] input form-control" id="materailcost_price'+index5+'" name="materailcost_price'+index5+'" /></td>';
+		template+='<td ><input type="text" readonly="readonly" class="validate[custom[number]] input form-control" id="totalmaterailcost'+index5+'" name="totalmaterailcost'+index5+'" /></td>';	
+		template+='<td ><input type="text" readonly="readonly" class="validate[required,custom[number]] input form-control" id="material_price'+index5+'" name="material_price'+index5+'" value="" /></td>';
+
+		template+='<td ><input type="text" class="form-control" readonly="readonly" id="total'+index5+'" name="total'+index5+'" /></td>';
+		template+='<td ><input type="text" class="form-control"  id="note_'+index5+'" name="note_'+index5+'" /><input type="hidden" class="form-control"  id="is_service'+index5+'" name="is_service'+index5+'" value="0" /></td>';
+		template+="</tr>";
+		if(free.checked){
+			template='<tr id="row_order_'+index5+'" style="height:33px;">';
+			template+='<td >&nbsp;<input type="hidden" class="form-control"  id="is_service'+index5+'" name="is_service'+index5+'" value="0" /></td>';
+			template+='<td ><img onClick="deleteRecord('+index5+')" src="<?php echo BASE_URL; ?>/images/icon/delete.gif" /></td>';
+			template+='<td width="100%" colspan="8"><select style="background:#ccc;" class="form-control select2me" Onchange="ShowPopupProduct('+ index5 + ');" id="item_id_'+index5+'" name="item_id_'+index5+'" >'+option5+'<option></option></select>'+inp+'</td>';
+			template+="</tr>";
+			$('#table_order').append(template);
+			$("#is_service"+index5).val(1);
+		}
+		else{
+			$('#table_order').append(template);
+		}
+		if($('#identity').val()!="") {
+			var identity = $('#identity').val();
+			$('#identity').val(identity+','+index5);
+		} else {$('#identity').val(index5);}
+
+		$("#item_id_"+index5).val("<?php echo $r['pro_id'];?>");
+
+		$("#measure"+index5).val("<?php echo $r['measure'];?>");
+		$("#qty"+index5).val("<?php echo $r['qty_order'];?>");
+		$("#laborcost_price"+index5).val("<?php echo $r['costlabour_price'];?>");
+		$("#totallaborprice"+index5).val("<?php echo $r['totalcostlabor'];?>");
+		$("#labour_price"+index5).val("<?php echo $r['totalcostlabor'];?>");
+		
+		$("#materailcost_price"+index5).val("<?php echo $r['costmaterail_price'];?>");
+		$("#totalmaterailcost"+index5).val("<?php echo $r['totalcostmaterail'];?>");
+		$("#material_price"+index5).val("<?php echo $r['totalcostmaterail'];?>");
+		$("#total_costmaterial").val("<?php echo $r['ccostlaborprice'];?>");
+		$("#total_cost_labor").val("<?php echo $r['ccostmaterailprice'];?>");
+		$("#totalall_cost").val("<?php echo $r['ccostmaterailprice']+$r['ccostlaborprice'];?>");
+		
+		$("#project_name").val("<?php echo $r['project_name'];?>");
+		$("#project_name").attr("readonly", true);
+		$("#project_name").select2();
+		$("#customer_id").val("<?php echo $r['customer_id'];?>");
+		$("#id").val("<?php echo $r['ids'];?>");
+		$("#customer_id").attr("readonly", true);
+		$("#customer_id").select2();
+		$("#item_id_"+index5).select2();
+		$("#row_order_0").remove();
+		$("#frm").validationEngine();
+		<?php } }?>
+	$("#frm").validationEngine();
+}
 function saleTermDefual(){
 	index1=0;
 	term_option = '<?php echo $this->term_opt; ?>';
@@ -589,6 +671,8 @@ function getQtyById(index){//use
 				});
 			}
 }
+function getCostProject(){
+}
 <?php $url_price =  $this->url(array('module'=>'sales','controller'=>'index','action'=>'getproductprice')); ?>
 function getProductPrice(product_id,recordid){
 	customer_id=$("#customer_id").val();
@@ -613,8 +697,7 @@ function getProductPrice(product_id,recordid){
 	});
   }
 }
-$( document ).ready(function() {
-});
+
 function getItemOrder(){
 	item_ids=$("#add_item").val();
 	$('#add_item').val('').trigger("liszt:updated");
@@ -765,30 +848,32 @@ function netTotal() {//use
 function calculateIncludeOverhead(){
 	overheadpercent = $('#overheadpercent').val();	
 	totaloverhead = $('#totaloverhead').val();	
-	all_total = $('#all_total').val();	
+	
+	all_total = $('#totalall_cost').val();	
 	if(all_total==''){
 		all_total=0;}
-	overheadinclude = (overheadpercent*totaloverhead/100);//+parseFloat(all_total);
+	overheadinclude = (overheadpercent*all_total/100);//+parseFloat(all_total);
 	overheadinclude = (overheadinclude).toFixed(2);
-	
-	$('#overheadinclude').val(overheadinclude);
 	
 	totaloverheadinclude = parseFloat(overheadinclude)+parseFloat(totaloverhead);
 	$('#overhead').val(totaloverheadinclude);
 	
+	$('#overheadinclude').val(parseFloat(overheadinclude));
+	
 	calCulateKOH();
-	//netTotalCost();
 }
 function calCulateKOH(){
-	total_costmaterial = $('#total_costmaterial').val();	
-	total_cost_labor = $('#total_cost_labor').val();	
-	if(all_total==''){all_total=1;}
+	//total_costmaterial = $('#total_costmaterial').val();	
+	//total_cost_labor = $('#total_cost_labor').val();	
+	//if(all_total==''){all_total=1;}
 	
-	if(total_cost_labor==''){total_cost_labor=1;}
+	//if(total_cost_labor==''){total_cost_labor=1;}
 
-	all_total = parseFloat(total_cost_labor)+parseFloat(total_costmaterial);
+	//all_total = parseFloat(total_cost_labor)+parseFloat(total_costmaterial);
+	all_total =  $('#totalall_cost').val();	
+	if(all_total==''){all_total=0;}
 
-	overheadinclude = $('#overheadinclude').val();	
+	overheadinclude = $('#overhead').val();	
 	
 	if(overheadinclude==''){overheadinclude=0;}
 	koh=0;
@@ -839,22 +924,20 @@ function calcualteselling(){
 		$('#material_price'+rowIDArray[n]).val(materail_price.toFixed(2));
 
 		if($('#is_service'+rowIDArray[n]).val()==1){continue;}
-		total_amount = parseFloat(materail_price)+parseFloat(labor_price);
+		total_amount = (parseFloat(materail_price)+parseFloat(labor_price))*$('#qty'+rowIDArray[n]).val();
 		total_amount = total_amount.toFixed(2);
 		$('#total'+rowIDArray[n]).val(total_amount);
 		
-		total_labor += Number($('#labour_price'+rowIDArray[n]).val());
-		total_materail += Number($('#material_price'+rowIDArray[n]).val());
+		total_labor += Number($('#labour_price'+rowIDArray[n]).val()*($('#qty'+rowIDArray[n]).val()));
+		total_materail += Number($('#material_price'+rowIDArray[n]).val()*($('#qty'+rowIDArray[n]).val()));
 		netTotal += Number(total_amount);
-		
 	}	
 	if(isNaN(total_material)){
 		total_material=0;
 	}
-//alert("netTotal"+netTotal);
 	$('#total_material').val(total_materail.toFixed(2));
 	$('#total_labor').val(total_labor.toFixed(2));
-	$('#all_total').val(netTotal);
+	$('#all_total').val(netTotal.toFixed(2));
 	//calCulateKOH();
 }
 var record_id = 1;

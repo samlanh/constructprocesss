@@ -32,13 +32,6 @@ class Sales_Form_FrmSale extends Zend_Form
     	
     	$user= $this->GetuserInfo();
     	$options="";
-//     	$locationID = new Zend_Form_Element_Select('branch_id');
-//     	$locationID ->setAttribs(array('class'=>'form-control select2me'));
-// 		$options = $db->getAllLocation(1);
-//     	$locationID->setMultiOptions($options);
-//     	$locationID->setattribs(array(
-//     			'Onchange'=>'getsaleOrderNumber()',));
-//     	$this->addElement($locationID);
     	    	
     	$descriptionElement = new Zend_Form_Element_Textarea('remark');
     	$descriptionElement->setAttribs(array("class"=>'form-control',"rows"=>3));
@@ -65,8 +58,8 @@ class Sales_Form_FrmSale extends Zend_Form
     	
     	
     	$project_name = new Zend_Form_Element_Select('project_name');
-    	$project_name->setAttribs(array('class'=>'form-control select2me'));
-    	$optplan = $db->getAllPlan(1);
+    	$project_name->setAttribs(array('class'=>'form-control select2me','onchange'=>'getCostProject();'));
+    	$optplan = $db->getAllPlan(1,1);
     	$project_name->setMultiOptions($optplan);
     	
     	$duration = new Zend_Form_Element_Text('duration');

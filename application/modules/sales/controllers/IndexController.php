@@ -30,7 +30,7 @@ class Sales_IndexController extends Zend_Controller_Action
 		}
 		$db = new Sales_Model_DbTable_Dbcost();
 		$rows = $db->getAllSaleOrder($search);
-		$columns=array("Com.Name","CON_NAME","SALE_AGENT","SALE_ORDER","Project Name","Duration","Project Type",
+		$columns=array("Project Name","Com.Name","CON_NAME","SALE_AGENT","SALE_ORDER","Duration","Project Type",
 				"Total Labor Cost","Total Materail Cost","TOTAL_AMOUNT","DATE","APPROVED_STATUS","PENDING_STATUS","BY_USER");
 		$link=array(
 				'module'=>'sales','controller'=>'index','action'=>'edit',
@@ -435,6 +435,15 @@ class Sales_IndexController extends Zend_Controller_Action
 			$post=$this->getRequest()->getPost();
 			$db = new Application_Model_DbTable_DbGlobal();
 			$qo = $db->getSalesNumber($post['branch_id']);
+			echo Zend_Json::encode($qo);
+			exit();
+		}
+	}
+	function getprojectdetailAction(){
+		if($this->getRequest()->isPost()){
+			$post=$this->getRequest()->getPost();
+			$db = new Sales_Model_DbTable_DbSaleOrder();
+			$qo = $db->getProductById($post['project_id']);
 			echo Zend_Json::encode($qo);
 			exit();
 		}

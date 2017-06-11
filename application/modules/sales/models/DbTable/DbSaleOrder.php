@@ -7,10 +7,11 @@ class Sales_Model_DbTable_DbSaleOrder extends Zend_Db_Table_Abstract
 	function getAllSaleOrder($search){
 			$db= $this->getAdapter();
 			$sql=" SELECT id,
+			(SELECT name FROM `tb_plan` WHERE id = tb_boq.project_name limit 1 ) as project_name,
 			(SELECT cust_name FROM `tb_customer` WHERE tb_customer.id=tb_boq.customer_id LIMIT 1 ) AS customer_name,
 			(SELECT contact_name FROM `tb_customer` WHERE tb_customer.id=tb_boq.customer_id LIMIT 1 ) AS contact_name,	
 			(SELECT name FROM `tb_sale_agent` WHERE tb_sale_agent.id =tb_boq.saleagent_id  LIMIT 1 ) AS staff_name,
-			boq_number,project_name,duration,(SELECT name_en FROM `tb_view` WHERE type=2 AND key_code=project_type) AS project_type 
+			boq_number,duration,(SELECT name_en FROM `tb_view` WHERE type=2 AND key_code=project_type) AS project_type 
 			,all_total,discount_value,net_total,boq_date,
 			(SELECT name_en FROM `tb_view` WHERE type=3 AND key_code=is_approved LIMIT 1) AS approval,
 			(SELECT name_en FROM `tb_view` WHERE type=4 AND key_code=pending_status LIMIT 1) AS processing,
@@ -50,8 +51,24 @@ class Sales_Model_DbTable_DbSaleOrder extends Zend_Db_Table_Abstract
 			$userName=$session_user->user_name;
 			$GetUserId= $session_user->user_id;
 			$dbc=new Application_Model_DbTable_DbGlobal();
-			$data["branch_id"]=1;
-			$so = $dbc->getSalesNumber($data["branch_id"]);
+			
+			$pending=4;
+			$tosale = 0;
+			if($data['approv_status']==2){
+				$pending=2;
+			}
+			$arr=array(
+					'is_tosale'			=> $tosale,
+					'is_approved'		=> $data['approv_status'],
+					'approved_userid'	=> $GetUserId,
+					'approval_note'		=> $data['approval_note'],
+					'approved_date'		=> date("Y-m-d"),
+					'pending_status'	=> $pending,
+			);
+			$this->_name="tb_boqcost";
+			$where = " id = ".$data["id"];
+			$sale_id = $this->update($arr, $where);
+			
 
 			$info_purchase_order=array(
 					"customer_id"    => $data['customer_id'],
@@ -111,9 +128,8 @@ class Sales_Model_DbTable_DbSaleOrder extends Zend_Db_Table_Abstract
 					"all_total"      => $data['all_total'],
 					"discount_value" => $data['dis_value'],
 					"net_total"      => $data['net_total'],
-					//"labour_note"	 => $data["labor_remark"],
 					"user_id"        => $GetUserId,
-					'pending_status' => 2,
+					'pending_status' => 5,
 			);
 			$this->_name="tb_boq";
 			$sale_id = $this->insert($info_purchase_order); 
@@ -336,4 +352,20 @@ class Sales_Model_DbTable_DbSaleOrder extends Zend_Db_Table_Abstract
 		$sql=" SELECT * FROM `tb_quoatation_termcondition` WHERE quoation_id=$id AND term_type=2 ";
 		return $db->fetchAll($sql);
 	} 
+	function getAllProjectCost($project_id){
+		$db = $this->getAdapter();
+		$sql="SELECT b.costlaborprice AS ccostlaborprice,b.costmaterail AS ccostmaterailprice,bc.* FROM `tb_boqcost` AS b, `tb_boqcostdetail` AS bc WHERE b.id=bc.boq_id AND b.project_name=$project_id ";
+		return $db->fetchAll($sql);
+	}
+	function getAllCostpriceById($id){
+		$db = $this->getAdapter();
+		$sql="SELECT b.id as ids,b.customer_id,b.project_name,b.costlaborprice AS ccostlaborprice,b.costmaterail AS ccostmaterailprice,bc.* FROM `tb_boqcost` AS b, `tb_boqcostdetail` AS bc WHERE b.id=bc.boq_id AND b.id=".$id;
+		return $db->fetchAll($sql);
+	}
+	function getProductById($project_id){
+		$db = $this->getAdapter();
+		$sql="SELECT * FROM `tb_plan` WHERE id=$project_id AND appr_status=1 ";
+		return $db->fetchRow($sql);
+	}
+	
 }
