@@ -8,6 +8,9 @@ class Sales_Model_DbTable_Dbquoatation extends Zend_Db_Table_Abstract
 		$db = $this->getAdapter();
 		$sql = "SELECT 
 				  p.`qty_perunit`,
+				  p.`item_name`,
+				  p.`item_code`,
+				  p.`id`,
 				  (SELECT qty FROM `tb_prolocation` WHERE location_id = $branch AND pro_id = $item_id LIMIT 1) AS qty ,
 				   (SELECT price FROM `tb_prolocation` WHERE location_id = $branch AND pro_id = $item_id LIMIT 1) AS price ,
 				  (SELECT m.name FROM tb_measure as m where m.id=p.measure_id) as measure

@@ -12,6 +12,25 @@ class Application_Model_DbTable_DbGlobal extends Zend_Db_Table_Abstract
 	 * @param string $sql
 	 * @return array $row;
 	 */
+	 public function getDeliverNumber($branch_id = 1){
+    	$this->_name='tb_deliverynote';
+    	$db = $this->getAdapter();
+    	$sql=" SELECT COUNT(id)  FROM $this->_name WHERE branch_id=".$branch_id." LIMIT 1 ";
+    	$pre = $this->getPrefixCode($branch_id)."DN-";
+    	$acc_no = $db->fetchOne($sql);
+    
+    	$new_acc_no= (int)$acc_no+1;
+    	$acc_no= strlen((int)$acc_no+1);
+    	for($i = $acc_no;$i<5;$i++){
+    		$pre.='0';
+    	}
+    	return $pre.$new_acc_no;
+    }
+	 function getplanitem($id){
+		 $db = $this->getAdapter();
+		 $sql ="SELECT p.`item_name`,p.`item_code`,p.`id` FROM `tb_product` AS p ,`tb_boq` AS b,`tb_boqdetail` AS bd WHERE b.`id`=bd.`boq_id` AND p.id=bd.`pro_id` AND b.`project_name`='$id'";
+		return $db->fetchAll($sql);
+	 }
 	 function getDnNo($completed=null,$opt=null){
    	$db= $this->getAdapter();
 	$tr = Application_Form_FrmLanguages::getCurrentlanguage();

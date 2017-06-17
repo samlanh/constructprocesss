@@ -93,9 +93,9 @@
 	$module=$request->getModuleName();
 	$class_active='start active open';
 	
-	$url_request = array($this->url(array('module'=>'requestfromsite','controller'=>'request','action'=>'index'),null, true), "SITE_ITEM_REQUEST");
-	$url_request_add = array($this->url(array('module'=>'requestfromsite','controller'=>'request','action'=>'add'),null, true), "ADD_SITE_ITEM_REQUEST");
-	$url_request_edit = array($this->url(array('module'=>'requestfromsite','controller'=>'request','action'=>'edit'),null, true), "EDIT_SITE_ITEM_REQUEST");
+	$url_request = array($this->url(array('module'=>'purchase','controller'=>'siterequest','action'=>'index'),null, true), "SITE_ITEM_REQUEST");
+	$url_request_check = array($this->url(array('module'=>'purchase','controller'=>'siterequest','action'=>'checklist'),null, true), "CHECK_SITE_ITEM_REQUEST");
+	$url_request_deliver = array($this->url(array('module'=>'purchase','controller'=>'siterequest','action'=>'requestdelivery'),null, true), "DELIVER_SITE_ITEM_REQUEST");
 	
 	$url_plan_type = array($this->url(array('module'=>'sales','controller'=>'plantype','action'=>'index'),null, true), "PLAN_TYPE");
 	$url_plan = array($this->url(array('module'=>'sales','controller'=>'plan','action'=>'index'),null, true), "PLAN");
@@ -655,13 +655,13 @@
 		            		</a>
 	            		</li> 
 	            		<li>
-            			<a href="<?php echo $url_request_add[0]; ?>">
-	            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_request_add[1]);?>
+            			<a href="<?php echo $url_request_check[0]; ?>">
+	            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_request_check[1]);?>
 	            		</a>
             		    </li>
             		    <li>
-	            			<a href="<?php echo $url_request_edit[0]; ?>">
-							    <i class="icon-bulb"></i> <?php echo $tr->translate($url_request_edit[1]);?>
+	            			<a href="<?php echo $url_request_deliver[0]; ?>">
+							    <i class="icon-bulb"></i> <?php echo $tr->translate($url_request_deliver[1]);?>
 		            		</a>
 	            		</li>
 	            		
