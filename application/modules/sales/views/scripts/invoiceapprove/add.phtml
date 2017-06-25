@@ -11,18 +11,18 @@ $tr=Application_Form_FrmLanguages::getCurrentlanguage();
 				<div class="caption">
 					<i class="fa fa-globe"></i><?php echo $tr->translate("ទំរង់នៃការចេញ Quotation");?>
 				</div>
-						<div class="btn-group pull-right">
-							 <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="1000" data-close-others="true" aria-expanded="false">
-							   Actions <i class="fa fa-angle-down"></i>
-							 </button>
-								<ul class="dropdown-menu" role="menu">
-									<li>
-										<a href="#" onclick="doPrint();">
-											<i class="fa fa-print" aria-hidden="true"></i>&nbsp;&nbsp;Print
-										</a>
-									</li>
-								</ul>
-					</div>
+					<div class="btn-group pull-right">
+					 <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="1000" data-close-others="true" aria-expanded="false">
+					   Actions <i class="fa fa-angle-down"></i>
+					 </button>
+						<ul class="dropdown-menu" role="menu">
+							<li>
+								<a href="#" onclick="doPrint();">
+									<i class="fa fa-print" aria-hidden="true"></i>&nbsp;&nbsp;Print
+								</a>
+							</li>
+						</ul>
+				  </div>
 			</div>
             <div class="portlet-body form frmfilter">
 					<div style="clear:both;"></div>	
@@ -42,6 +42,7 @@ $tr=Application_Form_FrmLanguages::getCurrentlanguage();
 				font-weight: normal !important;}
 		ul.pur_info li strong{font-weight: bold;}
        .hover:hover{background: #ccc;}
+		.border{border:1px solid #000;  height:30px;}
 	</style>
 		<table style="font-family: 'Khmer OS Content'; width:100%;">
 			<tbody>
@@ -100,8 +101,72 @@ $tr=Application_Form_FrmLanguages::getCurrentlanguage();
 		    </tr>
 		    <tr>
 		    	<td id="exportExcel"><br />
-		            <table  style="border-collapse:collapse;border:1px solid #000; font-size:12px;" width="100%" cellspacing="0" border="1">
+	    			<div class="form-group">
+						<label class="control-label col-md-2">Overhead Included</label>
+						<label class="control-label col-md-2 border"><?php echo number_format($this->product[0]['overheadinclude'],2);?></label>
+						<label class="control-label col-md-2">Profit Margin</label>
+						<label class="control-label col-md-2 border"><?php echo number_format($this->product[0]['profitmargin'],2);?></label>
+						<label class="control-label col-md-2">Hour Rate Cost</label>
+						<label class="control-label col-md-2 border"><?php echo number_format($this->product[0]['hourrate'],2);?></label>
+					</div>
+	    			<div class="form-group">
+						<label class="control-label col-md-2">K Train</label>
+						<label class="control-label col-md-2 border"><?php echo number_format($this->product[0]['worker1'],2);?></label>
+						<label class="control-label col-md-2">KOH</label>
+						<label class="control-label col-md-2 border"><?php echo number_format($this->product[0]['koh'],2);?></label>
+						<label class="control-label col-md-2"></label>
+						<label class="control-label col-md-2 border" ><?php //echo number_format($this->product[0]['worker1'],2);?></label>
+					</div>
+		            <table style="border-collapse:collapse;border:1px solid #000; font-size:12px;" width="100%" cellspacing="0" border="1">
 		                 <tbody>
+		              <tr>
+						<td colspan="3" style="border:1px solid #fff;border-right:1px solid #000;"></td>
+						<td colspan="" style="border-left:1px solid #000;">&nbsp;<?php echo $tr->translate("Accomodation");?></td>
+						<td colspan="" style="border-left:1px solid #000;">&nbsp;<?php echo $tr->translate("Worker");?></td>
+						<td>&nbsp;&nbsp;<?php echo $tr->translate("Supervisor");?></td>
+						<td colspan="2" style="border-left:1px solid #000;"><?php echo $tr->translate("Tool");?>&nbsp;</td>
+						<td>&nbsp;&nbsp;<?php echo $tr->translate("Other");?></td>
+					</tr>
+		              <tr>
+						<td colspan="3" style="border:1px solid #fff;border-right:1px solid #000;"></td>
+						<td colspan="" style="border-left:1px solid #000;">&nbsp;<?php echo $tr->translate("Food");?></td>
+						<td colspan="" style="border-left:1px solid #000;">&nbsp;<?php echo number_format($this->product[0]['worker1'],2);?></td>
+						<td>&nbsp;&nbsp;<?php echo number_format($this->product[0]['supervisor1'],2);?></td>
+						<td colspan="2" style="border-left:1px solid #000;">&nbsp;<?php echo number_format($this->product[0]['tool1'],2);?></td>
+						<td>&nbsp;&nbsp;<?php echo number_format($this->product[0]['other1'],2);?></td>
+					</tr>
+					<tr>
+						<td colspan="3" style="border:1px solid #fff;border-top:1px solid #000;border-right:1px solid #000;"></td>
+						<td colspan="" style="border-left:1px solid #000;">&nbsp;<?php echo $tr->translate("Transport");?></td>
+						<td colspan="" style="border-left:1px solid #000;">&nbsp;<?php echo number_format($this->product[0]['worker2'],2);?></td>
+						<td colspan="" style="border-left:1px solid #000;">&nbsp;<?php echo number_format($this->product[0]['supervisor2'],2);?></td>
+						<td colspan="2">&nbsp;<?php echo number_format($this->product[0]['tool2'],2);?></td>
+						<td >&nbsp;&nbsp;<?php echo number_format($this->product[0]['other2'],2);?></td>
+					</tr>
+					<tr>
+						<td colspan="3" style="border:1px solid #fff;border-top:1px solid #000;border-right:1px solid #000;"></td>
+						<td colspan="" style="border-left:1px solid #000;">&nbsp;<?php echo $tr->translate("House");?></td>
+						<td colspan="" style="border-left:1px solid #000;">&nbsp;<?php echo number_format($this->product[0]['worker3'],2);?></td>
+						<td >&nbsp;&nbsp;<?php echo number_format($this->product[0]['supervisor3'],2);?></td>
+						<td colspan="2" style="border-left:1px solid #000;">&nbsp;<?php echo number_format($this->product[0]['tool3'],2);?></td>
+						<td >&nbsp;&nbsp;<?php echo number_format($this->product[0]['other3'],2);?></td>
+					</tr>
+					<tr>
+						<td colspan="3" style="border:1px solid #fff;border-top:1px solid #000;border-right:1px solid #000;"></td>
+						<td colspan="" style="border-left:1px solid #000;">&nbsp;<?php echo $tr->translate("Gasoline");?><input type="hidden" name="soid" id="soid" value="<?php echo ($this->product[0]['id']);?>"/><input type="text" name="boqcost_id" id="boqcost_id" value="<?php echo ($this->product[0]['id']);?>"/></td>
+						<td colspan="" style="border-left:1px solid #000;">&nbsp;<?php echo number_format($this->product[0]['worker4'],2);?></td>
+						<td>&nbsp;&nbsp;<?php echo number_format($this->product[0]['supervisor4'],2);?></td>
+						<td colspan="2" style="border-left:1px solid #000;">&nbsp;<?php echo number_format($this->product[0]['tool4'],2);?></td>
+						<td>&nbsp;&nbsp;<?php echo number_format($this->product[0]['other4'],2);?></td>
+					</tr>
+					<tr>
+						<td colspan="3" style="border:1px solid #fff;border-top:1px solid #000;border-right:1px solid #000;"></td>
+						<td colspan="" style="border-left:1px solid #000;">&nbsp;Total</td>
+						<td colspan="" style="border-bottom:1px solid #000;">&nbsp;<?php echo number_format($this->product[0]['totalworker'],2);?></td>
+						<td >&nbsp;&nbsp;<?php echo number_format($this->product[0]['totalsupervisor'],2);?></td>
+						<td colspan="2" style="border-left:1px solid #000;">&nbsp;<?php echo number_format($this->product[0]['totaltool'],2);?></td>
+						<td >&nbsp;&nbsp;<?php echo number_format($this->product[0]['totalother'],2);?></td>
+					</tr>
 		                 <tr bgcolor="#ccc" class="style" align="center" style="font-weight:bold; line-height: 20px; font-size:12px; padding:1px 0px; white-space: nowrap; ">
 		                    <td>&nbsp;<?php echo $tr->translate("NUM");?></td>
 							<td><?php echo $tr->translate("Description");?></td>
@@ -135,20 +200,42 @@ $tr=Application_Form_FrmLanguages::getCurrentlanguage();
 						   <?php 
                     }?>
                     <tr>
-						<td colspan="6" style="border:1px solid #fff;border-top:1px solid #000;border-right:1px solid #000;"></td>
-						<td colspan="2" style="border-left:1px solid #000;">&nbsp;&nbsp;<?php echo $tr->translate("TOTAL");?><input type="hidden" name="soid" id="soid" value="<?php echo ($this->product[0]['id']);?>"/><input type="hidden" name="quote_id" id="quote_id" value="<?php //echo ($this->product[0]['quote_id']);?>"/></td>
-						<td >&nbsp;&nbsp;<input type="hidden" name="all_total" id="all_total" value="<?php echo $this->product[0]['all_total'];?>"   ><?php echo number_format($this->product[0]['all_total'],2);?></td>
+                    	<td colspan="4" style="border: 1px solid #fff;border-top: 1px solid #000;border-right: 1px solid #000;">&nbsp;</td>
+                    	<td colspan="5">&nbsp;</td>
+                    </tr>
+                    <tr>
+						<td colspan="4" style="border:1px solid #fff;border-top:1px solid #000;border-right:1px solid #000;"></td>
+						<td colspan="" style="border-left:1px solid #000;">&nbsp;<?php echo $tr->translate("តម្លៃដើមសម្ភារៈ");?></td>
+						<td >&nbsp;&nbsp;<?php echo number_format($this->product[0]['costlaborprice'],2);?></td>
+						<td colspan="2" style="border-left:1px solid #000;">&nbsp;<?php echo $tr->translate("តម្លៃសម្ភារៈ");?><input type="hidden" name="soid" id="soid" value="<?php echo ($this->product[0]['id']);?>"/><input type="hidden" name="quote_id" id="quote_id" value="<?php //echo ($this->product[0]['quote_id']);?>"/></td>
+						<td >&nbsp;&nbsp;<?php echo number_format($this->product[0]['total_sellingmaterail'],2);?></td>
 					</tr>
 					<tr>
-						<td colspan="6" style="border:1px solid #fff;border-top:1px solid #000;border-right:1px solid #000;"></td>
-						<td colspan="2" style="border-left:1px solid #000;">&nbsp;&nbsp;<?php echo $tr->translate("DISCOUNT");?></td>
-						<td >&nbsp;&nbsp;
-						<input type="hidden" name="discount_type" id="discount_type" value="<?php echo $this->product[0]['discount_type'];?>"   >
-						<input type="hidden" name="discount" id="discount" value="<?php echo $this->product[0]['discount_value'];?>"   ><?php echo number_format($this->product[0]['discount_value'],2);echo ($this->product[0]['discount_type']==1)?'%':0;?></td>
+						<td colspan="4" style="border:1px solid #fff;border-top:1px solid #000;border-right:1px solid #000;"></td>
+						<td colspan="" style="border-left:1px solid #000;">&nbsp;<?php echo $tr->translate("តម្លៃដើមពលកម្ម");?></td>
+						<td colspan="" style="border-left:1px solid #000;">&nbsp;<?php echo ($this->product[0]['costlaborprice']);?></td>
+						<td colspan="2">&nbsp;តម្លៃពលកម្ម​ :</td>
+						<td >&nbsp;<?php echo number_format($this->product[0]['total_sellinglabor'],2);?></td>
 					</tr>
 					<tr>
-						<td colspan="6" style="border:1px solid #fff;border-top:1px solid #000;border-right:1px solid #000;"></td>
-						<td colspan="2" style="border-left:1px solid #000;">&nbsp;&nbsp;<?php echo $tr->translate("TOTAL_AMOUNT");?></td>
+						<td colspan="4" style="border:1px solid #fff;border-top:1px solid #000;border-right:1px solid #000;"></td>
+						<td colspan="" style="border-left:1px solid #000;">&nbsp;<?php echo $tr->translate("តម្លៃដើមតម្លៃសរុប");?><input type="hidden" name="soid" id="soid" value="<?php echo ($this->product[0]['id']);?>"/><input type="hidden" name="quote_id" id="quote_id" value="<?php //echo ($this->product[0]['quote_id']);?>"/></td>
+						<td >&nbsp;&nbsp;<?php echo number_format($this->product[0]['costlaborprice']+$this->product[0]['costmaterailprice'],2);?></td>
+						<td colspan="2" style="border-left:1px solid #000;">&nbsp;<?php echo $tr->translate("តម្លៃសរុប​ :");?></td>
+						<td >&nbsp;&nbsp;<?php echo number_format($this->product[0]['all_total'],2);?></td>
+					</tr>
+					<tr>
+						<td colspan="4" style="border:1px solid #fff;border-top:1px solid #000;border-right:1px solid #000;"></td>
+						<td colspan="" style="border-left:1px solid #000;">&nbsp;<?php echo $tr->translate("យល់ព្រម");?></td>
+						<td >&nbsp;&nbsp;</td>
+						<td colspan="2" style="border-left:1px solid #000;">&nbsp;<?php echo $tr->translate("បញ្ចុះតម្លៃ");?></td>
+						<td >&nbsp;&nbsp;<?php echo number_format($this->product[0]['discount_value'],2);?></td>
+					</tr>
+					<tr>
+						<td colspan="4" style="border:1px solid #fff;border-top:1px solid #000;border-right:1px solid #000;"></td>
+						<td colspan="" style="border-left:1px solid #000;">&nbsp;<?php echo $tr->translate("សម្គាល់");?></td>
+						<td >&nbsp;&nbsp;</td>
+						<td colspan="2" style="border-left:1px solid #000;">&nbsp;<?php echo $tr->translate("សាច់ប្រាក់សរុប​ : ");?></td>
 						<td >&nbsp;&nbsp;<input type="hidden" name="net_total" id="net_total" value="<?php echo $this->product[0]['net_total'];?>"   ><?php echo number_format($this->product[0]['net_total'],2);?></td>
 					</tr>
 					<tr>

@@ -53,7 +53,7 @@ class Sales_InvoiceapproveController extends Zend_Controller_Action
 				$dbq = new Sales_Model_DbTable_Dbinvoiceapprove();				
 				$returnid = $dbq->addInvoiceApproved($data);
 				if($returnid==1){
-					Application_Form_FrmMessage::Sucessfull("APPROVED_SUCESS", "/report/index/rpt-delivery");
+					Application_Form_FrmMessage::Sucessfull("APPROVED_SUCESS", "/sales/invoiceapprove");
 				}else{
 					Application_Form_FrmMessage::Sucessfull("Sale has been Rejected", "/sales/invoiceapprove");
 				}

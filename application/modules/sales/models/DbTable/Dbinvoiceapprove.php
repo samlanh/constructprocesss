@@ -49,7 +49,6 @@ class Sales_Model_DbTable_Dbinvoiceapprove extends Zend_Db_Table_Abstract
 		return $db->fetchRow($sql);
 	}
 	public function addInvoiceApproved($data)	{
-
 		$db = $this->getAdapter();
 		$db->beginTransaction();
 		try{
@@ -58,94 +57,37 @@ class Sales_Model_DbTable_Dbinvoiceapprove extends Zend_Db_Table_Abstract
 			$userName=$session_user->user_name;
 			$GetUserId= $session_user->user_id;
 			$dbc=new Application_Model_DbTable_DbGlobal();
-
 		if($data['approved_name']==1){	//approval and create invoice	
-			//echo 123;exit();
-			$this->_name="tb_quoatation";
+			$this->_name="tb_boqcost";
 				$data_to = array(
-						'pending_status'=>4,			
+					'pending_status'=>4,			
 				);
-				
-			if(!empty($data['quote_id'])){
-				$where=" id = ".$data['quote_id'];
+			if(!empty($data['boqcost_id'])){
+				$where=" id = ".$data['boqcost_id'];
 				$this->update($data_to, $where);
 			}
-				
-			$this->_name="tb_sales_order";
+			$this->_name="tb_boq";
 			$data_to = array(
 						'is_toinvocie'=>1,
-						'pending_status'=>4,
+						'pending_status'=>5,
 						'is_approved'=>$data['approved_name'],
 						'approved_note'=>$data['app_remark'],
 						'approved_date'=>$data['app_date'],
 						'approved_userid'=>$GetUserId,
 				);
-			$where=" id = ".$data['id'];
+			$where=" id = ".$data['boqcost_id'];
 			$this->update($data_to, $where);
-				
 			$dbg = new Application_Model_DbTable_DbGlobal();
-			
-			$rowexisting = $this->getInvoieExisting($data['id']);
-			if(!empty($rowexisting)){// for update
-				$invoice_number = $rowexisting['invoice_no'];
-			}else{//for add
-				$invoice_number = $dbg->getInvoiceNumber($data['branch_id']);
-			}
-			
-			$this->_name="tb_invoice"; /// if invoice existing update
-				$arr = array(
-						'approved_note'=>$data['app_remark'],
-						'sale_id'=>$data['id'],
-						'branch_id'=>$data['branch_id'],
-						'invoice_no'=>$invoice_number,
-						'invoice_date'=>date("Y-m-d",strtotime($data['app_date'])),
-						'approved_date'=>date("Y-m-d",strtotime($data['app_date'])),
-						'user_id'=>$GetUserId,
-						'sub_total'=>$data['all_total'],//$data['net_total'],
-						'discount'=>$data['discount'],
-						'paid_amount'=>0,
-						'balance'=>$data['balance']+$data['deposit'],
-						'sub_total_after'=>$data['all_total'],//$data['net_total'],
-						'discount_after'=>$data['discount'],
-						'paid_after'=>0,
-						'balance_after'=>$data['balance']+$data['deposit'],
-						'deposit'=>$data['deposit'],
-						'is_approved'=>$data['approved_name'],
-						);	
-            if(!empty($rowexisting)){// for update
-				$where = "sale_id = ".$data['id'];
-				$this->update($arr,$where);
-				$invoice_id=$rowexisting["id"];
-			}else{//for add
-				$invoice_id = $this->insert($arr);	
-			}						
-			
-			$this->_name="tb_deliverynote";//if delevery existing update
-			$arr = array(
-			    'branch_id'=>$data['branch_id'],
-				'invoice_id'=>$invoice_id,
-				'so_id'=>$data['soid'],
-				'delivery_userid'=>$data['app_remark'],
-				'deli_date'=>date("Y-m-d",strtotime($data['dilivery_date'])),
-				'user_id'=>$GetUserId,
-				'notefrom_accounting'=>$data['notefrom_accountingk']);			
-			if(!empty($rowexisting)){// for update
-				$where = " invoice_id = ".$rowexisting['id'];
-				$this->update($arr,$where);
-			}else{//for add
-				$this->insert($arr);
-			}
 			$result = 1;
 			
-			$sql = "DELETE FROM tb_quoatation_termcondition WHERE quoation_id="."'".$invoice_id."'";
+			$sql = "DELETE FROM tb_quoatation_termcondition WHERE quoation_id=".$data['boqcost_id'];
 			$db->query($sql);
-				
 			$ids=explode(',',$data['identity_term']);
 				 if(!empty($data['identity_term'])){
 					 foreach ($ids as $i)
 					 {
 						$data_item= array(
-								'quoation_id'	=> $invoice_id,
+								'quoation_id'	=> $data['boqcost_id'],
 								'condition_id'	=> $data['termid_'.$i],
 								"user_id"   	=> 	$GetUserId,
 								"date"      	=> 	date("Y-m-d"),
@@ -156,103 +98,31 @@ class Sales_Model_DbTable_Dbinvoiceapprove extends Zend_Db_Table_Abstract
 						$this->insert($data_item);
 					 }
 				}
-			
 		}else{// not approval //update to sale order
-			
-			$rowexisting = $this->getInvoieExisting($data['id']);
-			if(!empty($rowexisting)){
-				$this->_name="tb_invoice"; /// if invoice existing update
-				
-				$arr = array(
-						'approved_note'=>$data['app_remark'],
-						'sale_id'=>$data['id'],
-						'branch_id'=>$data['branch_id'],
-// 						'invoice_no'=>$invoice_number,
-						'invoice_date'=>date("Y-m-d",strtotime($data['app_date'])),
-						'approved_date'=>date("Y-m-d",strtotime($data['app_date'])),
-						'user_id'=>$GetUserId,
-						'sub_total'=>$data['all_total'],//$data['net_total'],
-						'discount'=>$data['discount'],
-						'paid_amount'=>0,
-						'balance'=>$data['balance']+$data['deposit'],
-						'sub_total_after'=>$data['all_total'],//$data['net_total'],
-						'discount_after'=>$data['discount'],
-						'paid_after'=>0,
-						'balance_after'=>$data['balance']+$data['deposit'],
-						'is_approved'=>$data['approved_name'],
-						);	
-						
-				$where = "sale_id = ".$data['id'];
-				$this->update($arr,$where);
-				
-				$this->_name="tb_deliverynote";
-				$arr = array(
-				'status'=>0,
-			    'branch_id'=>$data['branch_id'],
-// 				'invoice_id'=>$invoice_id,
-				'so_id'=>$data['soid'],
-				'delivery_userid'=>$data['app_remark'],
-				'deli_date'=>date("Y-m-d",strtotime($data['dilivery_date'])),
-				'user_id'=>$GetUserId,
-				'notefrom_accounting'=>$data['notefrom_accountingk']);		
-				
-				$where = " invoice_id = ".$rowexisting['id'];
-				$this->update($arr,$where);
-			}
-			
-			    $this->_name="tb_quoatation";
-				$data_to = array(
-						'pending_status'=>2,
-						//'is_approved'=>0,		
-                        'is_tosale'=>0,
-						//'is_approved'=>0,	
-						
-				);
-			if(!empty($data['quote_id'])){
-				//$where=" id = ".$data['quote_id'];
-				//$this->update($data_to, $where);
-			}
-			   $this->_name="tb_sales_order";
-				$data_to = array(
-						'is_toinvocie'=>0,
-						'pending_status'=>2,
-						'is_approved'=>2,
-						'approved_note'=>$data['app_remark'],
-						'approved_date'=>$data['app_date'],
-						'approved_userid'=>$GetUserId,
-				);
-				$where=" id = ".$data['id'];
-				$this->update($data_to, $where);
-				$result = 0;
-				
 				$sql = "DELETE FROM tb_quoatation_termcondition WHERE quoation_id="."'".$data["id"]."'";
 				$db->query($sql);
-			
-				$ids=explode(',',$data['identity_term']);
-				 if(!empty($data['identity_term'])){
-					 foreach ($ids as $i)
-					 {
+ 				$ids=explode(',',$data['identity_term']);
+ 				 if(!empty($data['identity_term'])){
+ 					 foreach ($ids as $i)
+ 					 {
 						$data_item= array(
 								'quoation_id'	=> $data["id"],
 								'condition_id'	=> $data['termid_'.$i],
 								"user_id"   	=> 	$GetUserId,
 								"date"      	=> 	date("Y-m-d"),
 								'term_type'		=>	2
-								
 						);
 						$this->_name='tb_quoatation_termcondition';
 						$this->insert($data_item);
-					 }
-				 }
-			}	
-//exit();			
+ 					 }
+ 				 }
+			}			
 			$db->commit();
 			return $result;
 		}catch(Exception $e){
 			$db->rollBack();
 			Application_Form_FrmMessage::message('INSERT_FAIL');
 			$err =$e->getMessage();
-			//echo 333;
 			echo $err;exit();
 			Application_Model_DbTable_DbUserLog::writeMessageError($err);
 		}
@@ -280,11 +150,9 @@ class Sales_Model_DbTable_Dbinvoiceapprove extends Zend_Db_Table_Abstract
 		(SELECT u.fullname FROM tb_acl_user AS u WHERE u.user_id = s.approved_userid LIMIT 1 ) AS approved_by,
 		(SELECT name_en FROM `tb_view` WHERE TYPE=7 AND key_code=is_approved LIMIT 1) approval_status,
 		(SELECT name_en FROM `tb_view` WHERE TYPE=8 AND key_code=pending_status LIMIT 1) processing,
-		so.price,so.old_price,
+		so.old_price,
 		so.qty_order,so.labour_price,so.materail_price,so.parent_service,
-		so.is_service,so.sub_total,s.net_total,
-		s.paid,s.discount_type,s.tax,s.discount_value,
-		s.balance
+		so.is_service,so.sub_total,s.*
 		FROM `tb_boq` AS s,
 		`tb_boqdetail` AS so WHERE s.id=so.boq_id
 		AND s.status=1 AND s.id = $id ";

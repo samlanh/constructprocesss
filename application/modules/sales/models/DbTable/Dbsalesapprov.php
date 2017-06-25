@@ -13,8 +13,8 @@ class Sales_Model_DbTable_Dbsalesapprov extends Zend_Db_Table_Abstract
 			(SELECT NAME FROM `tb_sale_agent` WHERE tb_sale_agent.id =tb_boq.saleagent_id  LIMIT 1 ) AS staff_name,
 			boq_number,boq_date,
 			all_total,discount_value,net_total,
-			(SELECT name_en FROM `tb_view` WHERE TYPE=7 AND key_code=is_approved LIMIT 1),
-			(SELECT name_en FROM `tb_view` WHERE TYPE=8 AND key_code=pending_status LIMIT 1),
+			(SELECT name_en FROM `tb_view` WHERE type=3 AND key_code=is_approved LIMIT 1) AS approval,
+			(SELECT name_en FROM `tb_view` WHERE type=4 AND key_code=pending_status LIMIT 1) AS processing,
 			(SELECT u.fullname FROM tb_acl_user AS u WHERE u.user_id = tb_boq.approved_userid) AS user_name
 			FROM `tb_boq` WHERE STATUS=1 ";
 			

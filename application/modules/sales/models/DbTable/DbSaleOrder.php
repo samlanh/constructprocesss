@@ -136,7 +136,7 @@ class Sales_Model_DbTable_DbSaleOrder extends Zend_Db_Table_Abstract
 			unset($info_purchase_order);
 
 			$ids=explode(',',$data['identity']);
-			$locationid=$data['branch_id'];
+			$locationid=1;//$data['branch_id'];
 			$parent_service=0;
 			foreach ($ids as $i)
 			{

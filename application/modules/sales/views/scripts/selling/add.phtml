@@ -313,7 +313,14 @@
 												</div>
 											</div>
 											<div class="form-group">
-												<div class="col-md-4" style="text-align: right;">
+												 <div class="col-md-1" style="text-align: right;">
+												<!--Accessoeir-->
+												</div>
+												<div class="col-md-2">
+													<!-- <input type="text" name="accessoeir" id="accessoeir" onkeyup="calCulateKOH();" value="" class="validate[custom[number]] form-control" >
+												 -->
+												</div>
+												<div class="col-md-1" style="text-align: right;">
 													Gasoline
 												</div>
 												<div class="col-md-2">
@@ -870,6 +877,7 @@ function calCulateKOH(){
 	//if(total_cost_labor==''){total_cost_labor=1;}
 
 	//all_total = parseFloat(total_cost_labor)+parseFloat(total_costmaterial);
+	
 	all_total =  $('#totalall_cost').val();	
 	if(all_total==''){all_total=0;}
 
@@ -938,6 +946,7 @@ function calcualteselling(){
 	$('#total_material').val(total_materail.toFixed(2));
 	$('#total_labor').val(total_labor.toFixed(2));
 	$('#all_total').val(netTotal.toFixed(2));
+	calculateDiscount();
 	//calCulateKOH();
 }
 var record_id = 1;
