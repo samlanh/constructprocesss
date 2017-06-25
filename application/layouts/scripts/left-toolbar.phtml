@@ -82,6 +82,7 @@
 	$url_report_summary = array($this->url(array('module'=>'report','controller'=>'stock','action'=>'index')), "MENU_REPORT_INDEX_RPT_SUMMARY");
 	$url_report_pro = array($this->url(array('module'=>'report','controller'=>'product','action'=>'index'),null, true), "MENU_REPORT_PRODUCT_INDEX");
 	$url_report_purchase = array($this->url(array('module'=>'report','controller'=>'index','action'=>'rptpurchase'),null, true), "MENU_REPORT_PURCHASE_INDEX");
+	$url_report_proches = array($this->url(array('module'=>'report','controller'=>'proches','action'=>'index'),null, true), "MENU_REPORT_PURCHASE_INDEX");
 	$url_report_transfer = array($this->url(array('module'=>'report','controller'=>'index','action'=>'rpt-transfer'),null, true), "MENU_REPORT_INDEX_RPT-TRANSFER");
 	$url_report_all_in_one = array($this->url(array('module'=>'report','controller'=>'index','action'=>'index'),null, true), "MENU_REPORT");
 	$url_report_product = array($this->url(array('module'=>'report','controller'=>'product','action'=>'index'),null, true), "MENU_REPORT_PRODUCT");
@@ -580,21 +581,25 @@
 	            			<i class="icon-arrow-right"></i><?php echo $tr->translate( $url_report_all_in_one[1]);?>
 	            		</a>
             		</li>
-            		<?php }?>
-					<?php if($level==1){//admin and stock mg?> 
-            		<li>
-            			<a href="<?php echo $url_report_user[0];?>">
-	            			<i class="icon-arrow-right"></i><?php echo $tr->translate( $url_report_user[1]);?>
-	            		</a>
-            		</li>
-            		<?php }?>
 					<li>
+	            			<a href="<?php echo $url_report_proches[0]; ?>">
+		            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_report_proches[1]);?>
+		            		</a>
+	            		</li>
+	            		<li>
 	            			<a href="<?php echo $url_report_summary[0]; ?>">
 		            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_report_summary[1]);?>
 		            		</a>
 	            		</li> 
-					</ul>
+	            		<li>
+	            			<a href="<?php echo $url_report_transfer[0]; ?>">
+		            			<i class="icon-arrow-right"></i><?php echo $tr->translate($url_report_transfer[1]);?>
+		            		</a>
+	            		</li> 
+	            		
+            		<?php }?>
 				</li>
+				</ul>
 				<?php if($level==1){?>
 				<li>
 					<a href="javascript:;">

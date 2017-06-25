@@ -249,7 +249,7 @@ class Sales_Model_DbTable_DbPlan extends Zend_Db_Table_Abstract{
 (SELECT  NAME FROM `tb_plan_type` WHERE `tb_plan_type`.`id` = `tb_plan`.`type`) AS `type`,
 (SELECT c.`cust_name` FROM `tb_customer` AS c WHERE c.id=customer_id) as customer,
 (SELECT v.name_en FROM `tb_view` AS v WHERE v.key_code=`status` AND v.type=1 LIMIT 1) AS `status`,
-(SELECT v.name_en FROM `tb_view` AS v WHERE v.key_code=`pedding` AND v.type=10 LIMIT 1) AS `peddings`,
+(SELECT v.name_en FROM `tb_view` AS v WHERE v.key_code=`pedding` AND v.type=4 LIMIT 1) AS `peddings`,
 (SELECT v.name_en FROM `tb_view` AS v WHERE v.key_code=`appr_status` AND v.type=9 LIMIT 1) AS `appr_status`,
 (SELECT u.fullname FROM tb_acl_user AS u WHERE u.user_id=user_id LIMIT 1) AS user_name
 FROM `tb_plan` WHERE 1";

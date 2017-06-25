@@ -7,6 +7,7 @@
   $rpt_check_request_transfer=$this->url(array('module'=>'report','controller'=>'product','action'=>'rptcheckrequesttransfer'), null, true);
   $rpt_transfer_list=$this->url(array('module'=>'report','controller'=>'product','action'=>'rpttransferlist'), null, true);
   $rpt_receive_transfer=$this->url(array('module'=>'report','controller'=>'product','action'=>'rptreceivetransfer'), null, true);
+  $rpt_product_warning=$this->url(array('module'=>'report','controller'=>'product','action'=>'rptproductwarning'), null, true);
   
   ?>
 <div class="row">
@@ -30,7 +31,7 @@
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-					<div class="dashboard-stat red-intense">
+					<div class="dashboard-stat blue-madison">
 						<a class="more" href="<?php echo $rpt_current;?>">
 						<div class="visual">
 							<i class="fa fa-bar-chart-o"></i>
@@ -45,6 +46,27 @@
 						</div>
 						</a>
 						<a class="more" href="<?php echo $rpt_current;?>">
+						<?php echo $tr->translate("VIEW_MORE");?> <i class="m-icon-swapright m-icon-white"></i>
+						</a>
+					</div>
+				</div>
+				
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+					<div class="dashboard-stat red-intense">
+						<a class="more" href="<?php echo $rpt_product_warning;?>">
+						<div class="visual">
+							<i class="fa fa-bar-chart-o"></i>
+						</div>
+						<div class="details">
+							<div class="number">
+								 
+							</div>
+							<div class="desc">
+								<?php echo $tr->translate("RPT_PRO_WARNING");?>
+							</div>
+						</div>
+						</a>
+						<a class="more" href="<?php echo $rpt_product_warning;?>">
 						<?php echo $tr->translate("VIEW_MORE");?> <i class="m-icon-swapright m-icon-white"></i>
 						</a>
 					</div>

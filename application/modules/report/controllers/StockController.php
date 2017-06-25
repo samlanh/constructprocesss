@@ -130,13 +130,15 @@ class report_StockController extends Zend_Controller_Action
     				'start_date'	=>	date('Y-m-1'),
     				'end_date'		=>	date('Y-m-d'),
     				'category'		=>	-1,
+					'add_item'		=>	-1,
+					'suppliyer_id'	=>	-1,
     				//'suppliyer_id'	=>	-1,
     		);
     	}
 		$this->view->start_date = $data["start_date"];
 		$this->view->end_date = $data["end_date"];
 		
-    	$this->view->stockin = $db->getAllWorkingStone();
+    	$this->view->stockin = $db->getAllWorkingStone($data);
 		
 		
     	$formFilter = new report_Form_FrmSearch();

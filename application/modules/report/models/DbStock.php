@@ -6,6 +6,16 @@ Class report_Model_DbStock extends Zend_Db_Table_Abstract{
 		$result = $user_info->getUserInfo();
 		return $result;
 	}
+	function getPORequestHistory($data){
+		$db= $this->getAdapter();
+		$sql="SELECT * FROM `v_purchase_history` AS p";
+		$where='';
+		if($search['category']>0){
+		$where .= " AND p.`cate_id` = ".$search['category'];
+		}
+			
+		return $db->fetchAll($sql);
+	}
 	function getAllProduct($search){
 		$db= $this->getAdapter();
 		$user_info = $this->GetuserInfo();
@@ -16,7 +26,7 @@ Class report_Model_DbStock extends Zend_Db_Table_Abstract{
 			  p.`id`,
 			  p.`item_name` ,
 			  pl.`qty`,
-			 
+			  pl.price,
 			  pl.`location_id`,
 			  (SELECT m.name FROM `tb_measure` AS m WHERE m.id=p.`measure_id`) AS measure
 			  
@@ -148,7 +158,7 @@ Class report_Model_DbStock extends Zend_Db_Table_Abstract{
 				  ";
 		$from_date =$search['start_date'];
 		$to_date = $search['end_date'];
-		$where = " AND r.`date_in` BETWEEN "."'".date("m/d/Y",strtotime($from_date))."'"." AND "."'".date("m/d/Y",strtotime($to_date))."'";
+		$where = " AND r.`date_in` BETWEEN "."'".date("Y-m-d",strtotime($from_date))."'"." AND "."'".date("Y-m-d",strtotime($to_date))."'";
 		
 		if(!empty($search['text_search'])){
 			$s_where = array();
@@ -301,8 +311,8 @@ Class report_Model_DbStock extends Zend_Db_Table_Abstract{
 		if($search['suppliyer_id']>0){
 			$where .= " AND vendor_id = ".$search['suppliyer_id'];
 		}
-		if($search['purchase_status']>0){
-			$where .= " AND purchase_status =".$search['purchase_status'];
+		if($search['po_pedding']>0){
+			$where .= " AND purchase_status =".$search['po_pedding'];
 		}
 		$dbg = new Application_Model_DbTable_DbGlobal();
 		$where.=$dbg->getAccessPermission();
@@ -351,8 +361,8 @@ Class report_Model_DbStock extends Zend_Db_Table_Abstract{
 		if($search['suppliyer_id']>0){
 			$where .= " AND vendor_id = ".$search['suppliyer_id'];
 		}
-		if($search['purchase_status']>0){
-			$where .= " AND purchase_status =".$search['purchase_status'];
+		if($search['po_pedding']>0){
+			$where .= " AND purchase_status =".$search['po_pedding'];
 		}
 		$dbg = new Application_Model_DbTable_DbGlobal();
 		$where.=$dbg->getAccessPermission();
@@ -413,7 +423,7 @@ Class report_Model_DbStock extends Zend_Db_Table_Abstract{
 		$dbg = new Application_Model_DbTable_DbGlobal();
 		$where.=$dbg->getAccessPermission();
 		$order=" ORDER BY r.`order_number` ";
-		echo $sql.$where.$order;
+		//echo $sql.$where.$order;
 		return $db->fetchAll($sql.$where.$order);
 	}
 	
@@ -514,7 +524,7 @@ Class report_Model_DbStock extends Zend_Db_Table_Abstract{
 					(SELECT name_en FROM `tb_view` WHERE TYPE=10 AND key_code=r.`payment_type` LIMIT 1 ) payment_by,
 					(SELECT u.fullname FROM `tb_acl_user` AS u WHERE u.user_id = r.`user_id`) AS user_name ,
 					vd.`date_input` AS invoice_date,
-					vd.`total` AS in_total,
+					vd.`grand_total` AS in_total,
 					vd.`paid` AS in_paid,
 					vd.`balance` AS in_balance,
 					(SELECT i.invoice_no FROM `tb_invoice_controlling` AS i WHERE i.id=vd.`invoice_id`) AS invoice_no
@@ -547,16 +557,83 @@ Class report_Model_DbStock extends Zend_Db_Table_Abstract{
 			return $db->fetchAll($sql.$where.$order);
 	}
 	
-	function getAllWorkingStone(){
+	function getAllWorkingStone($search){
 		$db = $this->getAdapter();
+		$start_date = date("Y-m-d",strtotime($search["start_date"]));
+		$end_date =  date("Y-m-d",strtotime($search["end_date"]));
 		$sql = "SELECT 
 				  p.*,
 				  r.* 
 				FROM
 				  `v_product` AS p,
 				  `v_receive_purchase` AS r 
-				  WHERE p.id=r.`pro_id` AND p.`is_convertor`=1";
-		return $db->fetchAll($sql);
+				  WHERE p.id=r.`pro_id` AND p.`is_meterail`=1 AND r.`date_in` BETWEEN '$start_date' AND '$end_date'";
+			$where ='';
+			if(!empty($search['text_search'])){
+				$s_where = array();
+				$s_search = trim(addslashes($search['text_search']));
+				$s_where[] = " sale_no LIKE '%{$s_search}%'";
+				$s_where[] = " net_total LIKE '%{$s_search}%'";
+				$s_where[] = " paid LIKE '%{$s_search}%'";
+				$s_where[] = " balance LIKE '%{$s_search}%'";
+				$where .=' AND ('.implode(' OR ',$s_where).')';
+			}
+			if($search['category']>0){
+				$where .= " AND p.`cate_id` = ".$search['category'];
+			}
+			if($search['add_item']>0){
+				$where .= " AND p.id = ".$search['add_item'];
+			}
+			if($search['suppliyer_id']>0){
+				$where .= " AND r.`vendor_id` = ".$search['suppliyer_id'];
+			}
+			// $dbg = new Application_Model_DbTable_DbGlobal();
+			// $where.=$dbg->getAccessPermission();
+			$order=" ORDER BY id DESC ";
+			//echo $sql.$where;
+		return $db->fetchAll($sql.$where);
+	}
+	
+	function RecivePO($search,$groupbys=null){
+		$db = $this->getAdapter();
+		$start_date = date("Y-m-d",strtotime($search["start_date"]));
+		$end_date =  date("Y-m-d",strtotime($search["end_date"]));
+		$sql = "SELECT 
+				  p.*,
+				  r.* 
+				FROM
+				  `v_product` AS p,
+				  `v_receive_purchase` AS r 
+				  WHERE p.id=r.`pro_id` AND p.is_meterail!=1 AND r.`date_in` BETWEEN '$start_date' AND '$end_date'";
+			$where ='';
+			if(!empty($search['text_search'])){
+				$s_where = array();
+				$s_search = trim(addslashes($search['text_search']));
+				$s_where[] = " sale_no LIKE '%{$s_search}%'";
+				$s_where[] = " net_total LIKE '%{$s_search}%'";
+				$s_where[] = " paid LIKE '%{$s_search}%'";
+				$s_where[] = " balance LIKE '%{$s_search}%'";
+				$where .=' AND ('.implode(' OR ',$s_where).')';
+			}
+			if($search['category']>0){
+				$where .= " AND p.`cate_id` = ".$search['category'];
+			}
+			if($search['add_item']>0){
+				$where .= " AND p.id = ".$search['add_item'];
+			}
+			if($search['suppliyer_id']>0){
+				$where .= " AND r.`vendor_id` = ".$search['suppliyer_id'];
+			}
+			// $dbg = new Application_Model_DbTable_DbGlobal();
+			// $where.=$dbg->getAccessPermission();
+			$order=" ORDER BY r.order_id DESC ";
+			if($groupbys ==1){
+				$groupby=' GROUP BY r.order_id';
+			}else{
+				$groupby='';
+			}
+			echo $sql.$where.$groupby.$order;
+		return $db->fetchAll($sql.$where.$groupby.$order);
 	}
 	
 	function getAllSaleDetail($search){

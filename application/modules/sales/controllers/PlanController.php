@@ -49,7 +49,7 @@ public function init(){
 					{
 						Application_Form_FrmMessage::Sucessfull("INSERT_SUCCESS", '/sales/plan/index');
 					}else{
-						Application_Form_FrmMessage::Sucessfull("INSERT_SUCCESS","");
+						Application_Form_FrmMessage::Sucessfull("INSERT_SUCCESS","/sales/plan/add");
 					}
 				  }catch (Exception $e){
 				  	Application_Form_FrmMessage::messageError("INSERT_ERROR",$err = $e->getMessage());
@@ -79,7 +79,7 @@ public function init(){
 					{
 						Application_Form_FrmMessage::Sucessfull("INSERT_SUCCESS",'/sales/plan/index');
 					}else{
-						Application_Form_FrmMessage::Sucessfull("INSERT_SUCCESS","");
+						Application_Form_FrmMessage::Sucessfull("INSERT_SUCCESS","/sales/plan/add");
 					}
 				  }catch (Exception $e){
 				  	Application_Form_FrmMessage::messageError("INSERT_ERROR",$err = $e->getMessage());
@@ -141,7 +141,7 @@ public function init(){
 					{
 						Application_Form_FrmMessage::Sucessfull("INSERT_SUCCESS",'/sales/plan/planchecklist');
 					}else{
-						Application_Form_FrmMessage::Sucessfull("INSERT_SUCCESS","");
+						Application_Form_FrmMessage::Sucessfull("INSERT_SUCCESS","/sales/plan/add");
 					}
 				  }catch (Exception $e){
 				  	Application_Form_FrmMessage::messageError("INSERT_ERROR",$err = $e->getMessage());
@@ -180,7 +180,7 @@ public function init(){
 					{
 						Application_Form_FrmMessage::Sucessfull("INSERT_SUCCESS", '/sales/plan/workplan');
 					}else{
-						Application_Form_FrmMessage::Sucessfull("INSERT_SUCCESS","");
+						Application_Form_FrmMessage::Sucessfull("INSERT_SUCCESS","/sales/plan/workplan");
 					}
 				  }catch (Exception $e){
 				  	Application_Form_FrmMessage::messageError("INSERT_ERROR",$err = $e->getMessage());
@@ -204,7 +204,7 @@ public function init(){
 					{
 						Application_Form_FrmMessage::Sucessfull("INSERT_SUCCESS", '/sales/plan/workplan');
 					}else{
-						Application_Form_FrmMessage::Sucessfull("INSERT_SUCCESS","");
+						Application_Form_FrmMessage::Sucessfull("INSERT_SUCCESS","/sales/plan/workplan");
 					}
 				  }catch (Exception $e){
 				  	Application_Form_FrmMessage::messageError("INSERT_ERROR",$err = $e->getMessage());
