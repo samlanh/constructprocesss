@@ -34,7 +34,7 @@ class Sales_Form_FrmRequest extends Zend_Form
 		$request_type=new Zend_Form_Element_Select('request_type');
     	$request_type ->setAttribs(array(
     			'class' => 'form-control select2me',
-    			'Onchange'=>'getItem()','required'=>"required",
+    			'Onchange'=>'getItem();','required'=>"required",
     			));
 		
 		$request_type->setMultiOptions($opt_request_type);
@@ -237,15 +237,19 @@ class Sales_Form_FrmRequest extends Zend_Form
     	$paidElement->setAttribs(array('class'=>'custom[number] form-control','onkeyup'=>'doRemain();','style'=>'text-align:right'));
     	$this->addElement($paidElement);
 		
-		$opt_re = array(''=>$tr->translate("SELECT"),'1'=>'E','2'=>"W",3=>"G",4=>"M",5=>"P",6=>"S",7=>"MT",8=>"K",9=>"OT");
-		$request_type = new Zend_Form_Element_Select("re_type");
-		$request_type->setAttribs(array('class'=>'demo-code-language form-control select2me'));
-    	$request_type->setMultiOptions($opt_re);
-    	$this->addElement($request_type);
+		// $opt_re = array(''=>$tr->translate("SELECT"),'1'=>'E','2'=>"W",3=>"G",4=>"M",5=>"P",6=>"S",7=>"MT",8=>"K",9=>"OT");
+		// $request_type = new Zend_Form_Element_Select("re_type");
+		// $request_type->setAttribs(array('class'=>'demo-code-language form-control select2me'));
+    	// $request_type->setMultiOptions($opt_re);
+    	// $this->addElement($request_type);
 		
 		$reject = new Zend_Form_Element_Textarea("reject");
 		$reject->setAttribs(array('class'=>'form-control','style'=>'height: 40px;'));
 		$this->addElement($reject);
+		
+		$boq_id = new Zend_Form_Element_Hidden("boq_id");
+		$boq_id->setAttribs(array('class'=>'form-control','onChange'=>"getItemBOQ();"));
+		$this->addElement($boq_id);
     	
     	Application_Form_DateTimePicker::addDateField(array('order_date','date_in'));
     		if($data != null) {
@@ -268,7 +272,7 @@ class Sales_Form_FrmRequest extends Zend_Form
     			$dis_valueElement->setValue($data['discount_value']);
     			$allTotalElement->setValue($data['net_total']);
 				$plan->setValue($data["plan_id"]);
-				$request_type->setValue($data["re_type"]);
+				$request_type->setValue($data["type"]);
 				//$work_plan->setValue($data["work_plan"]);
 				$reject->setValue($data["approved_note"]);
 				$requst_no->setValue($data["number_work_request"]);

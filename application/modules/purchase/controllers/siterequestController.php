@@ -118,7 +118,9 @@ class Purchase_siterequestController extends Zend_Controller_Action
 			}
 		}
 		$row = $dbq->getSaleorderItemById($id);
+		$this->view->row = $row;
 		$this->view->rs = $dbq->getSaleorderItemDetailid($id);
+		print_r($dbq->getSaleorderItemDetailid($id));
 		$this->view->rsterm = $dbq->getTermconditionByid($id);
 		
 		///link left not yet get from DbpurchaseOrder
@@ -135,6 +137,11 @@ class Purchase_siterequestController extends Zend_Controller_Action
 		$this->view->product = $items->getAllProduct();
 		$this->view->worktype = $items->getWorkType();
 		$this->view->term_opt = $db->getAllTermCondition(1);
+		
+		$formpopup = new Sales_Form_FrmCustomer(null);
+		$formpopup = $formpopup->Formcustomer(null);
+		Application_Model_Decorator::removeAllDecorator($formpopup);
+		$this->view->form_customer = $formpopup;
 	}
 	function checklistAction(){
 		if($this->getRequest()->isPost()){

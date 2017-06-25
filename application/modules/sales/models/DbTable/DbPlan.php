@@ -113,7 +113,7 @@ class Sales_Model_DbTable_DbPlan extends Zend_Db_Table_Abstract{
 			}
 		$_arr = array(	
 			'type'				=>	$_data['type'],
-			'date_line_plan'	=>	date("Y-m-d",strtotime($_data["date_line_plan"])),
+			'date_line_plan'	=>	$_data["date_line_plan"],
 			'date_line_qo'		=>	date("Y-m-d",strtotime($_data["date_line_qo"])),
 			'plan_goald'		=>	$_data["plan_goald"],
 			'file'				=>	$file_name,
@@ -157,7 +157,7 @@ class Sales_Model_DbTable_DbPlan extends Zend_Db_Table_Abstract{
 		}
 		$_arr = array(	
 			'check_user'		=>	$GetUserId,
-			'reason'			=>	$_data["reason"],
+			'reason'			=>	$_data["remark"],
 			'pedding'			=>	$pedding,
 			'appr_status'		=>	$appr,
 			
@@ -165,6 +165,33 @@ class Sales_Model_DbTable_DbPlan extends Zend_Db_Table_Abstract{
 		$this->_name='tb_plan';
 		$where = "id =".$_data['id'];
 		$this->update($_arr, $where);
+		
+		$rs_reject = $this->getRejectExist($_data["id"],1);
+		
+		$_arr_remark = array(	
+			'plan_id'		=>	$_data['id'],
+			'type'			=>	1,
+			'remark'		=>	$_data["remark"],
+			'status'		=>	1,
+			'date'			=>	date("Y-m-d"),
+			'user_id'		=>	$GetUserId
+		);
+		$this->_name='tb_plan_check_remark';
+		$where = "plan_id=".$_data["id"]." AND type=1";
+		if(!empty($rs_reject)){
+			$this->update($_arr_remark,$where);
+		}else{
+			$this->insert($_arr_remark);
+		}
+		
+		
+	}
+	
+	function getRejectExist($id,$type){
+		$db=$this->getAdapter();
+		$sql="SELECT p.`plan_id`,p.type FROM `tb_plan_check_remark` AS p WHERE p.plan_id=$id AND p.type=$type";
+		$row = $db->fetchRow($sql);
+    	return $row;  
 	}
 		
 	 public function addworkplan($_data){
@@ -198,7 +225,8 @@ class Sales_Model_DbTable_DbPlan extends Zend_Db_Table_Abstract{
 				  (SELECT pt.name FROM `tb_plan_type` AS pt WHERE pt.id=p.`type` LIMIT 1) AS plan_type,
 				  (SELECT s.name FROM `tb_sale_agent` AS s WHERE s.id=p.`sale_id`) AS sale_agent,
 				  (SELECT s.`phone` FROM `tb_sale_agent` AS s WHERE s.id=p.`sale_id` LIMIT 1) AS sale_phone,
-				  (SELECT s.`email` FROM `tb_sale_agent` AS s WHERE s.id=p.`sale_id` LIMIT 1) AS sale_email
+				  (SELECT s.`email` FROM `tb_sale_agent` AS s WHERE s.id=p.`sale_id` LIMIT 1) AS sale_email,
+				  (SELECT c.remark FROM `tb_plan_check_remark` AS c WHERE c.plan_id=p.`id` LIMIT 1) AS reject_note
 				FROM
 				  `tb_plan` AS p 
 				WHERE id =$id";

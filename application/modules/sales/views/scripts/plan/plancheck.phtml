@@ -100,6 +100,14 @@ defined('BASE_URL')	|| define('BASE_URL', Zend_Controller_Front::getInstance()->
 														<td><?php echo $this->rs["address"];?></td>
 													</tr>
 													<tr>
+														<td class="right"><?php echo $tr->translate("DATE_LINE_PLAN");?> &nbsp;&nbsp;:&nbsp;&nbsp;</td>
+														<td><?php echo $this->rs["date_line_plan"];?></td>
+													</tr>
+													<tr>
+														<td class="right"><?php echo $tr->translate("DATE_LINE_QO");?> &nbsp;&nbsp;:&nbsp;&nbsp;</td>
+														<td><?php echo date("M-d-Y",strtotime($this->rs["date_line_qo"]));?></td>
+													</tr>
+													<tr>
 														<td class="right"><?php echo $tr->translate("DATE");?> &nbsp;&nbsp;:&nbsp;&nbsp;</td>
 														<td><?php echo date("M-d-Y",strtotime($this->rs["date"]));?></td>
 													</tr>
@@ -148,6 +156,31 @@ defined('BASE_URL')	|| define('BASE_URL', Zend_Controller_Front::getInstance()->
 								</table>
 								<?php }?>
 								 </div>
+						<div class="form-group" style="margin-top:10px;">
+							<label class="control-label col-md-2"><?php echo $tr->translate("REASON");?><span class="required">
+								</span>
+							</label>
+							<div class="col-md-4">
+								<div class="input-icon right">
+									<i class="fa"></i>
+									<textarea name="remark" id="notefrom_accountingk" style="width:100%;height: 50px;" ><?php echo $this->rs["reject_note"]?></textarea>
+								</div>
+							</div>
+							
+							<label class="control-label col-md-1"><?php //echo $tr->translate("REJECT_FROM_APPROVE");?><span class="required">
+								</span>
+							</label>
+							<div class="col-md-5">
+								<div class="input-icon right">
+									<i class="fa"></i>
+									<!--<textarea name="reject_approve" id="notefrom_accountingk" style="width:100%;height: 50px;" ><?php echo $this->rs["reject_approve"]?></textarea>-->
+									<select name="approve" id="approved_name" class="form-control select2me">
+							        	<option value="1"><?php echo $tr->translate("CHECKED");?></option>
+							        	<option value="2"><?php echo $tr->translate("REJECT");?></option>
+							        </select>
+								</div>
+							</div>
+						</div>
 							    <div class="form-group">
 									<div  class="col-md-12 col-md-offset-4 col-md-8">
 										<a href="<?php echo $this->baseUrl();?>/sales/plan"><button type="button" class="btn red"><i class="fa fa-times"></i> <?php echo $tr->translate("EXIT")?></button></a>

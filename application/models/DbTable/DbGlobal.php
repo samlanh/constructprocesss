@@ -12,6 +12,11 @@ class Application_Model_DbTable_DbGlobal extends Zend_Db_Table_Abstract
 	 * @param string $sql
 	 * @return array $row;
 	 */
+	public function getBOQCodeByPlan($id){
+		$db = $this->getAdapter();
+		$sql = "SELECT b.id,b.`boq_number` FROM `tb_boq` AS b WHERE b.`project_name`=$id AND b.`status`=1";
+		return $db->fetchAll($sql);
+	}
 	 public function getDeliverNumber($branch_id = 1){
     	$this->_name='tb_deliverynote';
     	$db = $this->getAdapter();
@@ -29,6 +34,11 @@ class Application_Model_DbTable_DbGlobal extends Zend_Db_Table_Abstract
 	 function getplanitem($id){
 		 $db = $this->getAdapter();
 		 $sql ="SELECT p.`item_name`,p.`item_code`,p.`id` FROM `tb_product` AS p ,`tb_boq` AS b,`tb_boqdetail` AS bd WHERE b.`id`=bd.`boq_id` AND p.id=bd.`pro_id` AND b.`project_name`='$id'";
+		return $db->fetchAll($sql);
+	 }
+	 function getboqitem($id){
+		 $db = $this->getAdapter();
+		 $sql ="SELECT p.`item_name`,p.`item_code`,p.`id` FROM `tb_product` AS p ,`tb_boq` AS b,`tb_boqdetail` AS bd WHERE b.`id`=bd.`boq_id` AND p.id=bd.`pro_id` AND b.`id`='$id'";
 		return $db->fetchAll($sql);
 	 }
 	 function getDnNo($completed=null,$opt=null){

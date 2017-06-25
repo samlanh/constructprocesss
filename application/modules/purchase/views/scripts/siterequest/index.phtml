@@ -94,9 +94,9 @@
 							?>
 								<tr class="normal">
 									<td class="items-no"><?php echo $key+1;?></td>
-									<td class="items"><a href="<?php echo $this->baseUrl();?>/sales/index/editrequest/id/<?php echo $rs["id"]?>"><?php echo $rs["location"];?></a></td>
-									<td class="items"><a href="<?php echo $this->baseUrl();?>/sales/index/editrequest/id/<?php echo $rs["id"]?>"><?php echo $rs["sale_no"];?></a></td>
-									<td class="items"><a href="<?php echo $this->baseUrl();?>/sales/index/editrequest/id/<?php echo $rs["id"]?>"><?php echo $rs["request_name"];?></a></td>
+									<td class="items"><?php echo $rs["location"];?></td>
+									<td class="items"><?php echo $rs["sale_no"];?></td>
+									<td class="items"><?php echo $rs["request_name"];?></td>
 									<td class="items"><?php echo $rs["position"];?></td>
 									<td class="items"><?php echo $rs["plan"];?></td>
 									<td class="items"><?php echo date('d-M-Y',strtotime($rs["date_sold"]));?></td>
@@ -105,8 +105,8 @@
 									<td class="items"><?php echo $rs["pedding"];?></td>
 									<td class="items"><?php echo $rs["user"];?></td>
 									<td class="items-no" style="white-space: nowrap;">
-										<a <?php echo $edit;?> href="<?php echo $this->baseUrl();?>/sales/index/editrequest/id/<?php echo $rs["id"]?>"><?php echo  $tr->translate("EDIT");?></a> | 
-										<a target="_blank" href="<?php echo $this->baseUrl();?>/sales/index/viewrequest/id/<?php echo $rs["id"]?>"><?php echo  $tr->translate("PRINT");?></a>
+										<a <?php echo $edit;?> href="<?php echo $this->baseUrl();?>/purchase/siterequest/edit/id/<?php echo $rs["id"]?>"><?php echo  $tr->translate("EDIT");?></a> | 
+										<a target="_blank" href="<?php echo $this->baseUrl();?>/purchase/siterequest/viewrequest/id/<?php echo $rs["id"]?>"><?php echo  $tr->translate("PRINT");?></a>
 									</td>
 								</tr>
 							<?php $counter='<strong style="float:right;padding:5px">Number of record(s): '.count($this->rs).'</strong>'; 

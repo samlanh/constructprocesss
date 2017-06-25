@@ -1,25 +1,26 @@
 <?php 
 	$tr = Application_Form_FrmLanguages::getCurrentlanguage();
 	$form=$this->form_sale;
-	$url_submit = $this->url(array('module'=>'sales','controller'=>'index','action'=>'addrequest'));
-	$url_cancel = $this->url(array('module'=>'sales','controller'=>'index','action'=>'index'));
-	$url_new = $this->url(array('module'=>'sales','controller'=>'index','action'=>'add'));
+	$url_submit = $this->url(array('module'=>'purchase','controller'=>'index','action'=>'add'));
+	$url_cancel = $this->url(array('module'=>'purchase','controller'=>'index','action'=>'index'));
+	$url_new = $this->url(array('module'=>'purchase','controller'=>'index','action'=>'add'));
+	print_r($this->row);
 ?>
-<title><?php echo $tr->translate("EDIT_REQUEST");?></title>
+<title><?php echo $tr->translate("ADD_SALESORDER");?></title>
 <div class="row">
 	<div class="col-md-12">
 		<div class="portlet box blue">
 			<div class="portlet-title">
 				<div class="caption">
-					<i class="icon-home"></i><?php echo $tr->translate("EDIT_REQUEST")?>
+					<i class="icon-home"></i><?php echo $tr->translate("ADD_REQUEST")?>
 				</div>
 				<div class="col-md-2 pull-right">
-								<a href="<?php echo $this->baseUrl();?>/sales/index/requestlist"><button type="button" class="btn blue btn-block btn-lg"><i class="fa fa-times"></i> <?php echo $tr->translate("GO_BACK")?></button></a>
+								<a href="<?php echo $this->baseUrl();?>/sales/index/requestlist"><button type="button" class="btn red btn-block btn-lg"><i class="fa fa-times"></i> <?php echo $tr->translate("GO_BACK")?></button></a>
 							</div>
 			</div>
 			<div class="portlet-body form">
 				<!-- BEGIN FORM-->
-				<form id="orderFrm" action="<?php // echo $url_submit; ?>" class="form-horizontal" enctype="multipart/form-data" method="post">
+				<form id="a" action="<?php //echo $url_submit; ?>" class="form-horizontal" enctype="multipart/form-data" method="post">
 					<div class="form-body">
 						<div class="form-group">
 							<label class="control-label col-md-2"><?php //echo $tr->translate("BRANCH_NAME");?><span class="required">
@@ -122,24 +123,15 @@
 						</div>
 						
 						<div class="form-group">
-							<label class="control-label col-md-2"><?php //echo $tr->translate("SALE_AGENT");?> <span class="required">
-								</span>
+							
+							<label class="control-label col-md-2"><?php echo $tr->translate("REQUEST_TYPE");?><span class="required">
+							</span>
 							</label>
 							<div class="col-md-4">
 								<div class="input-icon right">
-									<i class="fa"></i>
-									<?php //echo $form->getElement("saleagent_id");?>
+								<?php echo $form->getElement("request_type");?>
 								</div>
 							</div>
-							
-							<!--<label class="control-label col-md-2"><?php echo $tr->translate("REQUEST_TYPE");?><span class="required">
-							*</span>
-							</label>
-							<div class="col-md-4">
-								<div class="input-icon right">
-								<?php echo $form->getElement("re_type");?>
-								</div>
-							</div>-->
 							<label class="control-label col-md-2"><?php  echo $tr->translate("REMARK");?><span class="required">
 								 </span>
 							</label>
@@ -149,8 +141,44 @@
 								</div>
 							</div>
 						</div>
+						<div class="form-group">
 							
+							<label class="control-label col-md-2"><?php echo $tr->translate("BOQ_NUMBER");?><span class="required">
+							</span>
+							</label>
+							<div class="col-md-4">
+								<div class="input-icon right">
+								<?php echo $form->getElement("boq_id");?>
+								</div>
+							</div>
+							<label class="control-label col-md-2"><?php  //echo $tr->translate("REMARK");?><span class="required">
+								 </span>
+							</label>
+							<div class="col-md-4">
+								<div class="input-icon right">
+									<?php //echo $form->getElement("remark");?>
+								</div>
+							</div>
+						</div>
 						
+						<!--<div class="form-group">
+							<label class="control-label col-md-2"><?php  //echo $tr->translate("REMARK");?><span class="required">
+								 </span>
+							</label>
+							<div class="col-md-4">
+								<div class="input-icon right">
+									<?php //echo $form->getElement("remark");?>
+								</div>
+							</div>
+							<label class="control-label col-md-2"><?php  echo $tr->translate("REMARK");?><span class="required">
+								 </span>
+							</label>
+							<div class="col-md-4">
+								<div class="input-icon right">
+									<?php echo $form->getElement("remark");?>
+								</div>
+							</div>
+						</div>-->
 						<div class="form-group">
 							<div class="col-md-2">
 								<button type="button" class="btn red delete" style="width:100%;">
@@ -166,9 +194,9 @@
 								<input type="hidden" class="form-control" id="add_item" name="add_item" Onchange="getItemOrder();" style="width:100%;" placeholder="<?php echo $tr->translate("SELECT_PRODUCT");?>"/>
 							</div>
 							<div class="col-md-2">
-							<button type="button" class="btn red delete" style="width:100%;">
-									<input type="checkbox" Onclick="Confirmmessage()" id="free" name="free" />
-									<span>&nbsp;&nbsp;Free</span>
+								<button type="button" class="btn red delete" style="width:100%;">
+								<i class="fa fa-barcode"></i>
+								<span><?php echo $tr->translate("SCAN");?></span>
 								</button>
 							</div>
 						</div>
@@ -186,6 +214,9 @@
 									<th style="white-space:nowrap;"><?php echo $tr->translate("WORK_TYPE");?></th>
 									<th style="white-space:nowrap;"><?php echo $tr->translate("WORK_REMARK");?></th>
 									<th style="white-space:nowrap;"><?php echo $tr->translate("NUM_REMARK");?></th>
+									<th style="white-space:nowrap;"><?php echo $tr->translate("QTY_ORDER");?></th>
+									<th style="white-space:nowrap;"><?php echo $tr->translate("REQ_DATE_IN");?></th>
+									<th style="white-space:nowrap;"><?php echo $tr->translate("NOTE");?></th>
 							</tr>
 						 </table>
 						 <input type="hidden" id="identity" name="identity" />
@@ -194,20 +225,12 @@
 					</div>
 						<!-- blog bottom -->
 						<div class="form-group">
-							<!--<label class="control-label col-md-2"><?php //echo $tr->translate("PAYMENT_METHOD");?><span class="required">
+							<label class="control-label col-md-2"><?php //echo $tr->translate("PAYMENT_METHOD");?><span class="required">
 								 </span>
 							</label>
 							<div class="col-md-4">
 								<div class="input-icon right">
 									<?php //echo $form->getElement("payment_name");?>
-								</div>
-							</div>-->
-							<label class="control-label col-md-2"><?php echo $tr->translate("REJECT_FROM_CHECK");?><span class="required">
-							* </span>
-							</label>
-							<div class="col-md-4">
-								<div class="input-icon right">
-								<?php echo $form->getElement("reject");?>
 								</div>
 							</div>
 								<label class="control-label col-md-2"><?php echo $tr->translate("តម្លៃសរុប​ :");?><span class="required">
@@ -219,11 +242,14 @@
 								<?php echo $form->getElement("totalAmoun");?>
 								<?php echo $form->getElement("dis_value");?>
 								<?php echo $form->getElement("all_total");?>
+								<input type="hidden" name="global_disc" id="global_disc"/>
 								</div>
 							</div>
 						</div>
 						<!--<div class="form-group">
-							<label class="control-label col-md-2"></label>
+							<label class="control-label col-md-2"><span class="required">
+								 </span>
+							</label>
 							<div class="col-md-4">
 								<div class="input-icon right"></div>
 							</div>
@@ -232,18 +258,18 @@
 							<div class="col-md-4">
 								<div class="input-icon left">
 									<i>$</i>
-									<?php echo $form->getElement("dis_value");?>
+									<?php //echo $form->getElement("dis_value");?>
 								       <input type="hidden" name="global_disc" id="global_disc"/>
 								</div>
 							</div>	
 						</div>
 						<div class="form-group">
-							<label class="control-label col-md-2"><?php echo $tr->translate("REJECT_FROM_CHECK");?><span class="required">
+							<label class="control-label col-md-2"><?php //echo $tr->translate("ពន្ធ");?><span class="required">
 							* </span>
 							</label>
 							<div class="col-md-4">
 								<div class="input-icon right">
-								<?php echo $form->getElement("reject");?>
+								<?php //echo $form->getElement("total_tax");?>
 								</div>
 							</div>
 							<label class="control-label col-md-2">សាច់ប្រាក់សរុប​ :<span class="required">
@@ -252,17 +278,18 @@
 							<div class="col-md-4">
 								<div class="input-icon left">
 									<i>$</i>
-								<?php echo $form->getElement("all_total");?>
+								<?php //echo $form->getElement("all_total");?>
 								</div>
 							</div>
 						</div>-->
 						
 						
 						<div class="form-group">
+							
 							<div  class="col-md-12 col-md-offset-4 col-md-8">
 								<a href="<?php echo $this->baseUrl();?>/sales/index/requestlist"><button type="button" class="btn red"><i class="fa fa-times"></i> <?php echo $tr->translate("EXIT")?></button></a>
-								<button type="submit" name="save_close" value="saveclose" class="btn btn-primary" ><i class="glyphicon glyphicon-log-in"></i> <?php echo $tr->translate("SAVE_CLOSE")?></button>
-								<button type="submit" name="btnsavenew" class="btn btn-primary"><i class="fa fa-save"></i> <?php echo $tr->translate("SAVE_NEW")?> </button>
+								<button type="submit" id="save_close" name="save_close" value="save_close" class=" submit btn btn-primary" ><i class="glyphicon glyphicon-log-in"></i> <?php echo $tr->translate("SAVE_CLOSE")?></button>
+								<button type="submit" id="save_new" name="btnsavenew" class="btn btn-primary"><i class="submit1 fa fa-save"></i> <?php echo $tr->translate("SAVE_NEW")?> </button>
 								<!--<button type="submit" name="save_print" class="btn btn-primary"><i class="fa fa-print"></i> <?php echo $tr->translate("SAVE_PRINT")?></button>-->
 												
 							</div>
@@ -274,15 +301,317 @@
 		</div>
 	</div>
 </div>
+<?php $form = $this->form_customer; ?>
+<div id="customerpopup" class="modal fade" tabindex="-1" data-width="1200">
+       <div class="modal-dialog">
+      <div class="modal-content">
+      <div class="modal-header">   
+		<div class="row">
+		<div class="col-md-12">
+			<div class="portlet box blue">
+			<div class="portlet-title">
+				<div class="caption">
+					<i class="icon-home"></i><?php echo $tr->translate("ADD_NEW_CUSTOMER");?>
+				</div>
+				<div class="caption pull-right">
+					<a href="<?php echo $url_new;?>" >
+						 <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+					</a>
+				</div>
+			</div>
+			<div class="portlet-body form">
+				<form id="frmcustomer" name="frmcustomer" class="form-horizontal" enctype="multipart/form-data" method="post">
+				<div class="form-body">
+						<div class="form-group">
+							<label class="control-label col-md-2"><?php echo $tr->translate("Branch Name");?><span class="required">
+								</span>
+							</label>
+							<div class="col-md-4">
+								<div class="input-icon right">
+									<i class="fa"></i>
+									<?php echo $form->getElement("branch_id");?>
+								</div>
+							</div>
+							<label class="control-label col-md-2">
+							<?php echo $tr->translate("COMPANY_NUMBER");?><span class="required">
+								</span>
+							</label>
+							<div class="col-md-4">
+								<div class="input-icon right">
+									<i class="fa"></i>
+									<?php echo $form->getElement('cu_code'); ?>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-md-2"><?php echo $tr->translate("COMPANY_NAME");?> <span class="required">
+								</span>
+							</label>
+							<div class="col-md-4">
+								<div class="input-icon right">
+									<i class="fa"></i>
+									<?php echo $form->getElement('txt_name'); ?>
+								</div>
+							</div>
+							<label class="control-label col-md-2">
+							<?php echo $tr->translate("COMPANY_NUMBER");?><span class="required">
+								</span>
+							</label>
+							<div class="col-md-4">
+								<div class="input-icon right">
+									<i class="fa"></i>
+									<?php echo $form->getElement('txt_phone'); ?>
+								</div>
+							</div>
+						</div>
+					<div class="form-group">
+							<label class="control-label col-md-2"><?php echo $tr->translate("CON_NAME");?><span class="required">
+								</span>
+							</label>
+							<div class="col-md-4">
+								<div class="input-icon right">
+									<i class="fa"></i>
+									<?php echo $form->getElement('txt_contact_name'); ?>
+								</div>
+							</div>
+							<label class="control-label col-md-2">
+							<?php echo $tr->translate("CON_NUMBER");?><span class="required"></span>
+							</label>
+							<div class="col-md-4">
+								<div class="input-icon right">
+									<i class="fa"></i><?php echo $form->getElement('contact_phone'); ?>
+								</div>
+							</div>
+					</div>
+					<div class="form-group">
+							<label class="control-label col-md-2"><?php echo $tr->translate("CUSTOMER_TYPE");?> <span class="required">
+								</span>
+							</label>
+							<div class="col-md-4">
+									<div class="input-icon right">
+										<i class="fa"></i>
+										<?php echo $form->getElement('customer_type'); ?>
+									</div>
+							</div>
+							<label class="control-label col-md-2">
+							<?php echo $tr->translate("Customer Level");?><span class="required">
+								</span>
+							</label>
+							<div class="col-md-4">
+								<div class="input-icon right">
+									<i class="fa"></i>
+									<?php echo $form->getElement('customer_level'); ?>
+								</div>
+							</div>
+					</div>
+					<div class="form-group">
+							<label class="control-label col-md-2"><?php echo $tr->translate("VENDOR_ADD");?><span class="required">
+								</span>
+							</label>
+							<div class="col-md-4">
+								<div class="input-icon right">
+									<i class="fa"></i>
+									<?php echo $form->getElement("txt_address");?>
+								</div>
+							</div>
+							<label class="control-label col-md-2">
+							<?php echo $tr->translate("EMAIL");?><span class="required">
+								</span>
+							</label>
+							<div class="col-md-4">
+								<div class="input-icon right">
+									<i class="fa"></i>
+									<?php echo $form->getElement('txt_mail'); ?>
+								</div>
+							</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="control-label col-md-2"><?php echo $tr->translate("CREDIT_LIMIT");?> <span class="required">
+								</span>
+						</label>
+						<div class="col-md-4">
+								<div class="input-icon right">
+									<i class="fa"></i>
+									<?php echo $form->getElement('credit_limit'); ?>
+								</div>
+						</div>
+						<label class="control-label col-md-2">
+							<?php echo $tr->translate("CREDIT_TEARM");?><span class="required">
+								</span>
+						</label>
+						<div class="col-md-4">
+								<div class="input-icon right">
+									<i class="fa"></i>
+									<?php echo $form->getElement("credit_tearm");?>
+								</div>
+						</div>
+						
+					</div>
+					
+					<div class="form-group">
+						<label  class="col-md-12 col-md-offset-4 col-md-8">
+							<button type="button" name="btnsavenew" onclick="addNewCustomer();" class="btn btn-primary"><i class="fa fa-save"></i> <?php echo $tr->translate("SAVE_CUSTOMER")?> </button>
+						</label>
+					</div>
+				</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+          </div>
+        </div>
+    </div>
+ </div>
+<!-- end new product -->
 
 <script>
- 
- itemss = <?php echo Zend_Json::encode($this->product)?>;
- is_set =0;
-$( document ).ready(function() {
-	//addPlanAddr();
+<?php $url_item_plan =  $this->url(array('module'=>'','controller'=>'ajax','action'=>'getplanitem')); ?>
+<?php $url_item_boq =  $this->url(array('module'=>'','controller'=>'ajax','action'=>'getboqitem')); ?>
+<?php $url_boq_code = $this->url(array('module'=>'','controller'=>'ajax','action'=>'getplanboq'));?>
+function getItem(){
+	//$('#table_order').append('');
+	
+	document.getElementById('table_order').innerHTML = "";
+	$('#identity').val('');
+	tbheader();
+	var request_type = $("#request_type").val();
+	if(request_type==1){
+		itemss = <?php echo Zend_Json::encode($this->product)?>;
+		select2Speed('add_item');
+		boq='';
+		$('#boq_id').val('');
+		getBOQCode();
+	}else{
+		itemss='';
+		var id = $('#plan').val();
+		if(id==""){
+			
+			alert('Please Select Plan');
+		}else{
+			$.ajax({
+				url:"<?php echo $url_boq_code;?>",
+				type:"post",
+				data:{'id':id},
+				success: function(data){
+					//$('#table_order').append('');
+					boq = $.parseJSON(data);
+					getBOQCode();
+					
+				}
+			});
+		}
+		select2Speed('add_item');
+	}
+	
+	
+	
+}
 
-	select2Speed('add_item');
+function getBOQCode(){
+	 $('#boq_id').select2({
+            datas : _.map(_.range(0, boq.length), function (i) {
+				//alert(boq[i].id);
+                  return {
+                      id  : boq[i].id,
+                      text: boq[i].boq_number
+                  };
+            }),
+             dropdownCssClass : 'capitalize',
+             containerCssClass: 'capitalize',
+			// value			: '<?php echo $this->row["boq_id"];?>',
+			 //selected		:	'selected',
+            // // configure as multiple select
+            // //multiple         : true,
+            // // text for loading more results
+             formatLoadMore   : 'Loading more...',
+             query            : function (qs) {
+            // // pageSize is number of results to show in dropdown
+                 var pageSize,
+					results;
+                     pageSize = 20;
+                     results  = _.filter(this.datas, function (e) {
+                         return (qs.term === "" || e.text.toUpperCase().indexOf(qs.term.toUpperCase()) >= 0);
+                  });
+                 qs.callback({
+                     results: results.slice((qs.page - 1) * pageSize, qs.page * pageSize),
+                    // // retrieve more when user hits bottom
+                     more   : results.length >= qs.page * pageSize
+                 });
+             }
+        });
+		$('#boq_id').val('<?php echo $this->row["boq_id"];?>').text($(this).val()).trigger("update");
+}
+
+function getItemBOQ(){
+	
+	id  = $('#boq_id').val();
+	$.ajax({
+				url:"<?php echo $url_item_boq;?>",
+				type:"post",
+				data:{'id':id},
+				success: function(data){
+					//$('#table_order').append('');
+					itemss = $.parseJSON(data);
+					select2Speed();
+					
+				}
+			});
+}
+function tbheader(){
+	template='<tr id="row_order_'+index5+'" style="height:33px;">';
+	template+='<th><?php echo $tr->translate("DEL");?></th>';
+	template+='<th><?php echo $tr->translate("NUM");?></th>';
+	template+='<th style="white-space:nowrap;"><?php echo $tr->translate("ITEM_NAME");?></th>';
+	template+='<th style="white-space:nowrap;"><?php echo $tr->translate("CURRENT_QTY");?></th>';
+	template+='<th style="white-space:nowrap;"><?php echo $tr->translate("BOQ_QTY_REMAIN");?></th>';
+	template+='<th style="white-space:nowrap;"><?php echo $tr->translate("MEASURE");?></th>';
+	template+='<th style="white-space:nowrap;"><?php echo $tr->translate("QTY_REQUEST");?></th>';
+	template+='<th style="white-space:nowrap;"><?php echo $tr->translate("UNIT_PRICE_CAP");?></th>';
+	template+='<th style="white-space:nowrap;"><?php echo $tr->translate("SUB_TOTAL_CAP");?></th>';
+	// template+='<td width="10%" style="vertical-align: middle;text-align:center;"><select class="form-control select2me" name="work_type_'+index5+'" id="work_type_'+index5+'">'+worktype+'<option></option></select></td>';
+	// template+='<td width="4%" style="vertical-align: middle;text-align:center;"><input type="text" name="remark_'+index5+'" id="remark_'+index5+'" value=""/></td>';
+	// template+='<td><input type="text" class="form-control" id="note_'+index5+'" name="note_'+index5+'" /></span></td>';
+	// template+='<td><input type="text" onkeypress="return isNumberKey(event)" class="form-control" id="qty_order_'+index5+'" name="qty_order_'+index5+'" /></span></td>';
+	// template+='<td><input type="text" class="form-control date-picker" id="re_date_in_'+index5+'" name="re_date_in_'+index5+'" /></span></td>';
+	// template+='<td><input type="text"  class="form-control" id="re_note_'+index5+'" name="re_note_'+index5+'" /></span></td>';
+	template+="</tr>";
+	$('#table_order').append(template);
+	$('#boq_id').val(<?php echo $this->row["boq_id"];?>).trigger("change.select2");
+	
+}
+
+function initList(){
+	<?php if(!empty($this->rs)){ foreach($this->rs as $key=>$rs){$index5 = $key+1; ?>
+		template='<tr id="row_order_'+index5+'" style="height:33px;">';
+		template+='<td><img onClick="deleteRecord(<?php echo $index5;?>)" src="<?php echo BASE_URL; ?>/images/icon/delete.gif" /></td>';
+		template+='<td><label id="lbno_'+index5+'"><?php echo $index5;?><label></td>';
+		template+='<td style="white-space:nowrap;"><input type="hidden" class="form-control" id="item_id_'+index5+'" name="item_id_<?php echo $index5;?>" value="<?php echo $rs["pro_id"];?>" ><label id="item_name_<?php echo $index5;?>"><?php echo $rs["item_name"];?></label></td>';
+		template+='<td style="white-space:nowrap;"><input type="text" readOnly="readOnly" class="form-control" name="cur_qty_<?php echo $index5;?>" id="cur_qty_<?php echo $index5;?>" value="<?php echo $rs["cu_qty"];?>" /></td>';
+		template+='<td style="white-space:nowrap;"><input style="background:#f5e1e1;" readonly type="text" class="form-control" id="boq_qty<?php echo $index5;?>" name="boq_qty<?php echo $index5;?>" value="<?php echo $rs["boq_qty"];?>"/></td>';
+		template+='<td style="white-space:nowrap;"><label id="lb_measure_'+index5+'"><?php echo $rs["measure"];?></label></td>';
+		template+='<td style="white-space:nowrap;"><input type="text" onkeypress="return isNumberKey(event)" required="required" onKeyup="calculatePrice(<?php echo $index5;?>)" class="form-control" required="1" value="<?php echo $rs["qty_order"];?>" id="qty<?php echo $index5;?>" name="qty<?php echo $index5;?>"/></td>';
+		template+='<td style="white-space:nowrap;"><div class="input-icon left"><i class="fa">$</i><input style="text-align:right;" type="text" onkeypress="return isNumberKey(event)" required="required" onKeyup="calculatePrice(<?php echo $index5;?>)" class="validate[required,custom[number]] input form-control" id="price<?php echo $index5;?>" name="price<?php echo $index5;?>" value="<?php echo $rs["price"];?>"/><input type="hidden" id="oldprice_'+index5+'" name="oldprice_'+index5+'"/></td>';
+		template+='<td style="white-space:nowrap;"><div class="input-icon left"><i class="fa">$</i><input style="text-align:right;" type="text" onkeypress="return isNumberKey(event)" required="required" class="form-control" readonly="readonly" id="total<?php echo $index5;?>" name="total<?php echo $index5;?>" value="<?php echo $rs["sub_total"];?>" /></span></td>';
+		// template+='<td width="10%" style="vertical-align: middle;text-align:center;"><select class="form-control select2me" name="work_type_'+index5+'" id="work_type_'+index5+'">'+worktype+'<option></option></select></td>';
+		// template+='<td width="4%" style="vertical-align: middle;text-align:center;"><input type="text" name="remark_'+index5+'" id="remark_'+index5+'" value=""/></td>';
+		// template+='<td><input type="text" class="form-control" id="note_'+index5+'" name="note_'+index5+'" /></span></td>';
+		// template+='<td><input type="text" onkeypress="return isNumberKey(event)" class="form-control" id="qty_order_'+index5+'" name="qty_order_'+index5+'" /></span></td>';
+		// template+='<td><input type="text" class="form-control date-picker" id="re_date_in_'+index5+'" name="re_date_in_'+index5+'" /></span></td>';
+		// template+='<td><input type="text"  class="form-control" id="re_note_'+index5+'" name="re_note_'+index5+'" /></span></td>';
+		template+="</tr>";
+		$('#table_order').append(template);
+	
+	<?php }} ?>
+		
+	
+}
+//itemss = <?php echo Zend_Json::encode($this->product)?>;
+$( document ).ready(function() {
+	getItem();
+	getWork();
+	initList();
 	//alert("ready loaded");
 	/*$("#a").submit(function () {
 		$('[name="save_close"]').val(1);
@@ -299,12 +628,9 @@ $( document ).ready(function() {
         
     });*/
 
-// $("#work_plan").append("");
- getWork();
-  initList();
- //alert(<?php echo $this->work_id;?>);
+	//$('#boq_id').val(<?php echo $this->row["boq_id"];?>).trigger("change.select2");
 
- 
+
 });
 function select2Speed(name){
 	 $('#add_item').select2({
@@ -338,7 +664,7 @@ function select2Speed(name){
         });
 }
 
-<?php $url_staff =  $this->url(array('module'=>'purchase','controller'=>'purchaserequest','action'=>'getstaff')); ?>
+<?php $url_staff =  $this->url(array('module'=>'','controller'=>'ajax','action'=>'getstaff')); ?>
 function getStaff(){
 	id = $("#request_by").val();
 	$.ajax({
@@ -354,7 +680,6 @@ function getStaff(){
 
 <?php $url_work_plan =  $this->url(array('module'=>'','controller'=>'ajax','action'=>'getworkplan')); ?>
 function getWork(){
-	$('#work_plan').val('').trigger('change');
 	id = $("#plan").val();
 	$.ajax({
 		url:"<?php echo $url_work_plan;?>",
@@ -364,17 +689,13 @@ function getWork(){
 			data = $.parseJSON(data);
 			//alert(data);
 			document.getElementById('work_plan').innerHTML=data;
+			
 			//$("#work_plan").append(data);
-			if(is_set!=1){
-				$('#work_plan').val('<?php echo $this->work_id;?>').trigger('change');
-				is_set=1;
-			}
 		}
 	});
-	
-	
 }
-//var index5 = 0;num=0;
+
+var index5 = 0;num=0;
 var option5 = '<?php echo $this->items; ?>';
 var worktype = '<?php echo $this->worktype; ?>';
 var baseUrl = '<?php echo BASE_URL; ?>';
@@ -382,93 +703,37 @@ var template = '';
 var value = '';
 pqty = 1;
 var index=1;
-function initList() {
-	is_new_checked ='';
-	is_old_checked ='';
-	index5=0;
-	var template;
-	var option5 = '<?php echo $this->items;?>';
-	var worktype = '<?php echo $this->worktype; ?>';
-	<?php if(!empty($this->rs)) {
-		foreach($this->rs AS $i=>$r){?>
-		is_new = '';
-		is_old_checked='';
-		if('<?php echo $r["is_new"]?>' == 1){
-			is_new_checked = "checked";
-		}
-		
-		if('<?php echo $r["is_old"]?>' == 1){
-			is_old_checked = "checked";
-		}
-	index5++; 
-	index=index+1;
-	template='<tr id="row_order_'+index5+'" style="height:33px;">';
-	var inp = '';
-	if(index5 == 1) {
-		template+='<td >&nbsp;</td>';
-	} else {
-		template+='<td ><img onClick="deleteRecord('+index5+')" src="<?php echo BASE_URL; ?>/images/icon/delete.gif" /></td>';
-	}
-	template+='<td  width="2%">'+index5+'</td>';
-	template+='<td width="20%"><select class="form-control select2me" Onchange="ShowPopupProduct('+ index5 + ');" id="item_id_'+index5+'" name="item_id_'+index5+'" >'+option5+'<option></option></select>'+inp+'</td>';
-	template+='<td><input style="background:#f5e1e1;" readonly type="text" class="form-control" id="current_qty'+index5+'" name="current_qty'+index5+'" /></td>';
-	template+='<td ><input type="text" onkeypress="return isNumberKey(event)" required="required" onkeyup="calculatePrice('+index5+')" class="form-control" required="1" id="qty'+index5+'" name="qty'+index5+'"/></td>';
-	template+='<td  width="2%"><label id="lb_measure_'+index5+'"></label></td>';
-	template+='<td width="10%" ><div class="input-icon left"><i class="fa">$</i><input style="text-align:right;" type="text" onkeypress="return isNumberKey(event)" required="required"onkeyup="calculatePrice('+index5+')" class="validate[required,custom[number]] input form-control" id="price'+index5+'" name="price'+index5+'" /></div><input type="hidden" id="oldprice_'+index5+'" name="oldprice_'+index5+'"/></td>';
-	template+='<td width="12%" ><div class="input-icon left"><i class="fa">$</i><input style="text-align:right;" type="text" onkeypress="return isNumberKey(event)" required="required" class="form-control" readonly="readonly" id="total'+index5+'" name="total'+index5+'" /></div></td>';
-	template+='<td width="10%" style="vertical-align: middle;text-align:center;"><select class="form-control select2me" name="work_type_'+index5+'" id="work_type_'+index5+'">'+worktype+'<option></option></select></td>';
-	template+='<td width="4%" style="vertical-align: middle;text-align:center;"><input type="text" name="remark_'+index5+'" id="remark_'+index5+'" value="1"/></td>';
-	template+='<td width="4%"><input type="text" class="form-control" id="note_'+index5+'" name="note_'+index5+'" /></span></td>';
-	template+="</tr>";
-	$('#table_order').append(template);
-	
-	$("#item_id_"+index5).val("<?php echo $r['pro_id'];?>");
-	//$('work_type_'+index5).val("<?php echo $r["work_type"]?>");
-	$("#qty"+index5).val("<?php echo $r['qty_order'];?>");
-	$("#current_qty"+index5).val("<?php echo $r['cu_qty'];?>");
-	$("#note_"+index5).val("<?php echo $r['note'];?>");
-	$("#remark_"+index5).val("<?php echo $r['remark'];?>");
-	//$("#qty_unit_"+index5).val("<?php echo $r['qty_unit'];?>");
-	
-	//$("#qty_per_unit_"+index5).val("<?php echo $r['qty_detail'];?>");
-	$("#total"+index5).val("<?php echo $r['sub_total'];?>");
-	$("#price"+index5).val("<?php echo $r['price'];?>");
-	$("#oldprice_"+index5).val("<?php echo $r['price'];?>");
-	document.getElementById('lb_measure_'+index5).innerHTML='<?php echo $r['measure'];?>';
-	//$("#dis_value"+index5).val("<?php echo $r['disc_value'];?>");
-	
-	//getQtyById(index5);
-	
-
-	if($('#identity').val()!="") {
-		var identity = $('#identity').val();
-		$('#identity').val(identity+','+index5);
-	} else {$('#identity').val(index5);}
-	
-	$("#row_order_0").remove();
-		<?php } }?>
-		//alert(1);
-	
-}
 <?php $url_qty =  $this->url(array('module'=>'','controller'=>'ajax','action'=>'getqtybyid')); ?>
 function addRow(item_id) {
 	//item_id=$("#item_id_"+index).val();
 				//qty_unit=$("#qty_unit_"+index).val();
 				//qty_per_unit=$("#qty_per_unit_"+index).val();
+				
+	var request_type = $('#request_type').val();
+	var identity = $('#identity').val();
+	var arrays = identity.split(',');
+	if(arrays!=""){
+		a = arrays.length;
+		//alert(a);
+		index= parseInt(a)+1;
+	}else{
+		index=1;
+	}
 				branch_id = $("#branch_id").val();
+				boq_id = $("#boq_id").val();
 				if(branch_id=='' || branch_id==-1){alert("Please Select Branch First ");}
 				
 					$.ajax({
 						url:"<?php echo $url_qty;?>",
 						type:"post",
-						data:{'item_id':item_id,'branch_id':branch_id},
+						data:{'item_id':item_id,'branch_id':branch_id,'boq_id':boq_id},
 						success: function(data){
 							//alert(data);
 							item_qty = $.parseJSON(data);
-							if(item_qty.qty >0){
+							//if(item_qty.qty >0){
 								
 								index5++; //var first = index5;
-								index=index+1;
+								//index=index+1;
 								for(i=1; i<index5; i++){
 									new_item=parseInt(item_id);
 									items = parseInt($("#item_id_"+i).val());
@@ -478,28 +743,35 @@ function addRow(item_id) {
 										new_qty = parseFloat(qty)+1;
 										$("#qty"+i).val(new_qty);
 										//alert(i);
-										calculatePrice(i);
+										//calculatePrice(i);
 										//calculatePrice(index)
 										return false;
 									}
 								}
+								if(request_type==2){
+									cu_qty = item_qty.boq_qty;
+								}else{
+									cu_qty = item_qty.qty;
+								}
 								template='<tr id="row_order_'+index5+'" style="height:33px;">';
 								var inp = '';
-								if(index5 == 1) {
-									template+='<td >&nbsp;</td>';
-								} else {
-									template+='<td ><img onClick="deleteRecord('+index5+')" src="<?php echo BASE_URL; ?>/images/icon/delete.gif" /></td>';
-								}
-								template+='<td  width="2%">'+index5+'</td>';
-								template+='<td width="20%"><select class="form-control select2me" Onchange="ShowPopupProduct('+ index5 + ');" id="item_id_'+index5+'" name="item_id_'+index5+'" >'+option5+'<option></option></select>'+inp+'</td>';
+								
+								template+='<td ><img onClick="deleteRecord('+index5+')" src="<?php echo BASE_URL; ?>/images/icon/delete.gif" /></td>';
+								template+='<td  width="2%"><label id="lbno_'+index5+'">'+index+'<label></td>';
+								template+='<td width="40%"><input type="hidden" class="form-control" id="item_id_'+index5+'" name="item_id_'+index5+'" value="'+item_qty.id+'" ><label id="item_name_'+index5+'">'+item_qty.item_code+"-"+item_qty.item_name+'</label></td>';
 								template+='<td><input style="background:#f5e1e1;" readonly type="text" class="form-control" id="current_qty'+index5+'" name="current_qty'+index5+'" value="'+item_qty.qty+'"/></td>';
+								template+='<td  width="2%"><input style="background:#f5e1e1;" readonly type="text" class="form-control" id="boq_qty'+index5+'" name="boq_qty'+index5+'" value="'+item_qty.boq_qty+'"/></td>';
+								template+='<td  width="2%"><label id="lb_measure_'+index5+'">'+item_qty.measure+'</label></td>';
 								template+='<td ><input type="text" onkeypress="return isNumberKey(event)" required="required" onKeyup="calculatePrice('+index5+')" class="form-control" required="1" value="1" id="qty'+index5+'" name="qty'+index5+'"/></td>';
-								template+='<td  width="2%"><label id="lb_measure_'+index5+'"></label></td>';
+								
 								template+='<td style="width: 10%;"><div class="input-icon left"><i class="fa">$</i><input style="text-align:right;" type="text" onkeypress="return isNumberKey(event)" required="required" onKeyup="calculatePrice('+index5+')" class="validate[required,custom[number]] input form-control" id="price'+index5+'" name="price'+index5+'" value="'+item_qty.price+'"/><input type="hidden" id="oldprice_'+index5+'" name="oldprice_'+index5+'"/></td>';
 								template+='<td style="width: 12%;"><div class="input-icon left"><i class="fa">$</i><input style="text-align:right;" type="text" onkeypress="return isNumberKey(event)" required="required" class="form-control" readonly="readonly" id="total'+index5+'" name="total'+index5+'" /></span></td>';
-								template+='<td width="10%" style="vertical-align: middle;text-align:center;"><select class="form-control select2me" name="work_type_'+index5+'" id="work_type_'+index5+'">'+worktype+'<option></option></select></td>';
-								template+='<td width="4%" style="vertical-align: middle;text-align:center;"><input type="text" name="remark_'+index5+'" id="remark_'+index5+'" value=""/></td>';
-								template+='<td width="4%" style="vertical-align: middle;text-align:center;"><input type="text" name="note_'+index5+'" id="note_'+index5+'" value=""/></td>';
+								// template+='<td width="10%" style="vertical-align: middle;text-align:center;"><select class="form-control select2me" name="work_type_'+index5+'" id="work_type_'+index5+'">'+worktype+'<option></option></select></td>';
+								// template+='<td width="4%" style="vertical-align: middle;text-align:center;"><input type="text" name="remark_'+index5+'" id="remark_'+index5+'" value=""/></td>';
+								// template+='<td><input type="text" class="form-control" id="note_'+index5+'" name="note_'+index5+'" /></span></td>';
+								// template+='<td><input type="text" onkeypress="return isNumberKey(event)" class="form-control" id="qty_order_'+index5+'" name="qty_order_'+index5+'" /></span></td>';
+								// template+='<td><input type="text" class="form-control date-picker" id="re_date_in_'+index5+'" name="re_date_in_'+index5+'" /></span></td>';
+								// template+='<td><input type="text"  class="form-control" id="re_note_'+index5+'" name="re_note_'+index5+'" /></span></td>';
 								template+="</tr>";
 								$('#table_order').append(template);
 								if($('#identity').val()!="") {
@@ -517,17 +789,17 @@ function addRow(item_id) {
 								
 								$("#row_order_0").remove();
 								$("#orderFrm").validationEngine();
-								$("#item_id_"+index5).select2();
-							}else{
-								alert("Product is not available in Stock now!");
-							}
+							//}else{
+							//	alert("Product is not available in Stock now!");
+							//}
 						},
 						error:function(e){
 							//alert(e);
 						}
 				});
-}
+								calculatePrice(index5);
 
+}
 term_option = '<?php echo $this->term_opt; ?>';
 index1 = 0;
 function addtermcondition(t_id){
@@ -547,16 +819,13 @@ function addtermcondition(t_id){
 }
 <?php $url_qty =  $this->url(array('module'=>'','controller'=>'ajax','action'=>'getqtybyid')); ?>
 function getQtyById(index){//use
+	
 				item_id=$("#item_id_"+index).val();
-				qty_unit=$("#qty_unit_"+index).val();
-				qty_per_unit=$("#qty_per_unit_"+index).val();
+				//qty_unit=$("#qty_unit_"+index).val();
+				//qty_per_unit=$("#qty_per_unit_"+index).val();
 				branch_id = $("#branch_id").val();
 				if(branch_id=='' || branch_id==-1){alert("Please Select Branch First ");}
-				if(qty_unit==null || qty_unit==""){
-					if(qty_per_unit!==null && qty_per_unit!==""){
-						$("#qty"+index).val(qty_per_unit);
-					}
-				}else{
+				
 					$.ajax({
 						url:"<?php echo $url_qty;?>",
 						type:"post",
@@ -576,7 +845,8 @@ function getQtyById(index){//use
 							//alert(e);
 						}
 				});
-			}
+				
+			
 }
 <?php $url_price =  $this->url(array('module'=>'','controller'=>'ajax','action'=>'getproductprice')); ?>
 function getProductPrice(product_id,recordid){
@@ -603,9 +873,7 @@ function getProductPrice(product_id,recordid){
 	});
   }
 }
-$( document ).ready(function() {
-	//alert("ready loaded");
-});
+
 
 function getItemOrder(){
 	item_ids=$("#add_item").val();
@@ -628,6 +896,7 @@ function getTermItem(){
 }
 var record_index= 1;
 function deleteRecord(index) {
+	
 	var identity = $('#identity').val();
 	var arrays = identity.split(',');
 	for(var i=0;i<arrays.length;i++) {
@@ -636,7 +905,17 @@ function deleteRecord(index) {
 	var strings = arrays.join(',');
 	$('#identity').val(strings);
 	$("#row_order_"+index).remove();
+	newNo();
 	netTotal();
+}
+function newNo(){
+	a=0;
+	var identity = $('#identity').val();
+	var arrays = identity.split(',');
+	for(var i=0;i<arrays.length;i++) { a++;
+		$('#lbno_'+arrays[i]).text(a);
+		//$('#lbno'+arrays[i]).append(a);
+	}
 }
 function deleteTermRecord(termid){
 	var identity = $('#identity_term').val();
@@ -702,16 +981,39 @@ function totalQty(index){
 	getQtyById(index);
 }
 function calculatePrice(index) {
+	//alert(index);
+	request_type = $('#request_type').val();
 	var cur_qty = parseFloat($('#current_qty'+index).val());
+	var boq_qty = parseFloat($('#boq_qty'+index).val());
 	var qty = parseFloat($('#qty'+index).val());
-	/*if(qty>cur_qty){
-		alert('<?php echo $tr->translate("CURRENT_QTY_IS_LESS_THEN_ORDER_QTY ")?>');
-		$('#qty'+index).val(cur_qty);
-		qty=cur_qty;
-	}*/
+	if(request_type==2){
+		//alert(1);
+		if(qty>cur_qty){
+			alert('<?php echo $tr->translate("CURRENT_QTY_IS_LESS_THEN_ORDER_QTY")?>');
+			qty = cur_qty;
+			if(qty>boq_qty){
+				alert('<?php echo $tr->translate("BOQ_QTY_REMAIN_IS_LESS_THEN_ORDER_QTY")?>');
+				qty = boq_qty;
+			}
+		}else{
+			if(qty>boq_qty){
+				alert('<?php echo $tr->translate("BOQ_QTY_REMAIN_IS_LESS_THEN_ORDER_QTY")?>');
+				qty = boq_qty;
+			}
+		}
+	}else{
+		if(qty>cur_qty){
+			alert('<?php echo $tr->translate("CURRENT_QTY_IS_LESS_THEN_ORDER_QTY")?>');
+			qty = cur_qty;
+		}
+	}
+	
+	$('#qty'+index).val(qty);
+	
 	//var qty = $('#qty'+index).val();
 	var price = $('#price'+index).val();
 	var total = price * qty;
+	
 	//alert("total then aftet discount"+total);
 	/*var ds = $('#dis_value'+index).val();
 	if(ds.length!=0){
@@ -822,5 +1124,28 @@ function addPlanAddr(){
            
         }
     });
+}
+
+<?php $url_request_code =  $this->url(array('module'=>'sales','controller'=>'index','action'=>'get-request-no')); ?>
+function getQuotenumber(){
+	$("#txt_order").val("");
+				branch_id=$("#branch_id").val();
+				if(branch_id=="" || branch_id ==null || branch_id==-1){
+					return false;
+				}
+				else{
+				$.ajax({
+						url:"<?php echo $url_request_code;?>",
+						type:"post",
+						data:{'branch_id':branch_id},
+						success: function(data){
+							//alert(data);
+							qo = $.parseJSON(data);
+							$("#apno").val(qo);
+						},
+						error:function(){
+						}
+					});
+				}	
 }
 </script>	

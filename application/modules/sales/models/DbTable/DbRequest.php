@@ -161,6 +161,7 @@ class Sales_Model_DbTable_DbRequest extends Zend_Db_Table_Abstract
 					"type"				=>		$data["request_type"],
 					//"re_type"			=>		$data["re_type"],
 					"work_plan"			=>		$data["work_plan"],
+					"boq_id"			=>		$data["boq_id"],
 					
 			);
 			$this->_name="tb_sales_order";
@@ -299,6 +300,7 @@ class Sales_Model_DbTable_DbRequest extends Zend_Db_Table_Abstract
 					"type"				=>		2,
 					//"re_type"			=>		$data["re_type"],
 					"work_plan"			=>		$data["work_plan"],
+					"boq_id"			=>		$data["boq_id"],
 			);
 
 			$this->_name="tb_sales_order";
@@ -453,7 +455,7 @@ class Sales_Model_DbTable_DbRequest extends Zend_Db_Table_Abstract
 	}
 	function getItemOrder($id){
 		$db = $this->getAdapter();
-		$sql = "SELECT so.`qty_order`,so.price,so.`pro_id`,s.`branch_id` FROM `tb_sales_order` AS s,`tb_salesorder_item` AS so WHERE s.id=so.`saleorder_id` AND so.`saleorder_id`=$id";
+		$sql = "SELECT so.`qty_order`,so.price,so.`pro_id`,s.`branch_id`,type,plan_id,boq_id FROM `tb_sales_order` AS s,`tb_salesorder_item` AS so WHERE s.id=so.`saleorder_id` AND so.`saleorder_id`=$id";
 		return $db->fetchAll($sql);
 	}
 	
@@ -485,6 +487,7 @@ class Sales_Model_DbTable_DbRequest extends Zend_Db_Table_Abstract
 			$dn = $db_global->getDeliverNumber($row[0]["branch_id"]);
 			//echo $row[0]["branch_id"];
 			if(!empty($row)){
+				
 					foreach ($row as $rs){
 						$rs_pro = $this->getProductExist($rs["pro_id"],$rs["branch_id"]);
 						if(!empty($rs_pro)){
@@ -494,6 +497,30 @@ class Sales_Model_DbTable_DbRequest extends Zend_Db_Table_Abstract
 							$this->_name = "tb_prolocation";
 							$where=" id = ".$rs_pro['id'];
 							$this->update($arr_pro,$where);
+						}
+						
+						if($rs["type"]==2){
+							$sql = "SELECT 
+									  bd.`qty_order`,
+									  bd.`qty_orderafter` 
+									FROM
+									  `tb_boq` AS b,
+									  `tb_boqdetail` AS bd 
+									WHERE b.id = bd.`boq_id` 
+									  AND b.`id` ='".$rs["boq_id"].
+									  "' AND bd.`pro_id` =".$rs["pro_id"];
+									  
+							$row_boq = $db->fetchRow($sql);
+							
+							if($row_boq){
+								$arr = array(
+									'qty_orderafter' 	=>	$row_boq["qty_orderafter"]-$rs["qty_order"],
+								);
+								$this->_name="tb_boqdetail";
+								$where = "boq_id=".$rs["boq_id"].
+									  " AND `pro_id` =".$rs["pro_id"];
+								$this->update($arr,$where);
+							}
 						}
 					}
 				
@@ -587,18 +614,23 @@ class Sales_Model_DbTable_DbRequest extends Zend_Db_Table_Abstract
 	
 	function getSaleorderItemById($id){
 		$db = $this->getAdapter();
-		$sql=" SELECT * FROM $this->_name WHERE id = $id LIMIT 1 ";
+		$sql=" SELECT * FROM tb_sales_order WHERE id = $id LIMIT 1 ";
 		return $db->fetchRow($sql);
 	}
 	function getSaleorderItemDetailid($id){
 		$db = $this->getAdapter();
 		$sql="SELECT 
 				  s.* ,
+				  (SELECT p.item_name FROM `tb_product` AS p WHERE p.id=s.`pro_id` LIMIT 1) AS item_name,
+				  (SELECT m.name FROM tb_measure AS m WHERE m.id=(SELECT p.measure_id FROM `tb_product` AS p WHERE p.id=s.pro_id LIMIT 1)) AS measure,
+				  (SELECT bd.qty_orderafter FROM `tb_boqdetail` AS bd WHERE bd.boq_id=so.`boq_id` AND bd.pro_id=s.`pro_id` LIMIT 1) AS boq_qty,
 				  (SELECT m.`name` FROM `tb_measure` AS m WHERE m.id=(SELECT p.`measure_id` FROM `tb_product` AS p WHERE p.id=s.`pro_id`)) AS measure,
-				  (SELECT p.qty FROM `tb_prolocation` AS p WHERE p.pro_id=s.`pro_id` AND p.`location_id`=(SELECT `branch_id` FROM `tb_sales_order` WHERE `id`=s.`saleorder_id`)) AS cu_qty
+				  (SELECT p.qty FROM `tb_prolocation` AS p WHERE p.pro_id=s.`pro_id` AND p.`location_id`=(SELECT `branch_id` FROM `tb_sales_order` WHERE `id`=s.`saleorder_id`)) AS cu_qty,
+				  (SELECT p.price FROM `tb_prolocation` AS p WHERE p.pro_id=s.`pro_id` AND p.`location_id`=(SELECT `branch_id` FROM `tb_sales_order` WHERE `id`=s.`saleorder_id`)) AS price
 				FROM
-				  `tb_salesorder_item` AS s 
-				WHERE saleorder_id =$id ";
+				  `tb_salesorder_item` AS s ,
+				  `tb_sales_order` AS so
+				WHERE so.`id`=s.`saleorder_id` AND saleorder_id =$id ";
 		return $db->fetchAll($sql);
 	}
 	function getTermconditionByid($id){

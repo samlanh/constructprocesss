@@ -141,6 +141,25 @@
 								</div>
 							</div>
 						</div>
+						<div class="form-group">
+							
+							<label class="control-label col-md-2"><?php echo $tr->translate("BOQ_NUMBER");?><span class="required">
+							</span>
+							</label>
+							<div class="col-md-4">
+								<div class="input-icon right">
+								<?php echo $form->getElement("boq_id");?>
+								</div>
+							</div>
+							<label class="control-label col-md-2"><?php  //echo $tr->translate("REMARK");?><span class="required">
+								 </span>
+							</label>
+							<div class="col-md-4">
+								<div class="input-icon right">
+									<?php //echo $form->getElement("remark");?>
+								</div>
+							</div>
+						</div>
 						
 						<!--<div class="form-group">
 							<label class="control-label col-md-2"><?php  //echo $tr->translate("REMARK");?><span class="required">
@@ -200,7 +219,7 @@
 									<th style="white-space:nowrap;"><?php echo $tr->translate("NOTE");?></th>
 							</tr>
 						 </table>
-						 <input type="text" id="identity" name="identity" />
+						 <input type="hidden" id="identity" name="identity" />
 						 <input type="hidden" id="identity_term" name="identity_term" />
 								
 					</div>
@@ -449,46 +468,98 @@
 
 <script>
 <?php $url_item_plan =  $this->url(array('module'=>'','controller'=>'ajax','action'=>'getplanitem')); ?>
+<?php $url_item_boq =  $this->url(array('module'=>'','controller'=>'ajax','action'=>'getboqitem')); ?>
+<?php $url_boq_code = $this->url(array('module'=>'','controller'=>'ajax','action'=>'getplanboq'));?>
 function getItem(){
 	//$('#table_order').append('');
 	document.getElementById('table_order').innerHTML = "";
 	$('#identity').val('');
-	tbheader()
+	tbheader();
 	var request_type = $("#request_type").val();
 	if(request_type==1){
-		
 		itemss = <?php echo Zend_Json::encode($this->product)?>;
 		select2Speed('add_item');
+		boq='';
+		$('#boq_id').val('');
+		getBOQCode();
 	}else{
+		itemss='';
 		var id = $('#plan').val();
 		if(id==""){
-			itemss='';
+			
 			alert('Please Select Plan');
 		}else{
 			$.ajax({
-				url:"<?php echo $url_item_plan;?>",
+				url:"<?php echo $url_boq_code;?>",
 				type:"post",
 				data:{'id':id},
 				success: function(data){
-					//alert(data);
 					//$('#table_order').append('');
-					itemss = $.parseJSON(data);
-					select2Speed('add_item');
+					boq = $.parseJSON(data);
+					getBOQCode();
 					
 				}
 			});
 		}
+		select2Speed('add_item');
 	}
+	
 	
 	
 }
 
+function getBOQCode(){
+	 $('#boq_id').select2({
+            datas : _.map(_.range(0, boq.length), function (i) {
+				//alert(boq[i].id);
+                  return {
+                      id  : boq[i].id,
+                      text: boq[i].boq_number
+                  };
+            }),
+             dropdownCssClass : 'capitalize',
+             containerCssClass: 'capitalize',
+            // // configure as multiple select
+            // //multiple         : true,
+            // // text for loading more results
+             formatLoadMore   : 'Loading more...',
+             query            : function (qs) {
+            // // pageSize is number of results to show in dropdown
+                 var pageSize,
+					results;
+                     pageSize = 20;
+                     results  = _.filter(this.datas, function (e) {
+                         return (qs.term === "" || e.text.toUpperCase().indexOf(qs.term.toUpperCase()) >= 0);
+                  });
+                 qs.callback({
+                     results: results.slice((qs.page - 1) * pageSize, qs.page * pageSize),
+                    // // retrieve more when user hits bottom
+                     more   : results.length >= qs.page * pageSize
+                 });
+             }
+        });
+}
+function getItemBOQ(){
+	id  = $('#boq_id').val();
+	$.ajax({
+				url:"<?php echo $url_item_boq;?>",
+				type:"post",
+				data:{'id':id},
+				success: function(data){
+					//$('#table_order').append('');
+					itemss = $.parseJSON(data);
+					select2Speed();
+					
+				}
+			});
+}
 function tbheader(){
 	template='<tr id="row_order_'+index5+'" style="height:33px;">';
 	template+='<th><?php echo $tr->translate("DEL");?></th>';
 	template+='<th><?php echo $tr->translate("NUM");?></th>';
 	template+='<th style="white-space:nowrap;"><?php echo $tr->translate("ITEM_NAME");?></th>';
 	template+='<th style="white-space:nowrap;"><?php echo $tr->translate("CURRENT_QTY");?></th>';
+	template+='<th style="white-space:nowrap;"><?php echo $tr->translate("BOQ_QTY_REMAIN");?></th>';
 	template+='<th style="white-space:nowrap;"><?php echo $tr->translate("MEASURE");?></th>';
 	template+='<th style="white-space:nowrap;"><?php echo $tr->translate("QTY_REQUEST");?></th>';
 	template+='<th style="white-space:nowrap;"><?php echo $tr->translate("UNIT_PRICE_CAP");?></th>';
@@ -598,7 +669,9 @@ function addRow(item_id) {
 	//item_id=$("#item_id_"+index).val();
 				//qty_unit=$("#qty_unit_"+index).val();
 				//qty_per_unit=$("#qty_per_unit_"+index).val();
-				var identity = $('#identity').val();
+				
+	var request_type = $('#request_type').val();
+	var identity = $('#identity').val();
 	var arrays = identity.split(',');
 	if(arrays!=""){
 		a = arrays.length;
@@ -608,12 +681,13 @@ function addRow(item_id) {
 		index=1;
 	}
 				branch_id = $("#branch_id").val();
+				boq_id = $("#boq_id").val();
 				if(branch_id=='' || branch_id==-1){alert("Please Select Branch First ");}
 				
 					$.ajax({
 						url:"<?php echo $url_qty;?>",
 						type:"post",
-						data:{'item_id':item_id,'branch_id':branch_id},
+						data:{'item_id':item_id,'branch_id':branch_id,'boq_id':boq_id},
 						success: function(data){
 							//alert(data);
 							item_qty = $.parseJSON(data);
@@ -635,6 +709,11 @@ function addRow(item_id) {
 										return false;
 									}
 								}
+								if(request_type==2){
+									cu_qty = item_qty.boq_qty;
+								}else{
+									cu_qty = item_qty.qty;
+								}
 								template='<tr id="row_order_'+index5+'" style="height:33px;">';
 								var inp = '';
 								
@@ -642,6 +721,7 @@ function addRow(item_id) {
 								template+='<td  width="2%"><label id="lbno_'+index5+'">'+index+'<label></td>';
 								template+='<td width="40%"><input type="hidden" class="form-control" id="item_id_'+index5+'" name="item_id_'+index5+'" value="'+item_qty.id+'" ><label id="item_name_'+index5+'">'+item_qty.item_code+"-"+item_qty.item_name+'</label></td>';
 								template+='<td><input style="background:#f5e1e1;" readonly type="text" class="form-control" id="current_qty'+index5+'" name="current_qty'+index5+'" value="'+item_qty.qty+'"/></td>';
+								template+='<td  width="2%"><input style="background:#f5e1e1;" readonly type="text" class="form-control" id="boq_qty'+index5+'" name="boq_qty'+index5+'" value="'+item_qty.boq_qty+'"/></td>';
 								template+='<td  width="2%"><label id="lb_measure_'+index5+'">'+item_qty.measure+'</label></td>';
 								template+='<td ><input type="text" onkeypress="return isNumberKey(event)" required="required" onKeyup="calculatePrice('+index5+')" class="form-control" required="1" value="1" id="qty'+index5+'" name="qty'+index5+'"/></td>';
 								
@@ -863,13 +943,34 @@ function totalQty(index){
 }
 function calculatePrice(index) {
 	//alert(index);
+	request_type = $('#request_type').val();
 	var cur_qty = parseFloat($('#current_qty'+index).val());
+	var boq_qty = parseFloat($('#boq_qty'+index).val());
 	var qty = parseFloat($('#qty'+index).val());
-	if(qty>cur_qty){
-		alert('<?php echo $tr->translate("CURRENT_QTY_IS_LESS_THEN_ORDER_QTY")?>');
-		$('#qty'+index).val(cur_qty);
-		qty=cur_qty;
+	if(request_type==2){
+		//alert(1);
+		if(qty>cur_qty){
+			alert('<?php echo $tr->translate("CURRENT_QTY_IS_LESS_THEN_ORDER_QTY")?>');
+			qty = cur_qty;
+			if(qty>boq_qty){
+				alert('<?php echo $tr->translate("BOQ_QTY_REMAIN_IS_LESS_THEN_ORDER_QTY")?>');
+				qty = boq_qty;
+			}
+		}else{
+			if(qty>boq_qty){
+				alert('<?php echo $tr->translate("BOQ_QTY_REMAIN_IS_LESS_THEN_ORDER_QTY")?>');
+				qty = boq_qty;
+			}
+		}
+	}else{
+		if(qty>cur_qty){
+			alert('<?php echo $tr->translate("CURRENT_QTY_IS_LESS_THEN_ORDER_QTY")?>');
+			qty = cur_qty;
+		}
 	}
+	
+	$('#qty'+index).val(qty);
+	
 	//var qty = $('#qty'+index).val();
 	var price = $('#price'+index).val();
 	var total = price * qty;

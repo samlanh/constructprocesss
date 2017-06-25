@@ -176,10 +176,11 @@ class Sales_Form_FrmPlan extends Zend_Form
 		$desc->setAttribs(array('class'=>'form-control','id'=>'editor1','rows'=>'10','cols'=>'80'));
 		
 		$date_line_plan = new Zend_Form_Element_Text("date_line_plan");
-		$date_line_plan->setAttribs(array('class'=>'form-control date-picker'));
+		$date_line_plan->setAttribs(array('class'=>'form-control'));
 		
 		$date_line_qo = new Zend_Form_Element_Text("date_line_qo");
 		$date_line_qo->setAttribs(array('class'=>'form-control date-picker'));
+		$date_line_qo->setValue(date("m/d/Y"));
 		
 		$plan_goald =  new Zend_Form_Element_Text("plan_goald");
 		$plan_goald->setAttribs(array('class'=>'form-control'));
@@ -189,6 +190,10 @@ class Sales_Form_FrmPlan extends Zend_Form
 		
 		$file =  new Zend_Form_Element_File("file[]");
 		$file->setAttribs(array('class'=>'form-control'));
+		
+		$reject_note = new Zend_Form_Element_Textarea("reject_note");
+		$reject_note->setAttribs(array('class'=>'form-control',"style"=>"height:50px;","readOnly"=>"readOnly"));
+		$this->addElement($reject_note);
 		
 		if($data!=null){
 			$old_file = new Zend_Form_Element_Hidden("old_file");
@@ -203,9 +208,10 @@ class Sales_Form_FrmPlan extends Zend_Form
 			$desc->setValue($data["description"]);
 			$plan_goald->setValue($data["plan_goald"]);
 			$date_line_plan->setValue($data["date_line_plan"]);
-			$date_line_qo->setValue($data["date_line_qo"]);
+			$date_line_qo->setValue(date("m/d/Y",strtotime($data["date_line_qo"])));
 			$remark->setValue($data["remark"]);
 			$old_file->setValue($data["file"]);
+			$reject_note->setValue($data["reject_note"]);
 		}
 		
 		

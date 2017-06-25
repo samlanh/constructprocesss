@@ -139,7 +139,7 @@ public function init(){
 					$db->check($post);
 					if(isset($post["save_close"]))
 					{
-						Application_Form_FrmMessage::Sucessfull("INSERT_SUCCESS",'/sales/plan/index');
+						Application_Form_FrmMessage::Sucessfull("INSERT_SUCCESS",'/sales/plan/planchecklist');
 					}else{
 						Application_Form_FrmMessage::Sucessfull("INSERT_SUCCESS","");
 					}

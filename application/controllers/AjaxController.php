@@ -7,6 +7,25 @@ class AjaxController extends Zend_Controller_Action
     	defined('BASE_URL')	|| define('BASE_URL', Zend_Controller_Front::getInstance()->getBaseUrl());
 		
     }
+	
+	function getplanboqAction(){
+		if($this->getRequest()->isPost()){
+			$post=$this->getRequest()->getPost();
+			$db = new Application_Model_DbTable_DbGlobal();
+			$qo = $db->getBOQCodeByPlan($post['id']);
+			echo Zend_Json::encode($qo);
+			exit();
+		}
+	}
+	function getboqitemAction(){
+		if($this->getRequest()->isPost()){
+			$post=$this->getRequest()->getPost();
+			$db = new Application_Model_DbTable_DbGlobal();
+			$qo = $db->getboqitem($post['id']);
+			echo Zend_Json::encode($qo);
+			exit();
+		}
+	}
     function getplanitemAction(){
 		if($this->getRequest()->isPost()){
 			$post=$this->getRequest()->getPost();
@@ -140,8 +159,9 @@ class AjaxController extends Zend_Controller_Action
 			$post=$this->getRequest()->getPost();
 			$item_id = $post['item_id'];
 			$branch_id = $post['branch_id'];
+			$boq_id = $post["boq_id"];
 			
-			$row = $db->getItemQty($item_id,$branch_id);
+			$row = $db->getItemQty($item_id,$branch_id,$boq_id);
 			
 			echo Zend_Json::encode($row);
 			exit();
